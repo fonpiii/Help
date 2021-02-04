@@ -14,14 +14,113 @@
 
         <include layout="@layout/custom_toolbar"></include>
 
-<!--        <androidx.appcompat.widget.Toolbar-->
-<!--            android:id="@+id/toolbar"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="?attr/actionBarSize"-->
-<!--            android:background="?attr/colorPrimary"-->
-<!--            app:popupTheme="@style/Theme.Help.PopupOverlay" />-->
-
     </com.google.android.material.appbar.AppBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:rowCount="1"
+            android:layout_marginTop="10dp"
+            android:paddingStart="15dp"
+            android:paddingBottom="0dp"
+            android:columnCount="3">
+
+            <LinearLayout
+                android:id="@+id/imgProfile"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_row="0"
+                android:layout_column="0"
+                android:layout_gravity="fill"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="0"
+                android:layout_margin="5dp">
+
+                <LinearLayout
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/helplogo">
+
+                    </ImageView>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/txtFullName"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_row="0"
+                android:layout_column="1"
+                android:layout_gravity="fill"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="0"
+                android:layout_margin="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center|start">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ดอกไม้ นานา"
+                        android:textSize="17dp"
+                        android:textAlignment="textStart"
+                        android:textColor="@color/lightBlack">
+
+                    </TextView>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/txtUserType"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_row="0"
+                android:layout_column="2"
+                android:layout_gravity="fill"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center|start">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="17dp"
+                        android:text="(ผู้ขอความช่วยเหลือ)"
+                        android:textColor="@color/lightBlack">
+
+                    </TextView>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </GridLayout>
+
+    </LinearLayout>
 
     <include layout="@layout/bottom_disabled_sheet" />
 
