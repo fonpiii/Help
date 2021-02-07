@@ -9,7 +9,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Help">
-        <activity android:name=".LoginActivity"></activity>
+        <activity
+            android:name=".OtherMenu"
+            android:theme="@style/Theme.Help.NoActionBar">
+        </activity>
+        <activity android:name=".LoginActivity" />
         <activity android:name=".disabled.DisabledMainActivity" />
         <activity
             android:name=".MainActivity"

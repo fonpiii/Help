@@ -1,5 +1,6 @@
 package com.project.help.disabled
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -7,7 +8,9 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.project.help.OtherMenu
 import com.project.help.R
 
 class DisabledMainActivity : AppCompatActivity() {
@@ -17,6 +20,7 @@ class DisabledMainActivity : AppCompatActivity() {
     private lateinit var imgProfile: ImageView
     private lateinit var txtFullName: TextView
     private lateinit var txtUserType: TextView
+    private lateinit var otherMenu: CardView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +59,14 @@ class DisabledMainActivity : AppCompatActivity() {
         imgProfile = findViewById(R.id.imgProfile)
         txtFullName = findViewById(R.id.txtFullName)
         txtUserType = findViewById(R.id.txtUserType)
+        otherMenu = findViewById(R.id.otherMenu)
+        //endregion
+
+        //region Action
+        otherMenu.setOnClickListener(View.OnClickListener {
+            val intent = Intent(this, OtherMenu::class.java)
+            startActivity(intent)
+        })
         //endregion
     }
 }
