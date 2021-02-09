@@ -21,6 +21,7 @@ class DisabledMainActivity : AppCompatActivity() {
     private lateinit var txtFullName: TextView
     private lateinit var txtUserType: TextView
     private lateinit var otherMenu: CardView
+    private lateinit var iconLeft: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +55,11 @@ class DisabledMainActivity : AppCompatActivity() {
             }
         })
         //endregion
+
+        //region Back button
+        iconLeft = findViewById(R.id.iconLeft)
+        iconLeft.visibility = View.INVISIBLE
+        //endregion Back button
 
         //region Set variable
         imgProfile = findViewById(R.id.imgProfile)
