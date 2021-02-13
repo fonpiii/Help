@@ -5,9 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.cardview.widget.CardView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.project.help.OtherMenu
@@ -22,6 +20,9 @@ class DisabledMainActivity : AppCompatActivity() {
     private lateinit var txtUserType: TextView
     private lateinit var otherMenu: CardView
     private lateinit var iconLeft: ImageView
+    private lateinit var ratingReqForHelp: RatingBar
+    private lateinit var ratingVolunteerForHelp: RatingBar
+    private lateinit var spinnerCategory: Spinner
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +67,9 @@ class DisabledMainActivity : AppCompatActivity() {
         txtFullName = findViewById(R.id.txtFullName)
         txtUserType = findViewById(R.id.txtUserType)
         otherMenu = findViewById(R.id.otherMenu)
+        ratingReqForHelp = findViewById(R.id.ratingReqForHelp)
+        ratingVolunteerForHelp = findViewById(R.id.ratingVolunteerForHelp)
+        spinnerCategory = findViewById(R.id.spinnerCategory)
         //endregion
 
         //region Action
@@ -73,6 +77,27 @@ class DisabledMainActivity : AppCompatActivity() {
             val intent = Intent(this, OtherMenu::class.java)
             startActivity(intent)
         })
+
+        var categories = arrayOf("หมวดหมู่ผู้พิการ", "การมองเห็น", "การได้ยิน", "สติปัญญา")
+
+        spinnerCategory.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, categories)
+
+        spinnerCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+            }
+
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+            }
+        }
         //endregion
+
+        //region On init
+        setRating()
+        //endregion On init
+    }
+
+    private fun setRating() {
+//        ratingReqForHelp.rating = 1.0F
+//        ratingVolunteerForHelp.rating = 5.0F
     }
 }
