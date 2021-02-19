@@ -1,18 +1,22 @@
 package com.project.help.disabled
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.*
+import android.widget.ArrayAdapter
+import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.project.help.OtherMenu
 import com.project.help.R
 
+
 class DisabledMainActivity : AppCompatActivity() {
 
+    //region Global variable
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
     private lateinit var bottomSheetDisabled: LinearLayout
     private lateinit var imgProfile: ImageView
@@ -23,6 +27,9 @@ class DisabledMainActivity : AppCompatActivity() {
     private lateinit var ratingReqForHelp: RatingBar
     private lateinit var ratingVolunteerForHelp: RatingBar
     private lateinit var spinnerCategory: Spinner
+    private lateinit var btnPost: Button
+    private lateinit var recyclerFeed: RecyclerView
+    //endregion Global variable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,6 +77,8 @@ class DisabledMainActivity : AppCompatActivity() {
         ratingReqForHelp = findViewById(R.id.ratingReqForHelp)
         ratingVolunteerForHelp = findViewById(R.id.ratingVolunteerForHelp)
         spinnerCategory = findViewById(R.id.spinnerCategory)
+        btnPost = findViewById(R.id.btnPost)
+        recyclerFeed = findViewById(R.id.recycler_feed)
         //endregion
 
         //region Action
@@ -78,9 +87,32 @@ class DisabledMainActivity : AppCompatActivity() {
             startActivity(intent)
         })
 
-        var categories = arrayOf("หมวดหมู่ผู้พิการ", "การมองเห็น", "การได้ยิน", "สติปัญญา")
+        btnPost.setOnClickListener(View.OnClickListener {
+            val intent = Intent(this, PostActivity::class.java)
+            startActivity(intent)
+        })
+        //endregion
 
-        spinnerCategory.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, categories)
+        //region On init
+        setRating()
+        setSpinnerCategory()
+        getPosts()
+        //endregion On init
+    }
+
+    private fun setRating() {
+//        ratingReqForHelp.rating = 1.0F
+//        ratingVolunteerForHelp.rating = 5.0F
+    }
+
+    private fun setSpinnerCategory() {
+        var categories = arrayOf("หมวดหมู่ผู้พิการ", "การมองเห็น", "การได้ยิน", "การเคลื่อนไหวร่างกาย", "สติปัญญา",
+                            "ออทิสติก", "ผู้สูงอายุ")
+
+//        spinnerCategory.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item)
+        var adapter = ArrayAdapter(this, R.layout.color_spinner_layout, categories)
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_layout)
+        spinnerCategory.adapter = adapter
 
         spinnerCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -89,15 +121,29 @@ class DisabledMainActivity : AppCompatActivity() {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
             }
         }
-        //endregion
-
-        //region On init
-        setRating()
-        //endregion On init
     }
 
-    private fun setRating() {
-//        ratingReqForHelp.rating = 1.0F
-//        ratingVolunteerForHelp.rating = 5.0F
+    private fun getPosts() {
+        val postList = generateDummyListPost(10)
+
+        recyclerFeed.adapter = PostAdapter(postList)
+        recyclerFeed.layoutManager = LinearLayoutManager(this)
+        recyclerFeed.setHasFixedSize(true)
+    }
+
+    private fun generateDummyListPost(size: Int): List<PostItem> {
+        val list = ArrayList<PostItem>()
+
+        for (i in 0 until size) {
+            val drawable = when (i % 3) {
+                0 -> R.drawable.privacypolicy
+                1 -> R.drawable.hospital
+                else -> R.drawable.helplogo
+            }
+
+            val item = PostItem(drawable, "User $i", "ช่วยอ่านใบนัดหมอให้ทีครับ", i)
+            list += item
+        }
+        return list
     }
 }

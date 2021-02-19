@@ -301,6 +301,7 @@
                                 android:gravity="center">
 
                                 <Button
+                                    android:id="@+id/btnPost"
                                     android:layout_width="match_parent"
                                     android:layout_height="70dp"
                                     android:backgroundTint="@color/lightGray"
@@ -459,6 +460,7 @@
                     <Spinner
                         android:id="@+id/spinnerCategory"
                         android:layout_height="35dp"
+                        android:entries="@array/categories"
                         android:background="@drawable/style_spinner"
                         android:popupBackground="@color/lightGray"
                         android:layout_width="match_parent">
@@ -470,85 +472,23 @@
 
         </GridLayout>
 
-<!--        <GridLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:rowCount="2"-->
-<!--            android:layout_marginTop="10dp"-->
-<!--            android:paddingBottom="0dp"-->
-<!--            android:columnCount="2">-->
-
-<!--            <LinearLayout-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_row="1"-->
-<!--                android:layout_column="0"-->
-<!--                android:layout_gravity="fill"-->
-<!--                android:layout_rowWeight="1"-->
-<!--                android:layout_columnWeight="1"-->
-<!--                android:gravity="center"-->
-<!--                android:layout_margin="5dp">-->
-
-<!--                <LinearLayout-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:gravity="center">-->
-
-<!--                    <TextView-->
-<!--                        android:id="@+id/txtScoreReqForHelp"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:text="คะแนนขอความช่วยเหลือ"-->
-<!--                        android:textSize="17dp"-->
-<!--                        android:textStyle="bold"-->
-<!--                        android:textAlignment="center"-->
-<!--                        android:textColor="@color/black">-->
-
-<!--                    </TextView>-->
-
-<!--                </LinearLayout>-->
-
-<!--            </LinearLayout>-->
-
-<!--            <LinearLayout-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_row="1"-->
-<!--                android:layout_column="1"-->
-<!--                android:layout_gravity="fill"-->
-<!--                android:layout_rowWeight="1"-->
-<!--                android:layout_columnWeight="1"-->
-<!--                android:gravity="center"-->
-<!--                android:layout_margin="5dp">-->
-
-<!--                <LinearLayout-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:gravity="center">-->
-
-<!--                    <TextView-->
-<!--                        android:id="@+id/txtScoreVolunteerForHelp"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:text="คะแนนอาสาช่วยเหลือ"-->
-<!--                        android:textSize="17dp"-->
-<!--                        android:textAlignment="center"-->
-<!--                        android:textStyle="bold"-->
-<!--                        android:textColor="@color/black">-->
-
-<!--                    </TextView>-->
-
-<!--                </LinearLayout>-->
-
-<!--            </LinearLayout>-->
-
-<!--        </GridLayout>-->
-
-        <!--        <LinearLayout-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="wrap_content">-->
-        <!--            -->
-        <!--        </LinearLayout>-->
 
     </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="7dp">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_feed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:clipToPadding="false"
+            tools:listitem="@layout/content_feed">
+        </androidx.recyclerview.widget.RecyclerView>
+
+    </RelativeLayout>
+
 </LinearLayout>

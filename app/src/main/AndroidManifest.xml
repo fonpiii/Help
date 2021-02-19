@@ -10,12 +10,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Help">
         <activity
-            android:name=".ContactUs"
+            android:name=".disabled.PostActivity"
             android:theme="@style/Theme.Help.NoActionBar">
         </activity>
         <activity
-            android:name=".OtherMenu"
+            android:name=".ContactUs"
             android:theme="@style/Theme.Help.NoActionBar"></activity>
+        <activity
+            android:name=".OtherMenu"
+            android:theme="@style/Theme.Help.NoActionBar" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".disabled.DisabledMainActivity" />
         <activity
