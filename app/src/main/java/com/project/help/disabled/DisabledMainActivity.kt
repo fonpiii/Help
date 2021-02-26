@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.project.help.OtherMenu
 import com.project.help.R
+import com.project.help.disabled.model.PostDetails
 
 
 class DisabledMainActivity : AppCompatActivity() {
@@ -30,6 +31,15 @@ class DisabledMainActivity : AppCompatActivity() {
     private lateinit var btnPost: Button
     private lateinit var recyclerFeed: RecyclerView
     //endregion Global variable
+
+    private fun addPostList(postList: ArrayList<PostItem>, postDetails: PostDetails): ArrayList<PostItem> {
+        var index = postList.size - 1
+//        postList += PostItem(R.drawable.privacypolicy, "User " + (index+1).toString(),
+//                postDetails.txtPost.toString(), index+1, 3.0F)
+        postList.add(index, PostItem(R.drawable.privacypolicy, "User " + (index+1).toString(),
+                postDetails.txtPost.toString(), index+1, 5.0F))
+        return postList
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,7 +89,9 @@ class DisabledMainActivity : AppCompatActivity() {
         spinnerCategory = findViewById(R.id.spinnerCategory)
         btnPost = findViewById(R.id.btnPost)
         recyclerFeed = findViewById(R.id.recycler_feed)
-        //endregion
+
+        val postDetail = intent.getSerializableExtra("PostDetail") as? PostDetails
+        //endregion Set variable
 
         //region Action
         otherMenu.setOnClickListener(View.OnClickListener {
@@ -91,16 +103,16 @@ class DisabledMainActivity : AppCompatActivity() {
             val intent = Intent(this, PostActivity::class.java)
             startActivity(intent)
         })
-        //endregion
+        //endregion Action
 
         //region On init
-        setRating()
+        setRatingUserHeader()
         setSpinnerCategory()
-        getPosts()
+        getPosts(postDetail)
         //endregion On init
     }
 
-    private fun setRating() {
+    private fun setRatingUserHeader() {
 //        ratingReqForHelp.rating = 1.0F
 //        ratingVolunteerForHelp.rating = 5.0F
     }
@@ -123,15 +135,19 @@ class DisabledMainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getPosts() {
-        val postList = generateDummyListPost(10)
+    private fun getPosts(postDetails: PostDetails?) {
+        var postList = generateDummyListPost(10)
+
+        if (postDetails != null) {
+            postList = addPostList(postList, postDetails)
+        }
 
         recyclerFeed.adapter = PostAdapter(postList)
         recyclerFeed.layoutManager = LinearLayoutManager(this)
         recyclerFeed.setHasFixedSize(true)
     }
 
-    private fun generateDummyListPost(size: Int): List<PostItem> {
+    private fun generateDummyListPost(size: Int): ArrayList<PostItem> {
         val list = ArrayList<PostItem>()
 
         for (i in 0 until size) {
@@ -141,9 +157,13 @@ class DisabledMainActivity : AppCompatActivity() {
                 else -> R.drawable.helplogo
             }
 
-            val item = PostItem(drawable, "User $i", "ช่วยอ่านใบนัดหมอให้ทีครับ", i)
+            // Set content feed
+            val item = PostItem(drawable, "User " + (i+1).toString(),
+                    "ช่วยอ่านใบนัดหมอให้ทีครับ", (i+1), 3.0F)
             list += item
         }
+        list += PostItem(R.drawable.privacypolicy, "",
+                "", 999999, 3.0F)
         return list
     }
 }

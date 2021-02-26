@@ -66,7 +66,8 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="5dp"
                         android:gravity="center">
 
                         <TextView
@@ -74,10 +75,24 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="xxxxx  xxxxxx"
-                            android:textSize="15dp"
+                            android:textSize="13dp"
                             android:textColor="@color/black">
 
                         </TextView>
+
+                        <RatingBar
+                            android:id="@+id/ratingUser_Feed"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:numStars="5"
+                            android:rating="3"
+                            android:stepSize="0.5"
+                            android:isIndicator="true"
+                            android:layout_marginVertical="0dp"
+                            android:layout_marginHorizontal="8dp"
+                            style="@style/MyRatingBar">
+
+                        </RatingBar>
 
                     </LinearLayout>
 
@@ -89,18 +104,20 @@
                         android:gravity="center">
 
                         <ImageView
-                            android:id="@+id/icon_time"
-                            android:layout_width="10dp"
-                            android:layout_height="10dp"
-                            android:layout_marginEnd="8dp"
-                            android:src="@drawable/star_filled">
+                            android:id="@+id/icon_clock"
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:layout_marginEnd="5dp"
+                            android:src="@drawable/wall_clock">
 
                         </ImageView>
+
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="10 วินาที"
+                            android:textSize="10dp"
                             android:textColor="@color/black"
                             android:layout_marginEnd="5dp">
                         </TextView>
@@ -118,7 +135,7 @@
                                 android:text="xxxxxxxx"
                                 android:paddingHorizontal="5dp"
                                 android:gravity="center"
-                                android:textSize="15dp"
+                                android:textSize="10dp"
                                 android:textColor="@color/black">
 
                             </TextView>
@@ -138,7 +155,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-                            android:textSize="15dp"
+                            android:textSize="13dp"
                             android:textColor="@color/black">
 
                         </TextView>
