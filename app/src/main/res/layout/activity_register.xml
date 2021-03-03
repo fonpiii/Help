@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".ContactUs">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/Theme.Help.AppBarOverlay">
+
+        <include layout="@layout/custom_toolbar_register"></include>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:src="@drawable/helplogo">
+            </ImageView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:text="พร้อมที่จะเป็นอาสากับเราแล้วใช่หรือไม่ ?"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:textSize="15dp">
+            </TextView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:text="HELP ช่วยให้คุณสามารถเป็นจิตอาสา \n และช่วยเหลือผู้พิการได้อย่างง่ายดาย เพื่อทำให้ชีวิตประจำวัน \n ผู้พิการได้รับความสะดวกสะบายมากยิ่งขึ้น"
+                android:textSize="13dp">
+            </TextView>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/orange"
+                android:layout_marginTop="30dp"
+                android:layout_marginHorizontal="25dp"
+                android:text="ฉันต้องการขอความช่วยเหลือ"
+                android:paddingVertical="10dp"
+                android:textStyle="bold"
+                android:textSize="15dp"
+                android:textColor="@color/black">
+
+            </Button>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/orange"
+                android:layout_marginTop="5dp"
+                android:text="ฉันต้องการขอความช่วยเหลือ"
+                android:layout_marginHorizontal="25dp"
+                android:paddingVertical="10dp"
+                android:textStyle="bold"
+                android:textSize="15dp"
+                android:textColor="@color/black">
+
+            </Button>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

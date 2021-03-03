@@ -36,6 +36,13 @@ class PostActivity : AppCompatActivity() {
         return intent
     }
 
+    private fun openSoftKeyboard(context: Context, view: View) {
+        view.requestFocus()
+        // open the soft keyboard
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_post)
@@ -45,7 +52,7 @@ class PostActivity : AppCompatActivity() {
         iconLeft.setOnClickListener(View.OnClickListener {
             finish()
         })
-        //endregion Back buttonbtnPost_Post
+        //region Back button
 
         //region Set variable
         editPost = findViewById(R.id.editPost_Post)
@@ -88,12 +95,5 @@ class PostActivity : AppCompatActivity() {
             }
         })
         //endregion Action
-    }
-
-    private fun openSoftKeyboard(context: Context, view: View) {
-        view.requestFocus()
-        // open the soft keyboard
-        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
     }
 }

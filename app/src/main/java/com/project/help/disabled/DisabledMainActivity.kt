@@ -32,10 +32,63 @@ class DisabledMainActivity : AppCompatActivity() {
     private lateinit var recyclerFeed: RecyclerView
     //endregion Global variable
 
+    private fun setRatingUserHeader() {
+//        ratingReqForHelp.rating = 1.0F
+//        ratingVolunteerForHelp.rating = 5.0F
+    }
+
+    private fun setSpinnerCategory() {
+        var categories = arrayOf("หมวดหมู่ผู้พิการ", "การมองเห็น", "การได้ยิน", "การเคลื่อนไหวร่างกาย", "สติปัญญา",
+                "ออทิสติก", "ผู้สูงอายุ")
+
+//        spinnerCategory.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item)
+        var adapter = ArrayAdapter(this, R.layout.color_spinner_layout, categories)
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_layout)
+        spinnerCategory.adapter = adapter
+
+        spinnerCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+            }
+
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+            }
+        }
+    }
+
+    private fun getPosts(postDetails: PostDetails?) {
+        var postList = generateDummyListPost(10)
+
+        if (postDetails != null) {
+            postList = addPostList(postList, postDetails)
+        }
+
+        recyclerFeed.adapter = PostAdapter(postList)
+        recyclerFeed.layoutManager = LinearLayoutManager(this)
+        recyclerFeed.setHasFixedSize(true)
+    }
+
+    private fun generateDummyListPost(size: Int): ArrayList<PostItem> {
+        val list = ArrayList<PostItem>()
+
+        for (i in 0 until size) {
+            val drawable = when (i % 3) {
+                0 -> R.drawable.privacypolicy
+                1 -> R.drawable.hospital
+                else -> R.drawable.helplogo
+            }
+
+            // Set content feed
+            val item = PostItem(drawable, "User " + (i+1).toString(),
+                    "ช่วยอ่านใบนัดหมอให้ทีครับ", (i+1), 3.0F)
+            list += item
+        }
+        list += PostItem(R.drawable.privacypolicy, "",
+                "", 999999, 3.0F)
+        return list
+    }
+
     private fun addPostList(postList: ArrayList<PostItem>, postDetails: PostDetails): ArrayList<PostItem> {
         var index = postList.size - 1
-//        postList += PostItem(R.drawable.privacypolicy, "User " + (index+1).toString(),
-//                postDetails.txtPost.toString(), index+1, 3.0F)
         postList.add(index, PostItem(R.drawable.privacypolicy, "User " + (index+1).toString(),
                 postDetails.txtPost.toString(), index+1, 5.0F))
         return postList
@@ -110,60 +163,5 @@ class DisabledMainActivity : AppCompatActivity() {
         setSpinnerCategory()
         getPosts(postDetail)
         //endregion On init
-    }
-
-    private fun setRatingUserHeader() {
-//        ratingReqForHelp.rating = 1.0F
-//        ratingVolunteerForHelp.rating = 5.0F
-    }
-
-    private fun setSpinnerCategory() {
-        var categories = arrayOf("หมวดหมู่ผู้พิการ", "การมองเห็น", "การได้ยิน", "การเคลื่อนไหวร่างกาย", "สติปัญญา",
-                            "ออทิสติก", "ผู้สูงอายุ")
-
-//        spinnerCategory.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item)
-        var adapter = ArrayAdapter(this, R.layout.color_spinner_layout, categories)
-        adapter.setDropDownViewResource(R.layout.spinner_dropdown_layout)
-        spinnerCategory.adapter = adapter
-
-        spinnerCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(p0: AdapterView<*>?) {
-            }
-
-            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-            }
-        }
-    }
-
-    private fun getPosts(postDetails: PostDetails?) {
-        var postList = generateDummyListPost(10)
-
-        if (postDetails != null) {
-            postList = addPostList(postList, postDetails)
-        }
-
-        recyclerFeed.adapter = PostAdapter(postList)
-        recyclerFeed.layoutManager = LinearLayoutManager(this)
-        recyclerFeed.setHasFixedSize(true)
-    }
-
-    private fun generateDummyListPost(size: Int): ArrayList<PostItem> {
-        val list = ArrayList<PostItem>()
-
-        for (i in 0 until size) {
-            val drawable = when (i % 3) {
-                0 -> R.drawable.privacypolicy
-                1 -> R.drawable.hospital
-                else -> R.drawable.helplogo
-            }
-
-            // Set content feed
-            val item = PostItem(drawable, "User " + (i+1).toString(),
-                    "ช่วยอ่านใบนัดหมอให้ทีครับ", (i+1), 3.0F)
-            list += item
-        }
-        list += PostItem(R.drawable.privacypolicy, "",
-                "", 999999, 3.0F)
-        return list
     }
 }
