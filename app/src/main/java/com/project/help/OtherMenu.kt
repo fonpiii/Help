@@ -11,6 +11,7 @@ class OtherMenu : AppCompatActivity() {
 
     private lateinit var iconLeft: ImageView
     private lateinit var contactUsMenu: CardView
+    private lateinit var profileMenu: CardView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,11 +26,17 @@ class OtherMenu : AppCompatActivity() {
 
         //region Set variable
         contactUsMenu = findViewById(R.id.contactUs)
+        profileMenu = findViewById(R.id.profile)
         //endregion
 
         //region Action
         contactUsMenu.setOnClickListener(View.OnClickListener {
-            val intent = Intent(this, ContactUs::class.java)
+            val intent = Intent(this, ContactUsActivity::class.java)
+            startActivity(intent)
+        })
+
+        profileMenu.setOnClickListener(View.OnClickListener {
+            val intent = Intent(this, ProfileActivity::class.java)
             startActivity(intent)
         })
         //endregion

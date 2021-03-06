@@ -9,18 +9,28 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Help">
-        <activity android:name=".disabled.OldPost"></activity>
         <activity
-            android:name=".Register"
+            android:name=".ProfileActivity"
+            android:theme="@style/Theme.Help.NoActionBar">
+
+        </activity>
+        <activity
+            android:name=".disabled.ArchiveOfPostsActivity"
             android:theme="@style/Theme.Help.NoActionBar"></activity>
         <activity
-            android:name=".Welcome"
+            android:name=".disabled.OldPostActivity"
+            android:theme="@style/Theme.Help.NoActionBar" />
+        <activity
+            android:name=".RegisterActivity"
+            android:theme="@style/Theme.Help.NoActionBar" />
+        <activity
+            android:name=".WelcomeActivity"
             android:theme="@style/Theme.Help.NoActionBar" />
         <activity
             android:name=".disabled.PostActivity"
             android:theme="@style/Theme.Help.NoActionBar" />
         <activity
-            android:name=".ContactUs"
+            android:name=".ContactUsActivity"
             android:theme="@style/Theme.Help.NoActionBar" />
         <activity
             android:name=".OtherMenu"

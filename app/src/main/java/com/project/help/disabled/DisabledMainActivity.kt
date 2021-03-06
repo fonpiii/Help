@@ -24,6 +24,8 @@ class DisabledMainActivity : AppCompatActivity() {
     private lateinit var txtFullName: TextView
     private lateinit var txtUserType: TextView
     private lateinit var otherMenu: CardView
+    private lateinit var oldPost: CardView
+    private lateinit var archiveOfPosts: CardView
     private lateinit var iconLeft: ImageView
     private lateinit var ratingReqForHelp: RatingBar
     private lateinit var ratingVolunteerForHelp: RatingBar
@@ -79,18 +81,18 @@ class DisabledMainActivity : AppCompatActivity() {
 
             // Set content feed
             val item = PostItem(drawable, "User " + (i+1).toString(),
-                    "ช่วยอ่านใบนัดหมอให้ทีครับ", (i+1), 3.0F)
+                    "ช่วยอ่านใบนัดหมอให้ทีครับ", (i+1), 3.0F, 0)
             list += item
         }
         list += PostItem(R.drawable.privacypolicy, "",
-                "", 999999, 3.0F)
+                "", 999999, 3.0F, 0)
         return list
     }
 
     private fun addPostList(postList: ArrayList<PostItem>, postDetails: PostDetails): ArrayList<PostItem> {
         var index = postList.size - 1
         postList.add(index, PostItem(R.drawable.privacypolicy, "User " + (index+1).toString(),
-                postDetails.txtPost.toString(), index+1, 5.0F))
+                postDetails.txtPost.toString(), index+1, 5.0F, 0))
         return postList
     }
 
@@ -137,6 +139,8 @@ class DisabledMainActivity : AppCompatActivity() {
         txtFullName = findViewById(R.id.txtFullName)
         txtUserType = findViewById(R.id.txtUserType)
         otherMenu = findViewById(R.id.otherMenu)
+        oldPost = findViewById(R.id.oldPost)
+        archiveOfPosts = findViewById(R.id.archiveOfPosts)
         ratingReqForHelp = findViewById(R.id.ratingReqForHelp)
         ratingVolunteerForHelp = findViewById(R.id.ratingVolunteerForHelp)
         spinnerCategory = findViewById(R.id.spinnerCategory)
@@ -147,6 +151,16 @@ class DisabledMainActivity : AppCompatActivity() {
         //endregion Set variable
 
         //region Action
+        archiveOfPosts.setOnClickListener(View.OnClickListener {
+            val intent = Intent(this, ArchiveOfPostsActivity::class.java)
+            startActivity(intent)
+        })
+
+        oldPost.setOnClickListener(View.OnClickListener {
+            val intent = Intent(this, OldPostActivity::class.java)
+            startActivity(intent)
+        })
+
         otherMenu.setOnClickListener(View.OnClickListener {
             val intent = Intent(this, OtherMenu::class.java)
             startActivity(intent)

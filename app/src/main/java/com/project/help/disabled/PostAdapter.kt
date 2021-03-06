@@ -28,6 +28,11 @@ class PostAdapter(private val postList: List<PostItem>) : RecyclerView.Adapter<P
         holder.postDetailFeed.text = currentItem.postDetail
         holder.countCommentFeed.text = currentItem.count.toString()
         holder.ratingUserFeed.rating = currentItem.rating
+
+        if (currentItem.imagePost != 0) {
+            holder.imagePostFeed.visibility = View.VISIBLE
+            holder.imagePostFeed.setImageResource(currentItem.imagePost)
+        }
     }
 
     class PostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -36,5 +41,6 @@ class PostAdapter(private val postList: List<PostItem>) : RecyclerView.Adapter<P
         val postDetailFeed: TextView = itemView.findViewById(R.id.postDetail_Feed)
         val countCommentFeed: TextView = itemView.findViewById(R.id.countComment_Feed)
         val ratingUserFeed: RatingBar = itemView.findViewById(R.id.ratingUser_Feed)
+        val imagePostFeed: ImageView = itemView.findViewById(R.id.imgPostDetail_Feed)
     }
 }

@@ -3,15 +3,10 @@ package com.project.help
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
-import androidx.core.content.ContextCompat
-import androidx.core.widget.doAfterTextChanged
-import com.project.help.disabled.DisabledMainActivity
-import com.project.help.disabled.model.PostDetails
 
-class Welcome : AppCompatActivity() {
+class WelcomeActivity : AppCompatActivity() {
 
     //region Global variable
     private lateinit var btnLogin: Button
@@ -34,7 +29,7 @@ class Welcome : AppCompatActivity() {
         })
 
         btnRegister.setOnClickListener(View.OnClickListener {
-            val intent = Intent(this, Register::class.java)
+            val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
         })
         //endregion Action
