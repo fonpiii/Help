@@ -7,10 +7,11 @@ import android.view.View
 import android.widget.Button
 import com.project.help.disabled.DisabledMainActivity
 
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     lateinit var btnUser: Button
     lateinit var btnDisabled: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -19,13 +20,19 @@ class LoginActivity : AppCompatActivity() {
         btnUser = findViewById(R.id.btnUser)
         btnDisabled = findViewById(R.id.btnDisabled)
 
-        btnDisabled.setOnClickListener(View.OnClickListener {
-            val intent = Intent(this, DisabledMainActivity::class.java)
-            startActivity(intent)
-        })
+        btnDisabled.setOnClickListener(this)
+        btnUser.setOnClickListener(this)
+    }
 
-        btnUser.setOnClickListener(View.OnClickListener {
-            // Something
-        })
+    override fun onClick(v: View) {
+        when (v.id) {
+            R.id.btnDisabled -> {
+                val intent = Intent(this, DisabledMainActivity::class.java)
+                startActivity(intent)
+            }
+            R.id.btnUser -> {
+                // Something
+            }
+        }
     }
 }

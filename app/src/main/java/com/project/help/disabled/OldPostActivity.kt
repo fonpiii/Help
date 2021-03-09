@@ -12,11 +12,36 @@ import androidx.recyclerview.widget.RecyclerView
 import com.project.help.R
 import com.project.help.disabled.model.PostDetails
 
-class OldPostActivity : AppCompatActivity() {
+class OldPostActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var recyclerFeed: RecyclerView
     private lateinit var iconLeft: ImageView
     private lateinit var spinnerCategory: Spinner
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_old_post)
+
+        recyclerFeed = findViewById(R.id.recycler_feed)
+        spinnerCategory = findViewById(R.id.spinnerCategory)
+
+        //region On init
+        setToolbar()
+        setSpinnerCategory()
+        getPosts()
+        //endregion On init
+    }
+
+    override fun onClick(v: View) {
+        when (v.id) {
+            R.id.iconLeft -> finish()
+        }
+    }
+
+    private fun setToolbar() {
+        iconLeft = findViewById(R.id.iconLeft)
+        iconLeft.setOnClickListener(this)
+    }
 
     private fun getPosts() {
         var postList = generateDummyListPost(5)
@@ -38,12 +63,12 @@ class OldPostActivity : AppCompatActivity() {
 
             list += if (i == 2) {
                 val item = PostItem(drawable, "User " + (i+1).toString(),
-                    "ช่วยอ่านใบนัดหมอให้ทีครับ", (i+1), 3.0F, R.drawable.gmail)
+                        "ช่วยอ่านใบนัดหมอให้ทีครับ", (i+1), 3.0F, R.drawable.gmail)
                 item
             } else {
                 // Set content feed
                 val item = PostItem(drawable, "User " + (i+1).toString(),
-                    "ช่วยอ่านใบนัดหมอให้ทีครับ", (i+1), 3.0F, 0)
+                        "ช่วยอ่านใบนัดหมอให้ทีครับ", (i+1), 3.0F, 0)
                 item
             }
         }
@@ -52,7 +77,7 @@ class OldPostActivity : AppCompatActivity() {
 
     private fun setSpinnerCategory() {
         var categories = arrayOf("หมวดหมู่ผู้พิการ", "การมองเห็น", "การได้ยิน", "การเคลื่อนไหวร่างกาย", "สติปัญญา",
-            "ออทิสติก", "ผู้สูงอายุ")
+                "ออทิสติก", "ผู้สูงอายุ")
 
         var adapter = ArrayAdapter(this, R.layout.color_spinner_layout, categories)
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_layout)
@@ -65,27 +90,5 @@ class OldPostActivity : AppCompatActivity() {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
             }
         }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_old_post)
-
-        //region Back button
-        iconLeft = findViewById(R.id.iconLeft)
-        iconLeft.setOnClickListener(View.OnClickListener {
-            finish()
-        })
-        //region Back button
-
-        //region Set variable
-        recyclerFeed = findViewById(R.id.recycler_feed)
-        spinnerCategory = findViewById(R.id.spinnerCategory)
-        //endregion Set variable
-
-        //region On init
-        setSpinnerCategory()
-        getPosts()
-        //endregion On init
     }
 }

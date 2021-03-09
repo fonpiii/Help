@@ -8,7 +8,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 
-class RegisterActivity : AppCompatActivity() {
+class RegisterActivity : AppCompatActivity(), View.OnClickListener {
 
     //region Global variable
     private lateinit var iconLeft: ImageView
@@ -18,11 +18,19 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
-        //region Back button
+        //region On init
+        setToolbar()
+        //endregion On init
+    }
+
+    private fun setToolbar() {
         iconLeft = findViewById(R.id.iconLeft)
-        iconLeft.setOnClickListener(View.OnClickListener {
-            finish()
-        })
-        //region Back button
+        iconLeft.setOnClickListener(this)
+    }
+
+    override fun onClick(v: View) {
+        when (v.id) {
+            R.id.iconLeft -> finish()
+        }
     }
 }

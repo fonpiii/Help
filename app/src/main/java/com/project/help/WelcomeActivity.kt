@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 
-class WelcomeActivity : AppCompatActivity() {
+class WelcomeActivity : AppCompatActivity(), View.OnClickListener {
 
     //region Global variable
     private lateinit var btnLogin: Button
@@ -17,21 +17,23 @@ class WelcomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_welcome)
 
-        //region Set variable
         btnLogin = findViewById(R.id.btnLogin_Welcome)
         btnRegister = findViewById(R.id.btnRegister)
-        //endregion Set variable
 
-        //region Action
-        btnLogin.setOnClickListener(View.OnClickListener {
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-        })
+        btnLogin.setOnClickListener(this)
+        btnRegister.setOnClickListener(this)
+    }
 
-        btnRegister.setOnClickListener(View.OnClickListener {
-            val intent = Intent(this, RegisterActivity::class.java)
-            startActivity(intent)
-        })
-        //endregion Action
+    override fun onClick(v: View) {
+        when (v.id) {
+            R.id.btnLogin_Welcome -> {
+                val intent = Intent(this, LoginActivity::class.java)
+                startActivity(intent)
+            }
+            R.id.btnRegister -> {
+                val intent = Intent(this, RegisterActivity::class.java)
+                startActivity(intent)
+            }
+        }
     }
 }

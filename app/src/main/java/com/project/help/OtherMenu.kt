@@ -6,8 +6,9 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import androidx.cardview.widget.CardView
+import com.project.help.disabled.model.PostDetails
 
-class OtherMenu : AppCompatActivity() {
+class OtherMenu : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var iconLeft: ImageView
     private lateinit var contactUsMenu: CardView
@@ -17,28 +18,33 @@ class OtherMenu : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_other_menu)
 
-        //region Back button
-        iconLeft = findViewById(R.id.iconLeft)
-        iconLeft.setOnClickListener(View.OnClickListener {
-            finish()
-        })
-        //endregion Back button
-
-        //region Set variable
         contactUsMenu = findViewById(R.id.contactUs)
         profileMenu = findViewById(R.id.profile)
-        //endregion
 
-        //region Action
-        contactUsMenu.setOnClickListener(View.OnClickListener {
-            val intent = Intent(this, ContactUsActivity::class.java)
-            startActivity(intent)
-        })
+        contactUsMenu.setOnClickListener(this)
+        profileMenu.setOnClickListener(this)
 
-        profileMenu.setOnClickListener(View.OnClickListener {
-            val intent = Intent(this, ProfileActivity::class.java)
-            startActivity(intent)
-        })
-        //endregion
+        //region On init
+        setToolbar()
+        //endregion On init
+    }
+
+    private fun setToolbar() {
+        iconLeft = findViewById(R.id.iconLeft)
+        iconLeft.setOnClickListener(this)
+    }
+
+    override fun onClick(v: View) {
+        when (v.id) {
+            R.id.contactUs -> {
+                val intent = Intent(this, ContactUsActivity::class.java)
+                startActivity(intent)
+            }
+            R.id.profile -> {
+                val intent = Intent(this, ProfileActivity::class.java)
+                startActivity(intent)
+            }
+            R.id.iconLeft -> finish()
+        }
     }
 }

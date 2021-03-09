@@ -4,8 +4,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
+import com.project.help.disabled.model.PostDetails
 
-class ProfileActivity : AppCompatActivity() {
+class ProfileActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var iconLeft: ImageView
 
@@ -13,11 +14,19 @@ class ProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
-        //region Back button
+        //region On init
+        setToolbar()
+        //endregion On init
+    }
+
+    private fun setToolbar() {
         iconLeft = findViewById(R.id.iconLeft)
-        iconLeft.setOnClickListener(View.OnClickListener {
-            finish()
-        })
-        //endregion Back button
+        iconLeft.setOnClickListener(this)
+    }
+
+    override fun onClick(v: View) {
+        when (v.id) {
+            R.id.iconLeft -> finish()
+        }
     }
 }
