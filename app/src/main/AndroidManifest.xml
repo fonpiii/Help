@@ -10,13 +10,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Help">
         <activity
-            android:name=".ProfileActivity"
+            android:name=".EmergencyPNBActivity"
             android:theme="@style/Theme.Help.NoActionBar">
-
         </activity>
         <activity
-            android:name=".disabled.ArchiveOfPostsActivity"
+            android:name=".ProfileActivity"
             android:theme="@style/Theme.Help.NoActionBar"></activity>
+        <activity
+            android:name=".disabled.ArchiveOfPostsActivity"
+            android:theme="@style/Theme.Help.NoActionBar" />
         <activity
             android:name=".disabled.OldPostActivity"
             android:theme="@style/Theme.Help.NoActionBar" />

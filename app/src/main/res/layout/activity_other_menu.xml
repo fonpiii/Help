@@ -175,6 +175,7 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/emergencyTel"
                 android:layout_width="130dp"
                 android:layout_height="150dp"
                 android:layout_row="1"
