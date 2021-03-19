@@ -31,6 +31,9 @@ class CustomDialogFragment: DialogFragment(), View.OnClickListener {
     private lateinit var imgBtStop: ImageButton
     private lateinit var chronometer: Chronometer
     private lateinit var llRecorder: LinearLayout
+    private lateinit var llPlay: LinearLayout
+    private lateinit var seekBar: SeekBar
+    private lateinit var imgViewPlay: ImageView
     private lateinit var rootView: View
 
     override fun onCreateView(
@@ -44,6 +47,9 @@ class CustomDialogFragment: DialogFragment(), View.OnClickListener {
         imgBtStop = rootView.findViewById(R.id.imgBtStop)
         chronometer = rootView.findViewById(R.id.chronometer)
         llRecorder = rootView.findViewById(R.id.llRecorder)
+        llPlay = rootView.findViewById(R.id.llPlay)
+        seekBar = rootView.findViewById(R.id.seekBar)
+        imgViewPlay = rootView.findViewById(R.id.imgViewPlay)
 
         imgBtRecord.setOnClickListener(this)
         imgBtStop.setOnClickListener(this)
@@ -65,6 +71,15 @@ class CustomDialogFragment: DialogFragment(), View.OnClickListener {
                 prepareStop()
                 stopRecording()
             }
+            R.id.imgViewPlay -> {
+                if (!isPlaying && fileName != null) {
+                    isPlaying = true
+                    startPlaying()
+                } else {
+                    isPlaying = false
+                    stopPlaying()
+                }
+            }
         }
     }
 
@@ -72,7 +87,7 @@ class CustomDialogFragment: DialogFragment(), View.OnClickListener {
         TransitionManager.beginDelayedTransition(llRecorder)
         imgBtRecord.visibility = View.VISIBLE
         imgBtStop.visibility = View.GONE
-//        llPlay.visibility = View.VISIBLE
+        llPlay.visibility = View.VISIBLE
     }
 
 
@@ -80,7 +95,7 @@ class CustomDialogFragment: DialogFragment(), View.OnClickListener {
         TransitionManager.beginDelayedTransition(llRecorder)
         imgBtRecord.visibility = View.GONE
         imgBtStop.visibility = View.VISIBLE
-//        llPlay.visibility = View.GONE
+        llPlay.visibility = View.GONE
     }
 
     private fun startRecording() {
@@ -123,6 +138,7 @@ class CustomDialogFragment: DialogFragment(), View.OnClickListener {
         //starting the chronometer
         chronometer.stop()
         chronometer.base = SystemClock.elapsedRealtime()
+        llPlay.visibility = View.VISIBLE
         dismiss()
         Toast.makeText(rootView.context, "Recording saved successfully.", Toast.LENGTH_SHORT).show()
         //showing the play button
@@ -137,7 +153,60 @@ class CustomDialogFragment: DialogFragment(), View.OnClickListener {
 
         mPlayer = null
         //showing the play button
-//        imgViewPlay.setImageResource(R.drawable.ic_play_circle)
+        imgViewPlay.setImageResource(R.drawable.play_button)
         chronometer.stop()
+    }
+
+    private fun startPlaying() {
+        mPlayer = MediaPlayer()
+        try {
+            mPlayer!!.setDataSource(fileName)
+            mPlayer!!.prepare()
+            mPlayer!!.start()
+        } catch (e: IOException) {
+            Log.e("LOG_TAG", "prepare() failed")
+        }
+
+        //making the imageView pause button
+        imgViewPlay.setImageResource(R.drawable.pause)
+
+        seekBar.progress = lastProgress
+        mPlayer!!.seekTo(lastProgress)
+        seekBar.max = mPlayer!!.duration
+        seekBarUpdate()
+        chronometer.start()
+
+        mPlayer!!.setOnCompletionListener(MediaPlayer.OnCompletionListener {
+            imgViewPlay.setImageResource(R.drawable.play_button)
+            isPlaying = false
+            chronometer.stop()
+            chronometer.base = SystemClock.elapsedRealtime()
+            mPlayer!!.seekTo(0)
+        })
+
+        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                if (mPlayer != null && fromUser) {
+                    mPlayer!!.seekTo(progress)
+                    chronometer.base = SystemClock.elapsedRealtime() - mPlayer!!.currentPosition
+                    lastProgress = progress
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {}
+        })
+    }
+
+    private var runnable: Runnable = Runnable { seekBarUpdate() }
+
+    private fun seekBarUpdate() {
+        if (mPlayer != null) {
+            val mCurrentPosition = mPlayer!!.currentPosition
+            seekBar.progress = mCurrentPosition
+            lastProgress = mCurrentPosition
+        }
+        mHandler.postDelayed(runnable, 100)
     }
 }
