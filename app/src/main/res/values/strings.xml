@@ -19,4 +19,7 @@
         <item>ออทิสติก</item>
         <item>ผู้สูอายุ</item>
     </string-array>
+
+    <string name="audio_type">audio</string>
+    <string name="image_type">image</string>
 </resources>

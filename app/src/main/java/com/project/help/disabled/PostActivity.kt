@@ -1,6 +1,7 @@
 package com.project.help.disabled
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -13,6 +14,9 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.SystemClock
 import android.provider.MediaStore
+import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
+import android.text.Editable
 import android.transition.TransitionManager
 import android.util.Log
 import android.view.View
@@ -26,7 +30,8 @@ import com.project.help.disabled.model.PostDetails
 import java.io.File
 import java.io.IOException
 import java.io.Serializable
-import com.project.help.disabled.CustomDialogFragment as CustomDialogFragment1
+import java.util.*
+import kotlin.collections.ArrayList
 
 @RequiresApi(api = Build.VERSION_CODES.M)
 class PostActivity : AppCompatActivity(), View.OnClickListener {
@@ -37,13 +42,14 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var btnPost: TextView
     private lateinit var btnIsAdvice: LinearLayout
     private lateinit var btnImgGallery: LinearLayout
-    private lateinit var btndAudio: LinearLayout
+    private lateinit var btnAudio: LinearLayout
+    private lateinit var btnSpeechToText: LinearLayout
     private lateinit var itemAdvice: TextView
     private lateinit var layout_imagePost: LinearLayout
     private lateinit var imagePost: ImageView
-    private lateinit var dialog: CustomDialogFragment1
     private lateinit var layout_menu_bottom: LinearLayout
     private lateinit var layout_audio_bottom: LinearLayout
+    private lateinit var btnCloseImg: ImageButton
     private var mRecorder: MediaRecorder? = null
     private var mPlayer: MediaPlayer? = null
     private var fileName: String? = null
@@ -54,26 +60,31 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var imgBtStop: ImageButton
     private lateinit var chronometer: Chronometer
     private lateinit var llRecorder: LinearLayout
-    private lateinit var llPlay: LinearLayout
+    private lateinit var layout_audio: LinearLayout
     private lateinit var seekBar: SeekBar
     private lateinit var imgViewPlay: ImageView
-    private lateinit var btnCancel: ImageButton
+    private lateinit var btnCancelAudio: ImageButton
+    private lateinit var btnCloseAudio: ImageButton
     private val pickImage = 100
     private var imageUri: Uri? = null
     private var isAdvice: Boolean = false
     private val RECORD_AUDIO_REQUEST_CODE = 101
+    private val RQ_SPEECH_REC = 102
+    private lateinit var spinnerCategory: Spinner
     //endregion Global variable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_post)
 
+        //region Set variable
         editPost = findViewById(R.id.editPost_Post)
         btnPost = findViewById(R.id.btnPost_Post)
         btnIsAdvice = findViewById(R.id.btnIsAdvice)
         itemAdvice = findViewById(R.id.itemAdvice)
         btnImgGallery = findViewById(R.id.btnImgGallery)
-        btndAudio = findViewById(R.id.btndAudio)
+        btnAudio = findViewById(R.id.btnAudio)
+        btnSpeechToText = findViewById(R.id.btnSpeechToText)
         layout_imagePost = findViewById(R.id.layout_imagePost)
         imagePost = findViewById(R.id.imagePost)
         layout_menu_bottom = findViewById(R.id.layout_menu_bottom)
@@ -82,23 +93,31 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
         imgBtStop = findViewById(R.id.imgBtStop)
         chronometer = findViewById(R.id.chronometer)
         llRecorder = findViewById(R.id.llRecorder)
-        llPlay = findViewById(R.id.llPlay)
+        layout_audio = findViewById(R.id.layout_audio)
         seekBar = findViewById(R.id.seekBar)
         imgViewPlay = findViewById(R.id.imgViewPlay)
-        btnCancel = findViewById(R.id.btnCancel)
+        btnCancelAudio = findViewById(R.id.btnCancelAudio)
+        btnCloseImg = findViewById(R.id.btnCloseImg)
+        btnCloseAudio = findViewById(R.id.btnCloseAudio)
+        spinnerCategory = findViewById(R.id.spinnerCategory)
 
         imgBtRecord.setOnClickListener(this)
         imgBtStop.setOnClickListener(this)
         editPost.setOnClickListener(this)
         btnPost.setOnClickListener(this)
+        btnSpeechToText.setOnClickListener(this)
         btnIsAdvice.setOnClickListener(this)
         btnImgGallery.setOnClickListener(this)
-        btndAudio.setOnClickListener(this)
-        btnCancel.setOnClickListener(this)
+        btnAudio.setOnClickListener(this)
+        btnCancelAudio.setOnClickListener(this)
         imgViewPlay.setOnClickListener(this)
+        btnCloseImg.setOnClickListener(this)
+        btnCloseAudio.setOnClickListener(this)
+        //endregion Set variable
 
         //region On init
         setToolbar()
+        setSpinnerCategory()
         //endregion On init
 
         editPost.doAfterTextChanged {
@@ -138,16 +157,14 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
                 val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
                 startActivityForResult(gallery, pickImage)
             }
-            R.id.btndAudio -> {
+            R.id.btnAudio -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    getPermissionToRecordAudio()
+                    getPermissionToRecordAudio(RECORD_AUDIO_REQUEST_CODE)
                     layout_menu_bottom.visibility = View.GONE
                     layout_audio_bottom.visibility = View.VISIBLE
-//                    dialog = CustomDialogFragment1()
-//                    dialog.show(supportFragmentManager, "customDialog")
                 }
             }
-            R.id.btnCancel -> {
+            R.id.btnCancelAudio -> {
                 layout_menu_bottom.visibility = View.VISIBLE
                 layout_audio_bottom.visibility = View.GONE
             }
@@ -168,7 +185,33 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
                     stopPlaying()
                 }
             }
+            R.id.btnCloseImg -> {
+                setFilesToEmpty(getString(R.string.image_type))
+            }
+            R.id.btnCloseAudio -> {
+                setFilesToEmpty(getString(R.string.audio_type))
+            }
+            R.id.btnSpeechToText -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    getPermissionToRecordAudio(RQ_SPEECH_REC)
+                }
+            }
             R.id.iconLeft -> finish()
+        }
+    }
+
+    private fun setFilesToEmpty(type: String) {
+        when (type) {
+            getString(R.string.image_type) -> {
+                layout_imagePost.visibility = View.GONE
+                imageUri = null
+                imagePost.setImageURI(imageUri)
+            }
+            getString(R.string.audio_type) -> {
+                layout_audio.visibility = View.GONE
+                mRecorder = null
+                File(fileName).delete()
+            }
         }
     }
 
@@ -178,6 +221,9 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
             layout_imagePost.visibility = View.VISIBLE
             imageUri = data?.data
             imagePost.setImageURI(imageUri)
+        } else if (requestCode == RQ_SPEECH_REC && resultCode == Activity.RESULT_OK) {
+            val result:ArrayList<String>? = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+            editPost.text = Editable.Factory.getInstance().newEditable(result?.get(0).toString())
         }
     }
 
@@ -199,13 +245,21 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
         imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
     }
 
-    private fun getPermissionToRecordAudio() {
+    private fun getPermissionToRecordAudio(recordAudioRequestCode: Int) {
         // 1) Use the support library version ContextCompat.checkSelfPermission(...) to avoid checking the build version since Context.checkSelfPermission(...) is only available in Marshmallow
         // 2) Always check for permission (even if permission has already been granted) since the user can revoke permissions at any time through Settings
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE), RECORD_AUDIO_REQUEST_CODE)
+        if (recordAudioRequestCode == RECORD_AUDIO_REQUEST_CODE) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED
+                    || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                    || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE), recordAudioRequestCode)
+            }
+        } else if (recordAudioRequestCode == RQ_SPEECH_REC) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), recordAudioRequestCode)
+            } else {
+                askSpeechInput()
+            }
         }
     }
 
@@ -215,20 +269,27 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
         if (requestCode == RECORD_AUDIO_REQUEST_CODE) {
             if (grantResults.size == 3 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
                 //Toast.makeText(this, "Record Audio permission granted", Toast.LENGTH_SHORT).show();
-            } else if (grantResults.size == 3 && grantResults[0] != PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED && grantResults[2] != PackageManager.PERMISSION_GRANTED) {
-
+            } else {
+                layout_menu_bottom.visibility = View.VISIBLE
+                layout_audio_bottom.visibility = View.GONE
+                Toast.makeText(this, "You must give permissions to use this app. App is exiting.", Toast.LENGTH_SHORT).show()
+            }
+        } else if (requestCode == RQ_SPEECH_REC) {
+            if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                askSpeechInput()
+                Toast.makeText(this, "Record Audio permission granted", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(this, "You must give permissions to use this app. App is exiting.", Toast.LENGTH_SHORT).show()
-                dialog.dismiss()
             }
         }
+
     }
 
     private fun prepareStop() {
         TransitionManager.beginDelayedTransition(llRecorder)
         imgBtRecord.visibility = View.VISIBLE
         imgBtStop.visibility = View.GONE
-        llPlay.visibility = View.VISIBLE
+        layout_audio.visibility = View.VISIBLE
     }
 
 
@@ -236,7 +297,7 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
         TransitionManager.beginDelayedTransition(llRecorder)
         imgBtRecord.visibility = View.GONE
         imgBtStop.visibility = View.VISIBLE
-        llPlay.visibility = View.GONE
+        layout_audio.visibility = View.GONE
     }
 
     private fun startRecording() {
@@ -282,7 +343,7 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
         //starting the chronometer
         chronometer.stop()
         chronometer.base = SystemClock.elapsedRealtime()
-        llPlay.visibility = View.VISIBLE
+        layout_audio.visibility = View.VISIBLE
         Toast.makeText(this, "Recording saved successfully.", Toast.LENGTH_SHORT).show()
         //showing the play button
     }
@@ -317,13 +378,13 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
         mPlayer!!.seekTo(lastProgress)
         seekBar.max = mPlayer!!.duration
         seekBarUpdate()
-        chronometer.start()
+//        chronometer.start()
 
         mPlayer!!.setOnCompletionListener(MediaPlayer.OnCompletionListener {
             imgViewPlay.setImageResource(R.drawable.play_button)
             isPlaying = false
-            chronometer.stop()
-            chronometer.base = SystemClock.elapsedRealtime()
+//            chronometer.stop()
+//            chronometer.base = SystemClock.elapsedRealtime()
             mPlayer!!.seekTo(0)
         })
 
@@ -331,7 +392,7 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (mPlayer != null && fromUser) {
                     mPlayer!!.seekTo(progress)
-                    chronometer.base = SystemClock.elapsedRealtime() - mPlayer!!.currentPosition
+//                    chronometer.base = SystemClock.elapsedRealtime() - mPlayer!!.currentPosition
                     lastProgress = progress
                 }
             }
@@ -351,5 +412,34 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
             lastProgress = mCurrentPosition
         }
         mHandler.postDelayed(runnable, 100)
+    }
+
+    private fun askSpeechInput() {
+        if (!SpeechRecognizer.isRecognitionAvailable(this)) {
+            Toast.makeText(this, "Speech recognition is not available", Toast.LENGTH_SHORT).show()
+        } else {
+            val i = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+            i.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            i.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+            i.putExtra(RecognizerIntent.EXTRA_PROMPT, "Say something!")
+            startActivityForResult(i, RQ_SPEECH_REC)
+        }
+    }
+
+    private fun setSpinnerCategory() {
+        var categories = arrayOf("หมวดหมู่ผู้พิการ", "การมองเห็น", "การได้ยิน", "การเคลื่อนไหวร่างกาย", "สติปัญญา",
+                "ออทิสติก", "ผู้สูงอายุ")
+
+        var adapter = ArrayAdapter(this, R.layout.color_spinner_layout, categories)
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_layout)
+        spinnerCategory.adapter = adapter
+
+        spinnerCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+            }
+
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+            }
+        }
     }
 }

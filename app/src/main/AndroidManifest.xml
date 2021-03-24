@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -14,12 +15,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Help">
         <activity
-            android:name=".EmergencyPNBActivity"
+            android:name=".volunteer.VolunteerMainActivity"
             android:theme="@style/Theme.Help.NoActionBar">
         </activity>
         <activity
-            android:name=".ProfileActivity"
+            android:name=".EmergencyPNBActivity"
             android:theme="@style/Theme.Help.NoActionBar"></activity>
+        <activity
+            android:name=".ProfileActivity"
+            android:theme="@style/Theme.Help.NoActionBar" />
         <activity
             android:name=".disabled.ArchiveOfPostsActivity"
             android:theme="@style/Theme.Help.NoActionBar" />
@@ -34,8 +38,8 @@
             android:theme="@style/Theme.Help.NoActionBar" />
         <activity
             android:name=".disabled.PostActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/Theme.Help.NoActionBar" />
+            android:theme="@style/Theme.Help.NoActionBar"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ContactUsActivity"
             android:theme="@style/Theme.Help.NoActionBar" />
@@ -44,9 +48,6 @@
             android:theme="@style/Theme.Help.NoActionBar" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".disabled.DisabledMainActivity" />
-        <activity
-            android:name=".MainActivity"
-            android:theme="@style/Theme.Help.NoActionBar" />
         <activity
             android:name=".SplashScreenActivity"
             android:theme="@style/Theme.Help.NoActionBar">

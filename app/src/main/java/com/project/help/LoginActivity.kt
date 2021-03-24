@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import com.project.help.disabled.DisabledMainActivity
+import com.project.help.volunteer.VolunteerMainActivity
 
 class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -31,7 +32,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 startActivity(intent)
             }
             R.id.btnUser -> {
-                // Something
+                val intent = Intent(this, VolunteerMainActivity::class.java)
+                startActivity(intent)
             }
         }
     }
