@@ -15,12 +15,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Help">
         <activity
-            android:name=".volunteer.VolunteerMainActivity"
+            android:name=".disabled.RegisterDisabledActivity"
             android:theme="@style/Theme.Help.NoActionBar">
         </activity>
         <activity
-            android:name=".EmergencyPNBActivity"
+            android:name=".volunteer.RegisterVolunteerActivity"
             android:theme="@style/Theme.Help.NoActionBar"></activity>
+        <activity
+            android:name=".volunteer.VolunteerMainActivity"
+            android:theme="@style/Theme.Help.NoActionBar" />
+        <activity
+            android:name=".EmergencyPNBActivity"
+            android:theme="@style/Theme.Help.NoActionBar" />
         <activity
             android:name=".ProfileActivity"
             android:theme="@style/Theme.Help.NoActionBar" />

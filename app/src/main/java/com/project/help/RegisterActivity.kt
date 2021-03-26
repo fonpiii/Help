@@ -1,22 +1,30 @@
 package com.project.help
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
+import com.project.help.disabled.RegisterDisabledActivity
+import com.project.help.volunteer.RegisterVolunteerActivity
 
 class RegisterActivity : AppCompatActivity(), View.OnClickListener {
 
     //region Global variable
     private lateinit var iconLeft: ImageView
+    private lateinit var btnVolunteer: Button
+    private lateinit var btnDisabled: Button
     //endregion Global variable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
+
+        btnVolunteer = findViewById(R.id.btnVolunteer)
+        btnDisabled = findViewById(R.id.btnDisabled)
+
+        btnVolunteer.setOnClickListener(this)
+        btnDisabled.setOnClickListener(this)
 
         //region On init
         setToolbar()
@@ -30,6 +38,14 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View) {
         when (v.id) {
+            R.id.btnDisabled -> {
+                val intent = Intent(this, RegisterDisabledActivity::class.java)
+                startActivity(intent)
+            }
+            R.id.btnVolunteer -> {
+                val intent = Intent(this, RegisterVolunteerActivity::class.java)
+                startActivity(intent)
+            }
             R.id.iconLeft -> finish()
         }
     }

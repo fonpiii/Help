@@ -15,4 +15,6 @@
     <color name="lightGray">#EEEEEE</color>
     <color name="lightRed">#D95842</color>
     <color name="placeholder">#515050</color>
+    <color name="red">#FF0000</color>
+    <color name="lightGreen">#6DBB6D</color>
 </resources>

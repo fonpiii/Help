@@ -56,12 +56,13 @@
             </TextView>
 
             <Button
+                android:id="@+id/btnDisabled"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/orange"
                 android:layout_marginTop="30dp"
                 android:layout_marginHorizontal="25dp"
-                android:text="ฉันต้องการขอความช่วยเหลือ"
+                android:text="ฉันเพิ่งมาขอความช่วยเหลือ"
                 android:paddingVertical="10dp"
                 android:textStyle="bold"
                 android:textSize="15dp"
@@ -70,11 +71,12 @@
             </Button>
 
             <Button
+                android:id="@+id/btnVolunteer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/orange"
                 android:layout_marginTop="5dp"
-                android:text="ฉันต้องการขอความช่วยเหลือ"
+                android:text="ฉันเพิ่งมาเป็นอาสา"
                 android:layout_marginHorizontal="25dp"
                 android:paddingVertical="10dp"
                 android:textStyle="bold"
