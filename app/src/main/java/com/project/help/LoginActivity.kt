@@ -1,7 +1,6 @@
 package com.project.help
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -9,18 +8,22 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import cn.pedant.SweetAlert.SweetAlertDialog
+import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.project.help.disabled.DisabledMainActivity
 import com.project.help.disabled.model.RegisterModel
 import com.project.help.volunteer.VolunteerMainActivity
 import org.jetbrains.anko.toast
 
+
 class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var iconLeft: ImageView
-    private lateinit var submit: Button
+    private lateinit var submit: MaterialButton
     private lateinit var email: EditText
     private lateinit var password: EditText
     var mAuth: FirebaseAuth? = null
@@ -85,23 +88,30 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                         toast("Authentication Failed: " + task.exception)
                     }
                 } else {
-                    reference.orderByChild("email").equalTo(email.text.toString()).get().addOnSuccessListener { result ->
-                        var user = RegisterModel()
-                        for (data in result.children) {
-                            user = data.getValue(RegisterModel::class.java)!!
-                        }
+                    if (checkIsEmailVerified()) {
+                        reference.orderByChild("email").equalTo(email.text.toString()).get().addOnSuccessListener { result ->
+                            var user = RegisterModel()
+                            for (data in result.children) {
+                                user = data.getValue(RegisterModel::class.java)!!
+                            }
 
-                        if (user!!.userType == ConstValue.UserType_Disabled) {
-                            Toast.makeText(this, "เข้าสู่ระบบสำเร็จ", Toast.LENGTH_SHORT).show()
-                            startActivity(Intent(this, DisabledMainActivity::class.java))
-                            finishAffinity()
-                        } else if (user!!.userType == ConstValue.UserType_Volunteer) {
-                            Toast.makeText(this, "เข้าสู่ระบบสำเร็จ", Toast.LENGTH_SHORT).show()
-                            startActivity(Intent(this, DisabledMainActivity::class.java))
-                            finishAffinity()
+                            if (user!!.userType == ConstValue.UserType_Disabled) {
+                                Toast.makeText(this, "เข้าสู่ระบบสำเร็จ", Toast.LENGTH_SHORT).show()
+                                startActivity(Intent(this, DisabledMainActivity::class.java))
+                                finishAffinity()
+                            } else if (user!!.userType == ConstValue.UserType_Volunteer) {
+                                Toast.makeText(this, "เข้าสู่ระบบสำเร็จ", Toast.LENGTH_SHORT).show()
+                                startActivity(Intent(this, VolunteerMainActivity::class.java))
+                                finishAffinity()
+                            }
+                        }.addOnFailureListener{
+                            Log.e("firebase", "Error getting data", it)
                         }
-                    }.addOnFailureListener{
-                        Log.e("firebase", "Error getting data", it)
+                    } else {
+                        mAuth!!.signOut()
+                        SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE)
+                                .setTitleText("กรุณายืนยันอีเมลเพื่อเข้าสู่ระบบ")
+                                .show()
                     }
 
 //                    reference.orderByChild("email").equalTo(email.text.toString()).addListenerForSingleValueEvent(object : ValueEventListener {
@@ -123,18 +133,35 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     }
 
+    private fun checkIsEmailVerified(): Boolean {
+        val user = FirebaseAuth.getInstance().currentUser
+        return user.isEmailVerified
+    }
+
     private fun checkInput(): Boolean {
         var result = true
 
         if (email.text.isNullOrEmpty()) {
             email.error = "กรุณากรอกอีเมล"
             result = false
+        } else {
+            if (!Utilities.Validation.isValidEmail(email.text.trim().toString()) || password.length() < 6)
+            {
+                email.error = "รูปแบบอีเมลไม่ถูกต้อง"
+                result = false
+            }
         }
 
         if (password.text.isNullOrEmpty()) {
             password.error = "กรุณากรอกรหัสผ่าน"
             result = false
+        } else {
+            if (!Utilities.Validation.validatePassword(password.text.trim().toString())) {
+                password.error = "รหัสผ่านต้องมีอย่างน้อยหกตัวให้ผสมกันทั้งตัวเลข ตัวอักษร และอักษรพิเศษ"
+                result = false
+            }
         }
+
         return result
     }
 }

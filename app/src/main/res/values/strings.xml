@@ -26,4 +26,11 @@
     <string name="image_type">image</string>
     <string name="register_volunteer">ลงทะเบียนอาสา</string>
     <string name="register_disabled">ลงทะเบียนขอความช่วยเหลือ</string>
+
+    <string name="enterFirstName">กรุณากรอกชื่อ</string>
+    <string name="enterLastName">กรุณากรอกนามสกุล</string>
+    <string name="enterTel">กรุณากรอกเบอร์โทรศัพท์</string>
+    <string name="enterEmail">กรุณากรอกอีเมล</string>
+    <string name="enterPassword">กรุณากรอกรหัสผ่าน</string>
+    <string name="enterRePassword">กรุณากรอกรหัสผ่านอีกครั้ง</string>
 </resources>

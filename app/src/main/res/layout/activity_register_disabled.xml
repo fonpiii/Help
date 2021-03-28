@@ -67,24 +67,15 @@
                     <EditText
                         android:id="@+id/firstName"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
+                        android:layout_height="45dp"
                         android:layout_marginTop="5dp"
                         android:paddingHorizontal="7dp"
+                        android:hint="กรุณากรอกชื่อ"
+                        android:textSize="15dp"
                         android:inputType="textPersonName"
                         android:background="@color/lightGray">
 
                     </EditText>
-
-                    <TextView
-                        android:id="@+id/smallFirstName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="กรุณากรอกชื่อ"
-                        android:textSize="10dp"
-                        android:layout_marginStart="2dp"
-                        android:visibility="gone"
-                        android:textColor="@color/red">
-                    </TextView>
 
                 </LinearLayout>
 
@@ -107,24 +98,15 @@
                     <EditText
                         android:id="@+id/lastName"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
+                        android:layout_height="45dp"
                         android:layout_marginTop="5dp"
                         android:paddingHorizontal="7dp"
                         android:inputType="textPersonName"
+                        android:hint="กรุณากรอกนามสกุล"
+                        android:textSize="15dp"
                         android:background="@color/lightGray">
 
                     </EditText>
-
-                    <TextView
-                        android:id="@+id/smallLastName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="กรุณากรอกนามสกุล"
-                        android:textSize="10dp"
-                        android:layout_marginStart="2dp"
-                        android:visibility="gone"
-                        android:textColor="@color/red">
-                    </TextView>
 
                 </LinearLayout>
 
@@ -147,25 +129,16 @@
                     <EditText
                         android:id="@+id/tel"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
+                        android:layout_height="45dp"
                         android:layout_marginTop="5dp"
                         android:paddingHorizontal="7dp"
                         android:maxLength="10"
                         android:inputType="number"
+                        android:hint="กรุณากรอกเบอร์โทรศัพท์"
+                        android:textSize="15dp"
                         android:background="@color/lightGray">
 
                     </EditText>
-
-                    <TextView
-                        android:id="@+id/smallTel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="กรุณากรอกเบอร์โทรศัพท์"
-                        android:textSize="10dp"
-                        android:layout_marginStart="2dp"
-                        android:visibility="gone"
-                        android:textColor="@color/red">
-                    </TextView>
 
                 </LinearLayout>
 
@@ -188,24 +161,15 @@
                     <EditText
                         android:id="@+id/email"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
+                        android:layout_height="45dp"
                         android:layout_marginTop="5dp"
                         android:paddingHorizontal="7dp"
                         android:inputType="textEmailAddress"
+                        android:hint="กรุณากรอกอีเมล"
+                        android:textSize="15dp"
                         android:background="@color/lightGray">
 
                     </EditText>
-
-                    <TextView
-                        android:id="@+id/smallEmail"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="กรุณากรอกอีเมล"
-                        android:textSize="10dp"
-                        android:layout_marginStart="2dp"
-                        android:visibility="gone"
-                        android:textColor="@color/red">
-                    </TextView>
 
                 </LinearLayout>
 
@@ -228,24 +192,16 @@
                     <EditText
                         android:id="@+id/password"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
+                        android:layout_height="45dp"
                         android:layout_marginTop="5dp"
                         android:inputType="textPassword"
                         android:paddingHorizontal="7dp"
+                        android:hint="กรุณากรอกรหัสผ่าน"
+                        android:textSize="15dp"
+                        android:maxLength="20"
                         android:background="@color/lightGray">
 
                     </EditText>
-
-                    <TextView
-                        android:id="@+id/smallPassword"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="กรุณากรอกรหัสผ่าน"
-                        android:textSize="10dp"
-                        android:layout_marginStart="2dp"
-                        android:visibility="gone"
-                        android:textColor="@color/red">
-                    </TextView>
 
                 </LinearLayout>
 
@@ -284,24 +240,16 @@
                     <EditText
                         android:id="@+id/re_password"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
+                        android:layout_height="45dp"
                         android:layout_marginTop="5dp"
                         android:inputType="textPassword"
+                        android:hint="กรุณากรอกรหัสผ่านอีกครั้ง"
                         android:paddingHorizontal="7dp"
+                        android:textSize="15dp"
+                        android:maxLength="20"
                         android:background="@color/lightGray">
 
                     </EditText>
-
-                    <TextView
-                        android:id="@+id/smallRePassword"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="ยืนยันรหัสผ่านไม่ถูกต้อง"
-                        android:textSize="10dp"
-                        android:layout_marginStart="2dp"
-                        android:visibility="gone"
-                        android:textColor="@color/red">
-                    </TextView>
 
                 </LinearLayout>
 
@@ -312,17 +260,17 @@
                     android:gravity="center"
                     android:orientation="vertical">
 
-                    <Button
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/submit"
-                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:paddingHorizontal="35dp"
+                        android:layout_width="wrap_content"
+                        android:layout_marginTop="7dp"
                         android:text="ดำเนินการต่อ"
+                        android:textColor="@color/black"
                         android:backgroundTint="@color/lightGreen"
-                        android:textColor="@color/black">
-
-                    </Button>
+                        android:paddingHorizontal="35dp"
+                        android:paddingVertical="13dp"
+                        app:cornerRadius="18dp" />
 
                 </LinearLayout>
 

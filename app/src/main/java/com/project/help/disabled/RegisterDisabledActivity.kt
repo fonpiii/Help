@@ -1,29 +1,33 @@
 package com.project.help.disabled
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.TextUtils
 import android.util.Log
+import android.util.Patterns
 import android.view.View
-import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import cn.pedant.SweetAlert.SweetAlertDialog
+import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.project.help.ConstValue
 import com.project.help.R
+import com.project.help.Utilities
 import com.project.help.WelcomeActivity
 import com.project.help.disabled.model.RegisterModel
 import org.jetbrains.anko.toast
+
 
 class RegisterDisabledActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var txtToolbar: TextView
     private lateinit var iconLeft: ImageView
-    private lateinit var submit: Button
+    private lateinit var submit: MaterialButton
     private lateinit var firstName: EditText
     private lateinit var tel: EditText
     private lateinit var lastName: EditText
@@ -89,31 +93,41 @@ class RegisterDisabledActivity : AppCompatActivity(), View.OnClickListener {
         if (checkInput()) {
             mAuth!!.createUserWithEmailAndPassword(email.text.toString(), password.text.toString()).addOnCompleteListener { task ->
                 if (!task.isSuccessful) {
-                    if (password.length() < 6) {
-                        password.error = "Please check you password. Password must have minimum 6 characters."
-                    } else {
-                        toast("Authentication Failed: " + task.exception)
-                        Log.d("Test", task.exception.toString())
-                    }
+                    toast("Authentication Failed: " + task.exception)
+                    Log.d("Test", task.exception.toString())
                 } else {
-                    var model = RegisterModel(firstName.text.trim().toString(), lastName.text.trim().toString(),
+                    if (sendEmailVerification()) {
+                        var model = RegisterModel(firstName.text.trim().toString(), lastName.text.trim().toString(),
                                 tel.text.trim().toString(), email.text.trim().toString(), ConstValue.UserType_Disabled)
-                    var id = reference.push().key
-                    reference.child(id!!).setValue(model)
+                        var id = reference.push().key
+                        reference.child(id!!).setValue(model)
 
-                    SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
-                        .setTitleText("ระบบได้ทำการยืนยันการลงทะเบียนแล้วโปรดเข้าสู่ระบบเพื่อใช้งาน")
-                        .setConfirmClickListener(SweetAlertDialog.OnSweetClickListener {
-                            mAuth!!.signOut();
-                            val intent = Intent(this, WelcomeActivity::class.java)
-                            startActivity(intent)
-                            finishAffinity()
-                        })
-                        .show()
+                        SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
+                                .setTitleText("ระบบได้ทำการยืนยันการลงทะเบียนและได้ส่งอีเมลเพื่อยืนยันตัวตนแล้วโปรดเข้าสู่ระบบเพื่อใช้งาน")
+                                .setConfirmClickListener(SweetAlertDialog.OnSweetClickListener {
+                                    mAuth!!.signOut();
+                                    startActivity(Intent(this, WelcomeActivity::class.java))
+                                    finishAffinity()
+                                })
+                                .show()
+                    }
                 }
             }
         }
 
+    }
+
+    private fun sendEmailVerification(): Boolean {
+        var result = true
+        val user = FirebaseAuth.getInstance().currentUser
+        user.sendEmailVerification().addOnCompleteListener {
+            if (!it.isSuccessful) {
+                toast("Authentication Failed: " + it.exception)
+                Log.d("Test", it.exception.toString())
+                result = false
+            }
+        }
+        return result
     }
 
     private fun checkInput(): Boolean {
@@ -137,11 +151,22 @@ class RegisterDisabledActivity : AppCompatActivity(), View.OnClickListener {
         if (email.text.isNullOrEmpty()) {
             email.error = "กรุณากรอกอีเมล"
             result = false
+        } else {
+            if (!Utilities.Validation.isValidEmail(email.text.trim().toString()) || password.length() < 6)
+            {
+                email.error = "รูปแบบอีเมลไม่ถูกต้อง"
+                result = false
+            }
         }
 
         if (password.text.isNullOrEmpty()) {
             password.error = "กรุณากรอกรหัสผ่าน"
             result = false
+        } else {
+            if (!Utilities.Validation.validatePassword(password.text.trim().toString())) {
+                password.error = "รหัสผ่านต้องมีอย่างน้อยหกตัวให้ผสมกันทั้งตัวเลข ตัวอักษร และอักษรพิเศษ"
+                result = false
+            }
         }
 
         if (rePassword.text.isNullOrEmpty()) {

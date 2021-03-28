@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:fbutton="http://schemas.android.com/tools"
     android:background="@color/white"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -67,9 +68,11 @@
                     <EditText
                         android:id="@+id/firstName"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
+                        android:layout_height="45dp"
                         android:layout_marginTop="5dp"
                         android:paddingHorizontal="7dp"
+                        android:hint="@string/enterFirstName"
+                        android:textSize="15dp"
                         android:inputType="textPersonName"
                         android:background="@color/lightGray">
 
@@ -96,9 +99,11 @@
                     <EditText
                         android:id="@+id/lastName"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
+                        android:layout_height="45dp"
                         android:layout_marginTop="5dp"
                         android:paddingHorizontal="7dp"
+                        android:hint="@string/enterLastName"
+                        android:textSize="15dp"
                         android:inputType="textPersonName"
                         android:background="@color/lightGray">
 
@@ -129,6 +134,8 @@
                         android:layout_marginTop="5dp"
                         android:paddingHorizontal="7dp"
                         android:maxLength="10"
+                        android:hint="@string/enterTel"
+                        android:textSize="15dp"
                         android:inputType="number"
                         android:background="@color/lightGray">
 
@@ -155,10 +162,12 @@
                     <EditText
                         android:id="@+id/email"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
+                        android:layout_height="45dp"
                         android:layout_marginTop="5dp"
                         android:paddingHorizontal="7dp"
                         android:inputType="textEmailAddress"
+                        android:hint="@string/enterEmail"
+                        android:textSize="15dp"
                         android:background="@color/lightGray">
 
                     </EditText>
@@ -184,11 +193,13 @@
                     <EditText
                         android:id="@+id/password"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
+                        android:layout_height="45dp"
                         android:layout_marginTop="5dp"
                         android:inputType="textPassword"
                         android:paddingHorizontal="7dp"
-                        android:maxLength="8"
+                        android:hint="@string/enterPassword"
+                        android:textSize="15dp"
+                        android:maxLength="20"
                         android:background="@color/lightGray">
 
                     </EditText>
@@ -230,11 +241,13 @@
                     <EditText
                         android:id="@+id/re_password"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
+                        android:layout_height="45dp"
                         android:layout_marginTop="5dp"
                         android:inputType="textPassword"
                         android:paddingHorizontal="7dp"
-                        android:maxLength="8"
+                        android:hint="@string/enterRePassword"
+                        android:textSize="15dp"
+                        android:maxLength="20"
                         android:background="@color/lightGray">
 
                     </EditText>
@@ -248,17 +261,17 @@
                     android:gravity="center"
                     android:orientation="vertical">
 
-                    <Button
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/submit"
-                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:paddingHorizontal="35dp"
+                        android:layout_width="wrap_content"
+                        android:layout_marginTop="7dp"
                         android:text="ดำเนินการต่อ"
+                        android:textColor="@color/black"
                         android:backgroundTint="@color/lightGreen"
-                        android:textColor="@color/black">
-
-                    </Button>
+                        android:paddingHorizontal="35dp"
+                        android:paddingVertical="13dp"
+                        app:cornerRadius="18dp" />
 
                 </LinearLayout>
 
