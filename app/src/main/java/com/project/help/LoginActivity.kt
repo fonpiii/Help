@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.project.help.disabled.DisabledMainActivity
@@ -82,10 +84,14 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         if (checkInput()) {
             mAuth!!.signInWithEmailAndPassword(email.text.toString(), password.text.toString()).addOnCompleteListener { task ->
                 if (!task.isSuccessful) {
-                    if (password.length() < 6) {
-                        password.error = "รหัสผ่านต้องมีความยาวมากกว่า 6 ตัว"
-                    } else {
+                    try {
                         toast("Authentication Failed: " + task.exception)
+                        Log.d("Test", task.exception.toString())
+                        throw task.exception!!
+                    } catch (e: FirebaseAuthInvalidUserException) {
+                        alertDialog("อีเมลไม่ถูกต้อง", SweetAlertDialog.ERROR_TYPE)
+                    } catch (e: FirebaseAuthInvalidCredentialsException) {
+                        alertDialog("รหัสผ่านไม่ถูกต้อง", SweetAlertDialog.ERROR_TYPE)
                     }
                 } else {
                     if (checkIsEmailVerified()) {
@@ -109,9 +115,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                         }
                     } else {
                         mAuth!!.signOut()
-                        SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE)
-                                .setTitleText("กรุณายืนยันอีเมลเพื่อเข้าสู่ระบบ")
-                                .show()
+                        alertDialog("กรุณายืนยันอีเมลเพื่อเข้าสู่ระบบ", SweetAlertDialog.ERROR_TYPE)
                     }
 
 //                    reference.orderByChild("email").equalTo(email.text.toString()).addListenerForSingleValueEvent(object : ValueEventListener {
@@ -131,6 +135,12 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
             }
         }
 
+    }
+
+    private fun alertDialog(text: String, errorType: Int) {
+        SweetAlertDialog(this, errorType)
+                .setTitleText(text)
+                .show()
     }
 
     private fun checkIsEmailVerified(): Boolean {
@@ -155,11 +165,6 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         if (password.text.isNullOrEmpty()) {
             password.error = "กรุณากรอกรหัสผ่าน"
             result = false
-        } else {
-            if (!Utilities.Validation.validatePassword(password.text.trim().toString())) {
-                password.error = "รหัสผ่านต้องมีอย่างน้อยหกตัวให้ผสมกันทั้งตัวเลข ตัวอักษร และอักษรพิเศษ"
-                result = false
-            }
         }
 
         return result

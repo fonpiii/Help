@@ -196,30 +196,31 @@
             android:layout_marginTop="30dp"
             android:layout_marginHorizontal="25dp">
 
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/lightGray"
-                android:text="ฉันต้องการขอความช่วยเหลือ"
-                android:paddingVertical="10dp"
-                android:textStyle="bold"
-                android:textSize="15dp"
-                android:textColor="@color/black">
+            <com.google.android.material.button.MaterialButton
+                        android:layout_height="60dp"
+                        android:layout_width="match_parent"
+                        android:layout_marginTop="7dp"
+                        android:text="ฉันต้องการขอความช่วยเหลือ"
+                        android:textStyle="bold"
+                        android:textSize="15dp"
+                        android:textColor="@color/black"
+                        android:backgroundTint="@color/lightGray"
+                        android:paddingVertical="10dp"
+                        app:elevation="30dp"
+                        app:cornerRadius="18dp" />
 
-            </Button>
-
-            <Button
+            <com.google.android.material.button.MaterialButton
+                android:layout_height="60dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/lightGray"
-                android:layout_marginTop="8dp"
-                android:paddingVertical="10dp"
+                android:layout_marginTop="3dp"
                 android:text="ฉันจะอาสาช่วยเหลือ"
                 android:textStyle="bold"
                 android:textSize="15dp"
-                android:textColor="@color/black">
-
-            </Button>
+                android:textColor="@color/black"
+                android:backgroundTint="@color/lightGray"
+                android:paddingVertical="10dp"
+                app:elevation="30dp"
+                app:cornerRadius="18dp" />
 
         </LinearLayout>
 
@@ -283,18 +284,18 @@
                         android:layout_gravity="start"
                         android:gravity="center">
 
-                        <Button
-                            android:id="@+id/btnLogin_Welcome"
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnLogin"
+                            android:layout_height="62dp"
                             android:layout_width="140dp"
-                            android:layout_height="wrap_content"
-                            android:backgroundTint="@color/orange"
-                            android:paddingVertical="10dp"
-                            android:text="Login"
+                            android:layout_marginTop="7dp"
+                            android:text="@string/login"
                             android:textStyle="bold"
                             android:textSize="15dp"
-                            android:textColor="@color/black">
-
-                        </Button>
+                            android:textColor="@color/black"
+                            android:backgroundTint="@color/orange"
+                            android:paddingVertical="10dp"
+                            app:cornerRadius="18dp" />
 
                     </LinearLayout>
 
@@ -318,18 +319,18 @@
                         android:layout_gravity="end"
                         android:gravity="center">
 
-                        <Button
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnRegister"
+                            android:layout_height="62dp"
                             android:layout_width="140dp"
-                            android:layout_height="wrap_content"
-                            android:backgroundTint="@color/orange"
-                            android:paddingVertical="10dp"
-                            android:text="สมัครสมาชิก"
+                            android:layout_marginTop="7dp"
+                            android:text="@string/register"
                             android:textStyle="bold"
                             android:textSize="15dp"
-                            android:textColor="@color/black">
-
-                        </Button>
+                            android:textColor="@color/black"
+                            android:backgroundTint="@color/orange"
+                            android:paddingVertical="10dp"
+                            app:cornerRadius="18dp" />
 
                     </LinearLayout>
 

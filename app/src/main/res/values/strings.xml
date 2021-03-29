@@ -21,6 +21,8 @@
     </string-array>
 
     <string name="forgotPassword"><u>ลืมรหัสผ่าน</u></string>
+    <string name="login"><u>Login</u></string>
+    <string name="register"><u>สมัครสมาชิก</u></string>
 
     <string name="audio_type">audio</string>
     <string name="image_type">image</string>

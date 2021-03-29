@@ -5,14 +5,15 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 import com.project.help.disabled.DisabledMainActivity
 
 class WelcomeActivity : AppCompatActivity(), View.OnClickListener {
 
     //region Global variable
-    private lateinit var btnLogin: Button
-    private lateinit var btnRegister: Button
+    private lateinit var btnLogin: MaterialButton
+    private lateinit var btnRegister: MaterialButton
     var mAuth: FirebaseAuth? = null
     //endregion Global variable
 
@@ -20,7 +21,7 @@ class WelcomeActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_welcome)
 
-        btnLogin = findViewById(R.id.btnLogin_Welcome)
+        btnLogin = findViewById(R.id.btnLogin)
         btnRegister = findViewById(R.id.btnRegister)
 
         btnLogin.setOnClickListener(this)
@@ -40,7 +41,7 @@ class WelcomeActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View) {
         when (v.id) {
-            R.id.btnLogin_Welcome -> {
+            R.id.btnLogin -> {
                 val intent = Intent(this, LoginActivity::class.java)
                 startActivity(intent)
             }
