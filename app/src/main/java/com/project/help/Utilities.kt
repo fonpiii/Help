@@ -1,7 +1,10 @@
 package com.project.help
 
+import android.content.Context
 import android.text.TextUtils
 import android.util.Patterns
+import cn.pedant.SweetAlert.SweetAlertDialog
+import java.util.*
 import java.util.regex.Pattern
 
 class Utilities {
@@ -17,6 +20,20 @@ class Utilities {
             val matcher = pattern.matcher(password);
 
             return matcher.matches();
+        }
+    }
+
+    object Alert {
+        fun alertDialog(text: String, errorType: Int, page: Context) {
+            SweetAlertDialog(page, errorType)
+                    .setTitleText(text)
+                    .show()
+        }
+    }
+
+    object Converter {
+        fun getDateTimeFromFirebase(timeStamp: Long): Date? {
+            return Date(timeStamp)
         }
     }
 }

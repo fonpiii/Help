@@ -72,6 +72,7 @@
                         android:layout_marginTop="5dp"
                         android:paddingHorizontal="7dp"
                         android:hint="@string/enterFirstName"
+                        android:textColor="@color/black"
                         android:textSize="15dp"
                         android:inputType="textPersonName"
                         android:background="@color/lightGray">
@@ -103,6 +104,7 @@
                         android:layout_marginTop="5dp"
                         android:paddingHorizontal="7dp"
                         android:hint="@string/enterLastName"
+                        android:textColor="@color/black"
                         android:textSize="15dp"
                         android:inputType="textPersonName"
                         android:background="@color/lightGray">
@@ -135,6 +137,7 @@
                         android:paddingHorizontal="7dp"
                         android:maxLength="10"
                         android:hint="@string/enterTel"
+                        android:textColor="@color/black"
                         android:textSize="15dp"
                         android:inputType="number"
                         android:background="@color/lightGray">
@@ -168,6 +171,7 @@
                         android:inputType="textEmailAddress"
                         android:hint="@string/enterEmail"
                         android:textSize="15dp"
+                        android:textColor="@color/black"
                         android:background="@color/lightGray">
 
                     </EditText>
@@ -199,6 +203,7 @@
                         android:paddingHorizontal="7dp"
                         android:hint="@string/enterPassword"
                         android:textSize="15dp"
+                        android:textColor="@color/black"
                         android:maxLength="20"
                         android:background="@color/lightGray">
 
@@ -247,6 +252,7 @@
                         android:paddingHorizontal="7dp"
                         android:hint="@string/enterRePassword"
                         android:textSize="15dp"
+                        android:textColor="@color/black"
                         android:maxLength="20"
                         android:background="@color/lightGray">
 

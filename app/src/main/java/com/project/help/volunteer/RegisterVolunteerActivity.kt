@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -12,14 +11,17 @@ import androidx.appcompat.app.AppCompatActivity
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ServerValue
 import com.project.help.ConstValue
 import com.project.help.R
 import com.project.help.Utilities
 import com.project.help.WelcomeActivity
 import com.project.help.disabled.DisabledMainActivity
-import com.project.help.disabled.model.RegisterModel
+import com.project.help.disabled.model.RegisterDisabledModel
+import com.project.help.volunteer.model.RegisterVolunteerModel
 import org.jetbrains.anko.toast
 
 class RegisterVolunteerActivity : AppCompatActivity(), View.OnClickListener {
@@ -92,16 +94,16 @@ class RegisterVolunteerActivity : AppCompatActivity(), View.OnClickListener {
         if (checkInput()) {
             mAuth!!.createUserWithEmailAndPassword(email.text.toString(), password.text.toString()).addOnCompleteListener { task ->
                 if (!task.isSuccessful) {
-                    if (password.length() < 6) {
-                        password.error = "Please check you password. Password must have minimum 6 characters."
-                    } else {
-                        toast("Authentication Failed: " + task.exception)
-                        Log.d("Test", task.exception.toString())
+                    try {
+                        throw task.exception!!
+                    } catch (e: FirebaseAuthUserCollisionException) {
+                        Utilities.Alert.alertDialog("มีบัญชีที่สัมพันธ์กับอีเมลนี้อยู่แล้ว", SweetAlertDialog.ERROR_TYPE, this)
                     }
                 } else {
                     if (sendEmailVerification()) {
-                        var model = RegisterModel(firstName.text.trim().toString(), lastName.text.trim().toString(),
-                                tel.text.trim().toString(), email.text.trim().toString(), ConstValue.UserType_Volunteer)
+                        var model = RegisterVolunteerModel(firstName.text.trim().toString(), lastName.text.trim().toString(),
+                                tel.text.trim().toString(), email.text.trim().toString(), ConstValue.UserType_Volunteer,
+                                0.0, ServerValue.TIMESTAMP)
                         var id = reference.push().key
                         reference.child(id!!).setValue(model)
 
@@ -125,8 +127,7 @@ class RegisterVolunteerActivity : AppCompatActivity(), View.OnClickListener {
         val user = FirebaseAuth.getInstance().currentUser
         user.sendEmailVerification().addOnCompleteListener {
             if (!it.isSuccessful) {
-                toast("Authentication Failed: " + it.exception)
-                Log.d("Test", it.exception.toString())
+                Log.d("Send Email", it.exception.toString())
                 result = false
             }
         }

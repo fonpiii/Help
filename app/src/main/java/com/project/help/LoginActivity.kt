@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
@@ -17,9 +16,8 @@ import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.project.help.disabled.DisabledMainActivity
-import com.project.help.disabled.model.RegisterModel
+import com.project.help.model.UserModel
 import com.project.help.volunteer.VolunteerMainActivity
-import org.jetbrains.anko.toast
 
 
 class LoginActivity : AppCompatActivity(), View.OnClickListener {
@@ -85,28 +83,28 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
             mAuth!!.signInWithEmailAndPassword(email.text.toString(), password.text.toString()).addOnCompleteListener { task ->
                 if (!task.isSuccessful) {
                     try {
-                        toast("Authentication Failed: " + task.exception)
-                        Log.d("Test", task.exception.toString())
+//                        toast("Authentication Failed: " + task.exception)
                         throw task.exception!!
                     } catch (e: FirebaseAuthInvalidUserException) {
-                        alertDialog("อีเมลไม่ถูกต้อง", SweetAlertDialog.ERROR_TYPE)
+                        Utilities.Alert.alertDialog("อีเมลไม่ถูกต้อง", SweetAlertDialog.ERROR_TYPE, this)
                     } catch (e: FirebaseAuthInvalidCredentialsException) {
-                        alertDialog("รหัสผ่านไม่ถูกต้อง", SweetAlertDialog.ERROR_TYPE)
+                        Utilities.Alert.alertDialog("รหัสผ่านไม่ถูกต้อง", SweetAlertDialog.ERROR_TYPE, this)
                     }
                 } else {
                     if (checkIsEmailVerified()) {
                         reference.orderByChild("email").equalTo(email.text.toString()).get().addOnSuccessListener { result ->
-                            var user = RegisterModel()
+                            var user = UserModel()
                             for (data in result.children) {
-                                user = data.getValue(RegisterModel::class.java)!!
+                                user = data.getValue(UserModel::class.java)!!
                             }
 
+                            Toast.makeText(this, "เข้าสู่ระบบสำเร็จ", Toast.LENGTH_SHORT).show()
                             if (user!!.userType == ConstValue.UserType_Disabled) {
-                                Toast.makeText(this, "เข้าสู่ระบบสำเร็จ", Toast.LENGTH_SHORT).show()
-                                startActivity(Intent(this, DisabledMainActivity::class.java))
+                                var intent = Intent(this, DisabledMainActivity::class.java)
+                                intent.putExtra("User", user)
+                                startActivity(intent)
                                 finishAffinity()
                             } else if (user!!.userType == ConstValue.UserType_Volunteer) {
-                                Toast.makeText(this, "เข้าสู่ระบบสำเร็จ", Toast.LENGTH_SHORT).show()
                                 startActivity(Intent(this, VolunteerMainActivity::class.java))
                                 finishAffinity()
                             }
@@ -115,7 +113,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                         }
                     } else {
                         mAuth!!.signOut()
-                        alertDialog("กรุณายืนยันอีเมลเพื่อเข้าสู่ระบบ", SweetAlertDialog.ERROR_TYPE)
+                        Utilities.Alert.alertDialog("กรุณายืนยันอีเมลเพื่อเข้าสู่ระบบ", SweetAlertDialog.ERROR_TYPE, this)
                     }
 
 //                    reference.orderByChild("email").equalTo(email.text.toString()).addListenerForSingleValueEvent(object : ValueEventListener {
@@ -135,12 +133,6 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
             }
         }
 
-    }
-
-    private fun alertDialog(text: String, errorType: Int) {
-        SweetAlertDialog(this, errorType)
-                .setTitleText(text)
-                .show()
     }
 
     private fun checkIsEmailVerified(): Boolean {

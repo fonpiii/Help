@@ -10,9 +10,12 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.project.help.OtherMenu
 import com.project.help.R
 import com.project.help.disabled.model.PostDetails
+import com.project.help.model.UserModel
 
 
 class DisabledMainActivity : AppCompatActivity(), View.OnClickListener {
@@ -32,6 +35,9 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var spinnerCategory: Spinner
     private lateinit var btnPost: Button
     private lateinit var recyclerFeed: RecyclerView
+    private lateinit var database: FirebaseDatabase
+    private lateinit var reference: DatabaseReference
+    private lateinit var user: UserModel
     //endregion Global variable
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,10 +67,22 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener {
         setToolbar()
         setRatingUserHeader()
         setSpinnerCategory()
+        setFirebaseDatabase()
 
+        user = (intent.getParcelableExtra("User") as? UserModel)!!
         val postDetail = intent.getSerializableExtra("PostDetail") as? PostDetails
+        setHeader()
         getPosts(postDetail)
         //endregion On init
+    }
+
+    private fun setFirebaseDatabase() {
+        database = FirebaseDatabase.getInstance()
+        reference = database.getReference("User")
+    }
+
+    private fun setHeader() {
+        txtFullName.text = user.firstName + " " + user.lastName
     }
 
     override fun onClick(v: View) {
