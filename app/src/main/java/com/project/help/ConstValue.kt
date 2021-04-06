@@ -10,6 +10,9 @@ class ConstValue {
         const val FirstName = "FirstName"
         const val UserType_Disabled = "Disabled"
         const val UserType_Volunteer = "Volunteer"
+        const val audio_type = "audio"
+        const val image_type = "image"
+        const val video_type = "video"
 
     }
 }

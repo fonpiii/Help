@@ -9,7 +9,6 @@ import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.SystemClock
@@ -21,17 +20,27 @@ import android.transition.TransitionManager
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.webkit.MimeTypeMap
 import android.widget.*
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
+import cn.pedant.SweetAlert.SweetAlertDialog
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ServerValue
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import com.project.help.ConstValue
 import com.project.help.R
-import com.project.help.disabled.model.PostDetails
+import com.project.help.Utilities
+import com.project.help.disabled.model.PostDetailsRequest
+import com.project.help.disabled.model.mediaModel
+import com.project.help.model.UserModel
 import java.io.File
 import java.io.IOException
-import java.io.Serializable
 import java.util.*
-import kotlin.collections.ArrayList
 
 @RequiresApi(api = Build.VERSION_CODES.M)
 class PostActivity : AppCompatActivity(), View.OnClickListener {
@@ -39,6 +48,7 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
     //region Global variable
     private lateinit var iconLeft: ImageView
     private lateinit var editPost: EditText
+    private lateinit var txtUsername: TextView
     private lateinit var btnPost: TextView
     private lateinit var btnIsAdvice: LinearLayout
     private lateinit var btnImgGallery: LinearLayout
@@ -46,6 +56,7 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var btnSpeechToText: LinearLayout
     private lateinit var itemAdvice: TextView
     private lateinit var layout_imagePost: LinearLayout
+    private lateinit var layout_videoPost: LinearLayout
     private lateinit var imagePost: ImageView
     private lateinit var layout_menu_bottom: LinearLayout
     private lateinit var layout_audio_bottom: LinearLayout
@@ -70,7 +81,19 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
     private var isAdvice: Boolean = false
     private val RECORD_AUDIO_REQUEST_CODE = 101
     private val RQ_SPEECH_REC = 102
+    private val RQ_Gallery_REC = 103
     private lateinit var spinnerCategory: Spinner
+    private lateinit var mediaController: MediaController
+    private lateinit var videoPost: VideoView
+    private lateinit var btnCloseVideo: ImageButton
+    private var videoUri: Uri? = null
+    private lateinit var database: FirebaseDatabase
+    private lateinit var reference: DatabaseReference
+    private lateinit var storageReference: StorageReference
+    private lateinit var user: UserModel
+    private lateinit var categorySelected: String
+    var categories = arrayOf("หมวดหมู่ผู้พิการ", "การมองเห็น", "การได้ยิน", "การเคลื่อนไหวร่างกาย", "สติปัญญา",
+            "ออทิสติก", "ผู้สูงอายุ")
     //endregion Global variable
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,12 +103,14 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
         //region Set variable
         editPost = findViewById(R.id.editPost_Post)
         btnPost = findViewById(R.id.btnPost_Post)
+        txtUsername = findViewById(R.id.txtUsername_Feed)
         btnIsAdvice = findViewById(R.id.btnIsAdvice)
         itemAdvice = findViewById(R.id.itemAdvice)
         btnImgGallery = findViewById(R.id.btnImgGallery)
         btnAudio = findViewById(R.id.btnAudio)
         btnSpeechToText = findViewById(R.id.btnSpeechToText)
         layout_imagePost = findViewById(R.id.layout_imagePost)
+        layout_videoPost = findViewById(R.id.layout_videoPost)
         imagePost = findViewById(R.id.imagePost)
         layout_menu_bottom = findViewById(R.id.layout_menu_bottom)
         layout_audio_bottom = findViewById(R.id.layout_audio_bottom)
@@ -100,6 +125,9 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
         btnCloseImg = findViewById(R.id.btnCloseImg)
         btnCloseAudio = findViewById(R.id.btnCloseAudio)
         spinnerCategory = findViewById(R.id.spinnerCategory)
+        videoPost = findViewById(R.id.videoPost)
+        btnCloseVideo = findViewById(R.id.btnCloseVideo)
+        categorySelected = categories[0]
 
         imgBtRecord.setOnClickListener(this)
         imgBtStop.setOnClickListener(this)
@@ -113,11 +141,15 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
         imgViewPlay.setOnClickListener(this)
         btnCloseImg.setOnClickListener(this)
         btnCloseAudio.setOnClickListener(this)
+        btnCloseVideo.setOnClickListener(this)
         //endregion Set variable
 
         //region On init
         setToolbar()
         setSpinnerCategory()
+        setFirebaseDatabase()
+//        setFirebaseStorage()
+        setUser()
         //endregion On init
 
         editPost.doAfterTextChanged {
@@ -129,6 +161,22 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    private fun setFirebaseDatabase() {
+        database = FirebaseDatabase.getInstance()
+        reference = database.getReference("Posts")
+    }
+
+//    private fun setFirebaseStorage() {
+//        storageReference = FirebaseStorage.getInstance().getReference("Videos")
+//    }
+
+    private fun setUser() {
+        if ((intent.getParcelableExtra("User") as? UserModel) != null) {
+            user = (intent.getParcelableExtra("User") as? UserModel)!!
+            txtUsername.text = user.firstName + " " + user.lastName
+        }
+    }
+
     override fun onClick(v: View) {
         when (v.id) {
             R.id.editPost_Post -> {
@@ -136,12 +184,11 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
             }
             R.id.btnPost_Post -> {
                 if (editPost.length() > 0) {
-                    val postDetail = PostDetails()
-                    postDetail.txtPost = editPost.text.toString()
-                    postDetail.isAdvice = isAdvice
-                    val intent = launchNextScreen(this, postDetail)
-                    startActivity(intent)
-                    finish()
+                    if (categorySelected == categories[0]) {
+                        Utilities.Alert.alertDialog("กรุณาเลือกหมวดหมู่ผู้พิการ", SweetAlertDialog.ERROR_TYPE, this)
+                    } else {
+                        saveVideoToDb()
+                    }
                 }
             }
             R.id.btnIsAdvice -> {
@@ -154,8 +201,16 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
                 }
             }
             R.id.btnImgGallery -> {
-                val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
-                startActivityForResult(gallery, pickImage)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    checkPermissionForImage(RQ_Gallery_REC)
+                    if (videoUri == null) {
+                        layout_videoPost.visibility = View.GONE
+                    }
+
+                    if (imageUri == null) {
+                        layout_imagePost.visibility = View.GONE
+                    }
+                }
             }
             R.id.btnAudio -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -186,10 +241,13 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
                 }
             }
             R.id.btnCloseImg -> {
-                setFilesToEmpty(getString(R.string.image_type))
+                setFilesToEmpty(ConstValue.image_type)
             }
             R.id.btnCloseAudio -> {
-                setFilesToEmpty(getString(R.string.audio_type))
+                setFilesToEmpty(ConstValue.audio_type)
+            }
+            R.id.btnCloseVideo -> {
+                setFilesToEmpty(ConstValue.video_type)
             }
             R.id.btnSpeechToText -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -200,17 +258,102 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    private fun saveVideoToDb() {
+        var typeUrl = mediaModel()
+        storageReference = FirebaseStorage.getInstance().getReference("Videos")
+
+        if (videoUri != null) {
+            typeUrl.videoName = System.currentTimeMillis().toString() + "." + getFileExt(videoUri!!)
+            var referenceVideo = storageReference.child(typeUrl.videoName!!)
+            referenceVideo.putFile(videoUri!!).addOnSuccessListener { result ->
+                result.storage.downloadUrl.addOnSuccessListener {
+                    typeUrl.videoUrl = it.toString()
+                    saveImageToDb(typeUrl)
+                    Log.d("Test", "Video")
+                }
+            }.addOnFailureListener{
+                Log.e("firebase", "Error put video", it)
+            }
+        } else {
+            saveImageToDb(typeUrl)
+        }
+    }
+
+    private fun saveImageToDb(typeUrl: mediaModel) {
+        storageReference = FirebaseStorage.getInstance().getReference("Images")
+
+        if (imageUri != null) {
+            typeUrl.imageName = System.currentTimeMillis().toString() + "." + getFileExt(imageUri!!)
+            var referenceVideo = storageReference.child(typeUrl.imageName!!)
+            referenceVideo.putFile(imageUri!!).addOnSuccessListener { result ->
+                result.storage.downloadUrl.addOnSuccessListener {
+                    typeUrl.imageUrl = it.toString()
+                    saveAudioToDb(typeUrl)
+                    Log.d("Test", "Image")
+                }
+            }.addOnFailureListener{
+                Log.e("firebase", "Error put image", it)
+            }
+        } else {
+            saveAudioToDb(typeUrl)
+        }
+    }
+
+    private fun saveAudioToDb(typeUrl: mediaModel) {
+        storageReference = FirebaseStorage.getInstance().getReference("Audio")
+
+        if (fileName != null) {
+            val fileAudio = Uri.fromFile(File(fileName))
+            typeUrl.audioName = System.currentTimeMillis().toString() + ".mp3"
+            var referenceAudio = storageReference.child(typeUrl.audioName!!)
+            referenceAudio.putFile(fileAudio).addOnSuccessListener { result ->
+                result.storage.downloadUrl.addOnSuccessListener {
+                    typeUrl.audioUrl = it.toString()
+                    savePostDetails(typeUrl)
+                    Log.d("Test", "Audio")
+                }
+            }.addOnFailureListener{
+                Log.e("firebase", "Error put audio", it)
+            }
+        } else {
+            savePostDetails(typeUrl)
+        }
+    }
+
+    private fun savePostDetails(typeUrl: mediaModel) {
+        var reference = database.getReference("PostDetails")
+        var postDetailsModel = PostDetailsRequest(user.firstName!!, user.lastName!!, user.profileUrl!!,
+                typeUrl.imageUrl, typeUrl.imageName, typeUrl.videoUrl, typeUrl.videoName, typeUrl.audioUrl,
+                typeUrl.audioName, editPost.text.toString(), isAdvice, categorySelected,
+                "", user.scoreDisabled, ServerValue.TIMESTAMP, user.firstName!! + " " + user.lastName!!,
+                ServerValue.TIMESTAMP, user.firstName!! + " " + user.lastName!!)
+        var id = reference.push().key
+        reference.child(id!!).setValue(postDetailsModel).addOnCompleteListener {
+                    var intent = Intent(this, DisabledMainActivity::class.java)
+                    intent.putExtra("User", user)
+                    startActivity(intent)
+                    finishAffinity()
+        }
+    }
+
     private fun setFilesToEmpty(type: String) {
         when (type) {
-            getString(R.string.image_type) -> {
+            ConstValue.image_type -> {
                 layout_imagePost.visibility = View.GONE
                 imageUri = null
                 imagePost.setImageURI(imageUri)
             }
-            getString(R.string.audio_type) -> {
+            ConstValue.audio_type -> {
                 layout_audio.visibility = View.GONE
                 mRecorder = null
+                mPlayer = null
                 File(fileName).delete()
+                fileName = null
+            }
+            ConstValue.video_type -> {
+                layout_videoPost.visibility = View.GONE
+                videoUri = null
+                videoPost.setVideoURI(videoUri)
             }
         }
     }
@@ -218,13 +361,31 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK && requestCode == pickImage) {
-            layout_imagePost.visibility = View.VISIBLE
-            imageUri = data?.data
-            imagePost.setImageURI(imageUri)
+            val selectedMediaUri = data!!.data
+            if (selectedMediaUri.toString().contains("image")) {
+                layout_imagePost.visibility = View.VISIBLE
+                imageUri = data?.data
+                imagePost.setImageURI(imageUri)
+            } else if (selectedMediaUri.toString().contains("video")) {
+                mediaController = MediaController(this)
+                videoPost.setMediaController(mediaController)
+                mediaController.setAnchorView(videoPost)
+                videoPost.start()
+
+                layout_videoPost.visibility = View.VISIBLE
+                videoUri = data?.data
+                videoPost.setVideoURI(videoUri)
+            }
         } else if (requestCode == RQ_SPEECH_REC && resultCode == Activity.RESULT_OK) {
             val result:ArrayList<String>? = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
             editPost.text = Editable.Factory.getInstance().newEditable(result?.get(0).toString())
         }
+    }
+
+    private fun getFileExt(videoUri: Uri): String? {
+        var contentResolver = contentResolver
+        var mimeTypeMap = MimeTypeMap.getSingleton()
+        return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(videoUri))
     }
 
     private fun setToolbar() {
@@ -232,11 +393,11 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
         iconLeft.setOnClickListener(this)
     }
 
-    private fun launchNextScreen(context: Context, postDetails: PostDetails): Intent {
-        val intent = Intent(context, DisabledMainActivity::class.java)
-        intent.putExtra("PostDetail", postDetails as Serializable)
-        return intent
-    }
+//    private fun launchNextScreen(context: Context, postDetails: PostDetailsModel): Intent {
+//        val intent = Intent(context, DisabledMainActivity::class.java)
+//        intent.putExtra("PostDetail", postDetails as Serializable)
+//        return intent
+//    }
 
     private fun openSoftKeyboard(context: Context, view: View) {
         view.requestFocus()
@@ -263,6 +424,16 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    private fun checkPermissionForImage(galleryRequestCode: Int) {
+        if ((checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED)
+                && (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED)
+        ) {
+            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), galleryRequestCode)
+        } else {
+            pickImageAndVideoFromGallery()
+        }
+    }
+
     // Callback with the request from calling requestPermissions(...)
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         // Make sure it's our original READ_CONTACTS request
@@ -281,8 +452,19 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
             } else {
                 Toast.makeText(this, "You must give permissions to use this app. App is exiting.", Toast.LENGTH_SHORT).show()
             }
+        } else if (requestCode == RQ_Gallery_REC) {
+            if (grantResults.size == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                pickImageAndVideoFromGallery()
+            } else {
+                Toast.makeText(this, "You must give permissions to use this app. App is exiting.", Toast.LENGTH_SHORT).show()
+            }
         }
+    }
 
+    private fun pickImageAndVideoFromGallery() {
+        val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+        gallery.type = "image/* video/*"
+        startActivityForResult(gallery, pickImage)
     }
 
     private fun prepareStop() {
@@ -427,9 +609,6 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun setSpinnerCategory() {
-        var categories = arrayOf("หมวดหมู่ผู้พิการ", "การมองเห็น", "การได้ยิน", "การเคลื่อนไหวร่างกาย", "สติปัญญา",
-                "ออทิสติก", "ผู้สูงอายุ")
-
         var adapter = ArrayAdapter(this, R.layout.color_spinner_layout, categories)
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_layout)
         spinnerCategory.adapter = adapter
@@ -439,6 +618,7 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                categorySelected = categories[p2]
             }
         }
     }

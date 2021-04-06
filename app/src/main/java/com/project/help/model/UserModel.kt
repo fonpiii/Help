@@ -9,7 +9,9 @@ data class UserModel(
         var telephone: String? = "",
         var email: String? = "",
         var userType: String? = "",
-        var score: Double = 0.0,
+        var profileUrl: String? = "",
+        var scoreDisabled: Double = 0.0,
+        var scoreVolunteer: Double = 0.0,
         var createDate: Long = 0): Parcelable {
 
     constructor(parcel: Parcel) : this(
@@ -18,6 +20,8 @@ data class UserModel(
             parcel.readString(),
             parcel.readString(),
             parcel.readString(),
+            parcel.readString(),
+            parcel.readDouble(),
             parcel.readDouble(),
             parcel.readLong()
     ) {
@@ -30,7 +34,9 @@ data class UserModel(
         parcel.writeString(telephone)
         parcel.writeString(email)
         parcel.writeString(userType)
-        parcel.writeDouble(score)
+        parcel.writeString(profileUrl)
+        parcel.writeDouble(scoreDisabled)
+        parcel.writeDouble(scoreVolunteer)
         parcel.writeLong(createDate)
     }
 

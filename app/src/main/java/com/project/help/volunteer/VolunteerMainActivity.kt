@@ -140,9 +140,9 @@ class VolunteerMainActivity : AppCompatActivity(), View.OnClickListener {
     private fun getPosts() {
         var postList = generateDummyListPost(10)
 
-        recyclerFeed.adapter = PostAdapter(postList)
-        recyclerFeed.layoutManager = LinearLayoutManager(this)
-        recyclerFeed.setHasFixedSize(true)
+//        recyclerFeed.adapter = PostAdapter(postList)
+//        recyclerFeed.layoutManager = LinearLayoutManager(this)
+//        recyclerFeed.setHasFixedSize(true)
     }
 
     private fun generateDummyListPost(size: Int): ArrayList<PostItem> {

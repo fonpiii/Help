@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.*
+import com.google.android.material.button.MaterialButton
 import com.project.help.disabled.RegisterDisabledActivity
 import com.project.help.volunteer.RegisterVolunteerActivity
 
@@ -12,8 +13,8 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
 
     //region Global variable
     private lateinit var iconLeft: ImageView
-    private lateinit var btnVolunteer: Button
-    private lateinit var btnDisabled: Button
+    private lateinit var btnVolunteer: MaterialButton
+    private lateinit var btnDisabled: MaterialButton
     //endregion Global variable
 
     override fun onCreate(savedInstanceState: Bundle?) {

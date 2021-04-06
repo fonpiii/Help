@@ -55,35 +55,33 @@
                 android:textSize="13dp">
             </TextView>
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnDisabled"
-                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/orange"
+                android:layout_width="match_parent"
                 android:layout_marginTop="30dp"
                 android:layout_marginHorizontal="25dp"
                 android:text="ฉันเพิ่งมาขอความช่วยเหลือ"
-                android:paddingVertical="10dp"
                 android:textStyle="bold"
                 android:textSize="15dp"
-                android:textColor="@color/black">
-
-            </Button>
-
-            <Button
-                android:id="@+id/btnVolunteer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:textColor="@color/black"
                 android:backgroundTint="@color/orange"
-                android:layout_marginTop="5dp"
-                android:text="ฉันเพิ่งมาเป็นอาสา"
-                android:layout_marginHorizontal="25dp"
                 android:paddingVertical="10dp"
+                app:cornerRadius="10dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnVolunteer"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_marginTop="5dp"
+                android:layout_marginHorizontal="25dp"
+                android:text="ฉันเพิ่งมาเป็นอาสา"
                 android:textStyle="bold"
                 android:textSize="15dp"
-                android:textColor="@color/black">
-
-            </Button>
+                android:textColor="@color/black"
+                android:backgroundTint="@color/orange"
+                android:paddingVertical="10dp"
+                app:cornerRadius="10dp" />
 
         </LinearLayout>
 

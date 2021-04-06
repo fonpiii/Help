@@ -2,6 +2,7 @@ package com.project.help.disabled
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
 import android.widget.ArrayAdapter
@@ -15,6 +16,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.project.help.OtherMenu
 import com.project.help.R
 import com.project.help.disabled.model.PostDetails
+import com.project.help.disabled.model.PostDetailsResponse
 import com.project.help.model.UserModel
 
 
@@ -65,24 +67,27 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener {
         //region On init
         setMenuBottomSheet()
         setToolbar()
-        setRatingUserHeader()
         setSpinnerCategory()
         setFirebaseDatabase()
 
-        user = (intent.getParcelableExtra("User") as? UserModel)!!
-        val postDetail = intent.getSerializableExtra("PostDetail") as? PostDetails
+//        val postDetail = intent.getSerializableExtra("PostDetail") as? PostDetailsModel
         setHeader()
-        getPosts(postDetail)
+        getPosts()
         //endregion On init
     }
 
     private fun setFirebaseDatabase() {
         database = FirebaseDatabase.getInstance()
-        reference = database.getReference("User")
+        reference = database.getReference("PostDetails")
     }
 
     private fun setHeader() {
-        txtFullName.text = user.firstName + " " + user.lastName
+        if ((intent.getParcelableExtra("User") as? UserModel) != null) {
+            user = (intent.getParcelableExtra("User") as? UserModel)!!
+            txtFullName.text = user.firstName + " " + user.lastName
+            ratingReqForHelp.rating = user.scoreDisabled.toFloat()
+            ratingVolunteerForHelp.rating = user.scoreVolunteer.toFloat()
+        }
     }
 
     override fun onClick(v: View) {
@@ -101,6 +106,9 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener {
             }
             R.id.btnPost -> {
                 val intent = Intent(this, PostActivity::class.java)
+                if (user != null) {
+                    intent.putExtra("User", user)
+                }
                 startActivity(intent)
             }
         }
@@ -139,11 +147,6 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener {
         iconLeft.visibility = View.INVISIBLE
     }
 
-    private fun setRatingUserHeader() {
-//        ratingReqForHelp.rating = 1.0F
-//        ratingVolunteerForHelp.rating = 5.0F
-    }
-
     private fun setSpinnerCategory() {
         var categories = arrayOf("หมวดหมู่ผู้พิการ", "การมองเห็น", "การได้ยิน", "การเคลื่อนไหวร่างกาย", "สติปัญญา",
             "ออทิสติก", "ผู้สูงอายุ")
@@ -161,16 +164,40 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun getPosts(postDetails: PostDetails?) {
-        var postList = generateDummyListPost(10)
+    private fun getPosts() {
+        reference.get().addOnSuccessListener { result ->
+            var postDetails = ArrayList<PostDetailsResponse>()
+            for (data in result.children) {
+                var postDetail: PostDetailsResponse = data.getValue(PostDetailsResponse::class.java)!!
+                postDetail.id = data.key.toString()
+                postDetails.add(postDetail)
+            }
 
-        if (postDetails != null) {
-            postList = addPostList(postList, postDetails)
+            // Sort postDetails by date
+            postDetails.sortByDescending { it.createDate }
+
+            // Set for hide
+            var postDetail = PostDetailsResponse()
+            postDetails.add(postDetail)
+
+            if (postDetails.size != 0) {
+                recyclerFeed.adapter = PostAdapter(postDetails)
+                recyclerFeed.layoutManager = LinearLayoutManager(this)
+                recyclerFeed.setHasFixedSize(true)
+            }
+//            Toast.makeText(this, "เข้าสู่ระบบสำเร็จ", Toast.LENGTH_SHORT).show()
+        }.addOnFailureListener{
+            Log.e("firebase", "Error getting data", it)
         }
-
-        recyclerFeed.adapter = PostAdapter(postList)
-        recyclerFeed.layoutManager = LinearLayoutManager(this)
-        recyclerFeed.setHasFixedSize(true)
+//        var postList = generateDummyListPost(10)
+//
+//        if (postDetails != null) {
+//            postList = addPostList(postList, postDetails)
+//        }
+//
+//        recyclerFeed.adapter = PostAdapter(postList)
+//        recyclerFeed.layoutManager = LinearLayoutManager(this)
+//        recyclerFeed.setHasFixedSize(true)
     }
 
     private fun generateDummyListPost(size: Int): ArrayList<PostItem> {

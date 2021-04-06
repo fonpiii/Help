@@ -84,6 +84,8 @@
                         android:layout_marginTop="5dp"
                         android:paddingHorizontal="7dp"
                         android:hint="@string/enterEmail"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/hint"
                         android:textSize="15dp"
                         android:inputType="textPersonName"
                         android:background="@color/lightGray">
@@ -116,7 +118,9 @@
                         android:paddingHorizontal="7dp"
                         android:maxLength="20"
                         android:hint="@string/enterPassword"
+                        android:textColorHint="@color/hint"
                         android:textSize="15dp"
+                        android:textColor="@color/black"
                         android:inputType="textPassword"
                         android:background="@color/lightGray">
 

@@ -71,7 +71,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="ดอกไม้ นานา"
-                        android:textSize="15dp"
+                        android:textSize="13dp"
                         android:textAlignment="textStart"
                         android:textColor="@color/lightBlack">
 
@@ -101,7 +101,7 @@
                         android:id="@+id/txtUserType"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="15dp"
+                        android:textSize="14dp"
                         android:text="(ผู้ขอความช่วยเหลือ)"
                         android:textColor="@color/lightBlack">
 

@@ -103,7 +103,7 @@ class RegisterVolunteerActivity : AppCompatActivity(), View.OnClickListener {
                     if (sendEmailVerification()) {
                         var model = RegisterVolunteerModel(firstName.text.trim().toString(), lastName.text.trim().toString(),
                                 tel.text.trim().toString(), email.text.trim().toString(), ConstValue.UserType_Volunteer,
-                                0.0, ServerValue.TIMESTAMP)
+                                "", 0.0, 0.0, ServerValue.TIMESTAMP)
                         var id = reference.push().key
                         reference.child(id!!).setValue(model)
 

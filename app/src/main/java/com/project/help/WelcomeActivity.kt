@@ -41,7 +41,6 @@ class WelcomeActivity : AppCompatActivity(), View.OnClickListener {
         btnRegister.setOnClickListener(this)
 
         setFirebaseDatabase()
-        checkSessionLogin()
         getCountUserType(ConstValue.UserType_Disabled)
         getCountUserType(ConstValue.UserType_Volunteer).toString()
     }
@@ -65,31 +64,6 @@ class WelcomeActivity : AppCompatActivity(), View.OnClickListener {
     private fun setFirebaseDatabase() {
         database = FirebaseDatabase.getInstance()
         reference = database.getReference("User")
-    }
-
-    private fun checkSessionLogin() {
-        mAuth = FirebaseAuth.getInstance()
-
-        if (mAuth!!.currentUser != null) {
-            reference.orderByChild("email").equalTo(mAuth!!.currentUser.email).get().addOnSuccessListener { result ->
-                var user = UserModel()
-                for (data in result.children) {
-                    user = data.getValue(UserModel::class.java)!!
-                }
-
-                if (user!!.userType == ConstValue.UserType_Disabled) {
-                    var intent = Intent(this, DisabledMainActivity::class.java)
-                    intent.putExtra("User", user)
-                    startActivity(intent)
-                    finishAffinity()
-                } else if (user!!.userType == ConstValue.UserType_Volunteer) {
-                    startActivity(Intent(this, VolunteerMainActivity::class.java))
-                    finishAffinity()
-                }
-            }.addOnFailureListener{
-                Log.e("firebase", "Error getting data", it)
-            }
-        }
     }
 
     override fun onClick(v: View) {

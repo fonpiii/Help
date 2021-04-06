@@ -40,7 +40,6 @@ class RegisterDisabledActivity : AppCompatActivity(), View.OnClickListener {
     var mAuth: FirebaseAuth? = null
     private lateinit var database: FirebaseDatabase
     private lateinit var reference: DatabaseReference
-    var ISO_8601_FORMAT: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:sss'Z'")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,7 +105,7 @@ class RegisterDisabledActivity : AppCompatActivity(), View.OnClickListener {
                     if (sendEmailVerification()) {
                         var model = RegisterDisabledModel(firstName.text.trim().toString(), lastName.text.trim().toString(),
                                 tel.text.trim().toString(), email.text.trim().toString(), ConstValue.UserType_Disabled,
-                                0.0, ServerValue.TIMESTAMP)
+                                "", 0.0, 0.0, ServerValue.TIMESTAMP)
                         var id = reference.push().key
                         reference.child(id!!).setValue(model)
 

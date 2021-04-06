@@ -8,6 +8,8 @@ data class RegisterDisabledModel(
         var telephone: String = "",
         var email: String = "",
         var userType: String = "",
-        var score: Double = 0.0,
+        var profileUrl: String = "",
+        var scoreDisabled: Double = 0.0,
+        var scoreVolunteer: Double = 0.0,
         var createDate: MutableMap<String, String> = ServerValue.TIMESTAMP) {
 }
