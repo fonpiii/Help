@@ -167,6 +167,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
+                        android:id="@+id/cardAudio_Feed"
+                        android:visibility="gone"
                         android:layout_gravity="start"
                         android:gravity="center">
 
@@ -177,7 +179,7 @@
                             android:layout_marginTop="10dp"
                             android:layout_marginBottom="10dp"
                             android:layout_gravity="center"
-                            android:visibility="gone"
+                            android:visibility="visible"
                             app:cardBackgroundColor="@color/lightYellow">
 
                             <LinearLayout
@@ -185,11 +187,10 @@
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
                                 android:paddingEnd="10dp"
-                                android:paddingStart="10dp"
-                                android:visibility="visible">
+                                android:paddingStart="10dp">
 
                                 <ImageView
-                                    android:id="@+id/imgViewPlay"
+                                    android:id="@+id/imgViewPlay_Feed"
                                     android:layout_width="30dp"
                                     android:layout_height="30dp"
                                     android:background="?android:attr/selectableItemBackground"
@@ -199,7 +200,7 @@
                                     android:src="@drawable/play_button" />
 
                                 <SeekBar
-                                    android:id="@+id/seekBar"
+                                    android:id="@+id/seekBar_Feed"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center_vertical"
@@ -222,7 +223,7 @@
                             android:id="@+id/imgPostDetail_Feed"
                             android:layout_width="match_parent"
                             android:layout_height="128dp"
-                            android:layout_marginTop="10dp"
+                            android:layout_marginTop="5dp"
                             android:layout_marginBottom="10dp"
                             android:visibility="gone"
                             android:src="@drawable/gmail">
@@ -241,7 +242,7 @@
                             android:id="@+id/videoPostDetail_Feed"
                             android:layout_width="match_parent"
                             android:layout_height="300dp"
-                            android:layout_marginTop="10dp"
+                            android:layout_marginTop="5dp"
                             android:layout_marginBottom="10dp"
                             android:visibility="gone">
 

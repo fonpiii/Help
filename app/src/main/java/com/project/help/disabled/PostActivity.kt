@@ -2,6 +2,7 @@ package com.project.help.disabled
 
 import android.Manifest
 import android.app.Activity
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -92,6 +93,7 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var storageReference: StorageReference
     private lateinit var user: UserModel
     private lateinit var categorySelected: String
+    private lateinit var dialog: Dialog
     var categories = arrayOf("หมวดหมู่ผู้พิการ", "การมองเห็น", "การได้ยิน", "การเคลื่อนไหวร่างกาย", "สติปัญญา",
             "ออทิสติก", "ผู้สูงอายุ")
     //endregion Global variable
@@ -187,6 +189,8 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
                     if (categorySelected == categories[0]) {
                         Utilities.Alert.alertDialog("กรุณาเลือกหมวดหมู่ผู้พิการ", SweetAlertDialog.ERROR_TYPE, this)
                     } else {
+                        dialog = Utilities.Alert.loadingDialog(this, "กำลังโพส")
+                        dialog.apply { show() }
                         saveVideoToDb()
                     }
                 }
@@ -333,6 +337,7 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
                     intent.putExtra("User", user)
                     startActivity(intent)
                     finishAffinity()
+                    dialog.dismiss()
         }
     }
 

@@ -189,35 +189,6 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener {
         }.addOnFailureListener{
             Log.e("firebase", "Error getting data", it)
         }
-//        var postList = generateDummyListPost(10)
-//
-//        if (postDetails != null) {
-//            postList = addPostList(postList, postDetails)
-//        }
-//
-//        recyclerFeed.adapter = PostAdapter(postList)
-//        recyclerFeed.layoutManager = LinearLayoutManager(this)
-//        recyclerFeed.setHasFixedSize(true)
-    }
-
-    private fun generateDummyListPost(size: Int): ArrayList<PostItem> {
-        val list = ArrayList<PostItem>()
-
-        for (i in 0 until size) {
-            val drawable = when (i % 3) {
-                0 -> R.drawable.privacypolicy
-                1 -> R.drawable.hospital
-                else -> R.drawable.helplogo
-            }
-
-            // Set content feed
-            val item = PostItem(drawable, "User " + (i+1).toString(),
-                "ช่วยอ่านใบนัดหมอให้ทีครับ", (i+1), 3.0F, 0)
-            list += item
-        }
-        list += PostItem(R.drawable.privacypolicy, "",
-            "", 999999, 3.0F, 0)
-        return list
     }
 
     private fun addPostList(postList: ArrayList<PostItem>, postDetails: PostDetails): ArrayList<PostItem> {

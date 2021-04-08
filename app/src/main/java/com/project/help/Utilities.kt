@@ -1,9 +1,11 @@
 package com.project.help
 
+import android.app.Dialog
 import android.content.Context
 import android.text.TextUtils
 import android.util.Patterns
 import cn.pedant.SweetAlert.SweetAlertDialog
+import dmax.dialog.SpotsDialog
 import java.util.*
 import java.util.regex.Pattern
 
@@ -28,6 +30,14 @@ class Utilities {
             SweetAlertDialog(page, errorType)
                     .setTitleText(text)
                     .show()
+        }
+
+        fun loadingDialog(page: Context, message: String): Dialog {
+
+            return SpotsDialog.Builder()
+                .setContext(page)
+                .setMessage(message)
+                .setCancelable(false).build()
         }
     }
 
