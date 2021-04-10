@@ -96,6 +96,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                             var user = UserModel()
                             for (data in result.children) {
                                 user = data.getValue(UserModel::class.java)!!
+                                user.userId = data.key
                             }
 
                             Toast.makeText(this, "เข้าสู่ระบบสำเร็จ", Toast.LENGTH_SHORT).show()

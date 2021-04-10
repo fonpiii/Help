@@ -10,12 +10,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.project.help.ConstValue
 import com.project.help.OtherMenu
 import com.project.help.R
-import com.project.help.disabled.model.PostDetails
 import com.project.help.disabled.model.PostDetailsResponse
 import com.project.help.model.UserModel
 
@@ -40,6 +42,7 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var database: FirebaseDatabase
     private lateinit var reference: DatabaseReference
     private lateinit var user: UserModel
+    private lateinit var shimmer: ShimmerFrameLayout
     //endregion Global variable
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,6 +61,7 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener {
         spinnerCategory = findViewById(R.id.spinnerCategory)
         btnPost = findViewById(R.id.btnPost)
         recyclerFeed = findViewById(R.id.recycler_feed)
+        shimmer = findViewById(R.id.shimmerFrameLayout)
 
         archiveOfPosts.setOnClickListener(this)
         oldPost.setOnClickListener(this)
@@ -72,8 +76,18 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener {
 
 //        val postDetail = intent.getSerializableExtra("PostDetail") as? PostDetailsModel
         setHeader()
-        getPosts()
+        getPosts(ConstValue.getByAll, "")
         //endregion On init
+    }
+
+    override fun onResume() {
+        super.onResume()
+        shimmer.startShimmerAnimation()
+    }
+
+    override fun onPause() {
+        shimmer.stopShimmerAnimation()
+        super.onPause()
     }
 
     private fun setFirebaseDatabase() {
@@ -148,7 +162,7 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun setSpinnerCategory() {
-        var categories = arrayOf("หมวดหมู่ผู้พิการ", "การมองเห็น", "การได้ยิน", "การเคลื่อนไหวร่างกาย", "สติปัญญา",
+        var categories = arrayOf("ทั้งหมด", "การมองเห็น", "การได้ยิน", "การเคลื่อนไหวร่างกาย", "สติปัญญา",
             "ออทิสติก", "ผู้สูงอายุ")
 
         var adapter = ArrayAdapter(this, R.layout.color_spinner_layout, categories)
@@ -160,41 +174,59 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                if (p2 == 0) {
+                    getPosts(ConstValue.getByAll, "")
+                } else {
+                    getPosts(ConstValue.getByCategory, categories[p2])
+                }
             }
         }
     }
 
-    private fun getPosts() {
-        reference.get().addOnSuccessListener { result ->
-            var postDetails = ArrayList<PostDetailsResponse>()
-            for (data in result.children) {
-                var postDetail: PostDetailsResponse = data.getValue(PostDetailsResponse::class.java)!!
-                postDetail.id = data.key.toString()
-                postDetails.add(postDetail)
+    private fun getPosts(getBy: String, value: String) {
+        shimmer.startShimmerAnimation()
+        when (getBy) {
+            ConstValue.getByAll -> {
+                reference.get().addOnSuccessListener { result ->
+                    setPostDetails(result)
+                }.addOnFailureListener{
+                    Log.e("firebase", "Error getting data", it)
+                }
             }
+            ConstValue.getByCategory -> {
+                reference.orderByChild("categorys").equalTo(value).get().addOnSuccessListener { result ->
+                    setPostDetails(result)
+                }.addOnFailureListener{
+                    Log.e("firebase", "Error getting data", it)
+                }
+            }
+        }
+    }
 
-            // Sort postDetails by date
-            postDetails.sortByDescending { it.createDate }
-
-            // Set for hide
-            var postDetail = PostDetailsResponse()
+    private fun setPostDetails(result: DataSnapshot) {
+        var postDetails = ArrayList<PostDetailsResponse>()
+        for (data in result.children) {
+            var postDetail: PostDetailsResponse = data.getValue(PostDetailsResponse::class.java)!!
+            postDetail.id = data.key.toString()
             postDetails.add(postDetail)
+        }
 
-            if (postDetails.size != 0) {
-                recyclerFeed.adapter = PostAdapter(postDetails)
-                recyclerFeed.layoutManager = LinearLayoutManager(this)
-                recyclerFeed.setHasFixedSize(true)
-            }
-//            Toast.makeText(this, "เข้าสู่ระบบสำเร็จ", Toast.LENGTH_SHORT).show()
-        }.addOnFailureListener{
-            Log.e("firebase", "Error getting data", it)
+        // Sort postDetails by date
+        postDetails.sortByDescending { it.createDate }
+
+        if (postDetails.size != 0) {
+            recyclerFeed.adapter = PostAdapter(postDetails)
+            recyclerFeed.layoutManager = LinearLayoutManager(this)
+            recyclerFeed.setHasFixedSize(true)
+            closeShimmer()
+        } else {
+            closeShimmer()
         }
     }
 
-    private fun addPostList(postList: ArrayList<PostItem>, postDetails: PostDetails): ArrayList<PostItem> {
-        var index = postList.size - 1
-        postList.add(index, PostItem(R.drawable.privacypolicy, "User " + (index+1).toString(),
-            postDetails.txtPost.toString(), index+1, 5.0F, 0))
-        return postList
+    private fun closeShimmer() {
+        shimmer.stopShimmerAnimation()
+        shimmer.visibility = View.GONE
+        recyclerFeed.visibility = View.VISIBLE
     }
 }

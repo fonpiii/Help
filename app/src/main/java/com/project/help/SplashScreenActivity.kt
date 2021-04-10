@@ -35,6 +35,7 @@ class SplashScreenActivity : AppCompatActivity() {
                     var user = UserModel()
                     for (data in result.children) {
                         user = data.getValue(UserModel::class.java)!!
+                        user.userId = data.key
                     }
 
                     if (user!!.userType == ConstValue.UserType_Disabled) {

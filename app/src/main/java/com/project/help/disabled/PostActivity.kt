@@ -329,8 +329,8 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
         var postDetailsModel = PostDetailsRequest(user.firstName!!, user.lastName!!, user.profileUrl!!,
                 typeUrl.imageUrl, typeUrl.imageName, typeUrl.videoUrl, typeUrl.videoName, typeUrl.audioUrl,
                 typeUrl.audioName, editPost.text.toString(), isAdvice, categorySelected,
-                "", user.scoreDisabled, ServerValue.TIMESTAMP, user.firstName!! + " " + user.lastName!!,
-                ServerValue.TIMESTAMP, user.firstName!! + " " + user.lastName!!)
+                "", user.scoreDisabled, ServerValue.TIMESTAMP, user.userId,
+                ServerValue.TIMESTAMP, user.userId)
         var id = reference.push().key
         reference.child(id!!).setValue(postDetailsModel).addOnCompleteListener {
                     var intent = Intent(this, DisabledMainActivity::class.java)

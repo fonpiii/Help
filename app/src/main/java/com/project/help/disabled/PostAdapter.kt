@@ -46,6 +46,8 @@ class PostAdapter(private val postList: List<PostDetailsResponse>) : RecyclerVie
         if (currentItem.imageUrl != "") {
             holder.imagePostFeed.visibility = View.VISIBLE
             Picasso.get().load(currentItem.imageUrl).into(holder.imagePostFeed)
+        } else {
+            holder.imagePostFeed.visibility = View.GONE
         }
 
         if (currentItem.videoUrl != "") {
@@ -63,6 +65,8 @@ class PostAdapter(private val postList: List<PostDetailsResponse>) : RecyclerVie
                     mediaController.setAnchorView(holder.videoPostFeed)
                 })
             })
+        } else {
+            holder.videoPostFeed.visibility = View.GONE
         }
 
         if (currentItem.audioUrl != "") {
@@ -79,6 +83,8 @@ class PostAdapter(private val postList: List<PostDetailsResponse>) : RecyclerVie
                 }
             })
 
+        } else {
+            holder.cardAudio.visibility = View.GONE
         }
     }
 
