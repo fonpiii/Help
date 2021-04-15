@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".CommentActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/Theme.Help.AppBarOverlay">
+
+        <include layout="@layout/custom_toolbar"></include>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <include layout="@layout/comment_feed"/>
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="480dp"
+            android:fillViewport="true"
+            android:layout_marginTop="15dp">
+
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/shimmerFrameLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:orientation="vertical">
+
+                <!-- Adding 15 rows of placeholders -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <include layout="@layout/shimmer_placeholder_layout" />
+
+                    <include layout="@layout/shimmer_placeholder_layout" />
+
+                    <include layout="@layout/shimmer_placeholder_layout" />
+
+                    <include layout="@layout/shimmer_placeholder_layout" />
+
+                    <include layout="@layout/shimmer_placeholder_layout" />
+
+                    <include layout="@layout/shimmer_placeholder_layout" />
+
+                    <include layout="@layout/shimmer_placeholder_layout" />
+
+                    <include layout="@layout/shimmer_placeholder_layout" />
+
+                    <include layout="@layout/shimmer_placeholder_layout" />
+
+                    <include layout="@layout/shimmer_placeholder_layout" />
+
+                    <include layout="@layout/shimmer_placeholder_layout" />
+
+                    <include layout="@layout/shimmer_placeholder_layout" />
+
+                    <include layout="@layout/shimmer_placeholder_layout" />
+
+                    <include layout="@layout/shimmer_placeholder_layout" />
+
+                    <include layout="@layout/shimmer_placeholder_layout" />
+                </LinearLayout>
+            </com.facebook.shimmer.ShimmerFrameLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_feed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:clipToPadding="false"
+                android:visibility="gone"
+                tools:listitem="@layout/content_feed">
+            </androidx.recyclerview.widget.RecyclerView>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_menu_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_weight="1"
+            android:gravity="bottom"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:rowCount="1"
+                android:columnCount="2"
+                android:background="@color/lightGray"
+                android:layout_gravity="top">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:layout_row="0"
+                    android:layout_column="0"
+                    android:layout_gravity="fill"
+                    android:layout_rowWeight="1"
+                    android:layout_columnWeight="1">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:layout_marginEnd="7dp"
+                        android:gravity="end">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:gravity="center"
+                            android:visibility="visible"
+                            android:layout_marginEnd="7dp">
+
+                            <EditText
+                                android:id="@+id/editComment"
+                                android:layout_width="280dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginHorizontal="10dp"
+                                android:inputType="textMultiLine"
+                                android:textColorHint="@color/placeholder"
+                                android:textSize="18dp"
+                                android:hint="แสดงความคิดเห็น...">
+
+                            </EditText>
+
+
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:layout_row="0"
+                    android:layout_column="1"
+                    android:layout_gravity="fill"
+                    android:layout_rowWeight="1"
+                    android:layout_columnWeight="0">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:layout_marginEnd="7dp"
+                        android:gravity="end">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="60dp"
+                            android:gravity="center"
+                            android:visibility="gone"
+                            android:layout_marginEnd="7dp"
+                            android:layout_gravity="end">
+
+                            <ImageButton
+                                android:layout_width="35dp"
+                                android:layout_height="35dp"
+                                android:backgroundTint="@color/lightGray"
+                                android:src="@drawable/gallery">
+                            </ImageButton>
+
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="60dp"
+                            android:gravity="center"
+                            android:layout_marginEnd="7dp"
+                            android:layout_gravity="end">
+
+                            <ImageButton
+                                android:id="@+id/btnSpeechToText"
+                                android:layout_width="35dp"
+                                android:layout_height="35dp"
+                                android:backgroundTint="@color/lightGray"
+                                android:src="@drawable/voice_search">
+                            </ImageButton>
+
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="60dp"
+                            android:gravity="center"
+                            android:visibility="visible"
+                            android:layout_gravity="end">
+
+                            <ImageButton
+                                android:id="@+id/btnSendMessage"
+                                android:layout_width="35dp"
+                                android:layout_height="35dp"
+                                android:backgroundTint="@color/lightGray"
+                                android:src="@drawable/ic_baseline_send_24">
+                            </ImageButton>
+
+
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </GridLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -215,7 +215,7 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener {
         postDetails.sortByDescending { it.createDate }
 
         if (postDetails.size != 0) {
-            recyclerFeed.adapter = PostAdapter(postDetails)
+            recyclerFeed.adapter = PostAdapter(postDetails, user)
             recyclerFeed.layoutManager = LinearLayoutManager(this)
             recyclerFeed.setHasFixedSize(true)
             closeShimmer()

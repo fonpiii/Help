@@ -1,4 +1,4 @@
-package com.project.help.disabled
+package com.project.help.model
 
 import android.content.Context
 import android.content.Intent
@@ -13,48 +13,33 @@ import androidx.recyclerview.widget.RecyclerView
 import com.project.help.CommentActivity
 import com.project.help.R
 import com.project.help.Utilities
+import com.project.help.disabled.PostAdapter
 import com.project.help.disabled.model.PostDetailsResponse
-import com.project.help.model.UserModel
 import com.squareup.picasso.Picasso
 import java.io.IOException
 
+class CommentAdapter(private val commentList: List<CommentResponse>, private val user: UserModel) : RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() {
+    private lateinit var holderMaster: CommentViewHolder
 
-class PostAdapter(private val postList: List<PostDetailsResponse>, private val user: UserModel) : RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentViewHolder {
+        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.comment_child_feed,
+                parent, false)
 
-    private lateinit var holderMaster: PostViewHolder
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.content_feed,
-            parent, false)
-
-        return PostViewHolder(itemView)
+        return CommentViewHolder(itemView)
     }
 
-    override fun getItemCount() = postList.size
+    override fun getItemCount() = commentList.size
 
-    override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
-        var currentItem = postList[position]
+    override fun onBindViewHolder(holder: CommentViewHolder, position: Int) {
+        var currentItem = commentList[position]
 
 //        holder.imageProfileFeed.setImageResource(currentItem.imageProfile)
         holder.imageProfileFeed.setImageResource(R.drawable.helplogo)
         holder.txtUsernameFeed.text = currentItem.firstName + " " + currentItem.lastName
-        holder.postDetailFeed.text = currentItem.postDesc
+        holder.postDetailFeed.text = currentItem.commentDesc
         holder.ratingUserFeed.rating = currentItem.rating.toFloat()
-        holder.categoryFeed.text = currentItem.categorys
+//        holder.categoryFeed.text = currentItem.categorys
         holder.timeStampFeed.text = Utilities.Converter.convertTimeToPostDetails(currentItem.createDate)
-
-        holder.commentLayout.setOnClickListener(View.OnClickListener {
-            var intent = Intent(holder.context, CommentActivity::class.java)
-            intent.putExtra("PostDetailId", currentItem.id)
-            intent.putExtra("User", user)
-            holder.context?.startActivity(intent)
-        })
-
-        if (currentItem.comments == "") {
-            holder.countCommentFeed.text = "0"
-        } else {
-            holder.countCommentFeed.text = "0"
-        }
 
         if (currentItem.imageUrl != "") {
             holder.imagePostFeed.visibility = View.VISIBLE
@@ -166,20 +151,17 @@ class PostAdapter(private val postList: List<PostDetailsResponse>, private val u
 
     private var runnable: Runnable = Runnable { seekBarUpdate() }
 
-    class PostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class CommentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageProfileFeed: ImageView = itemView.findViewById(R.id.imgProfile_Feed)
         val txtUsernameFeed: TextView = itemView.findViewById(R.id.txtUsername_Feed)
         val postDetailFeed: TextView = itemView.findViewById(R.id.postDetail_Feed)
-        val countCommentFeed: TextView = itemView.findViewById(R.id.countComment_Feed)
         val ratingUserFeed: RatingBar = itemView.findViewById(R.id.ratingUser_Feed)
         val imagePostFeed: ImageView = itemView.findViewById(R.id.imgPostDetail_Feed)
         val videoPostFeed: VideoView = itemView.findViewById(R.id.videoPostDetail_Feed)
-        val categoryFeed: TextView = itemView.findViewById(R.id.category_Feed)
         val timeStampFeed: TextView = itemView.findViewById(R.id.timeStamp_Feed)
         val cardAudio: LinearLayout = itemView.findViewById(R.id.cardAudio_Feed)
         val seekBar: SeekBar = itemView.findViewById(R.id.seekBar_Feed)
         val imgViewPlay: ImageView = itemView.findViewById(R.id.imgViewPlay_Feed)
-        val commentLayout: LinearLayout = itemView.findViewById(R.id.commentLayout_Feed)
         val context: Context? = itemView.context
         var lastProgress = 0
         var isPlaying = false
