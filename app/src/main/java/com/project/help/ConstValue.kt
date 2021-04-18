@@ -14,6 +14,7 @@ class ConstValue {
         const val image_type = "image"
         const val video_type = "video"
         const val getByAll = "all"
+        const val getById = "id"
         const val getByCategory = "category"
 
     }

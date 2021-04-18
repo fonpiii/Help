@@ -14,12 +14,13 @@ data class PostDetailsResponse(
     var audioUrl: String = "",
     var audioName: String = "",
     var postDesc: String = "",
-    var isAdvice: Boolean = false,
+    var advice: Boolean = false,
     var categorys: String = "",
     var comments: String = "",
     var createDate: Long = 0,
     var createBy: String = "",
     var updateDate: Long = 0,
     var rating: Double = 0.0,
+    var close: Boolean = false,
     var updateBy: String = "") {
 }

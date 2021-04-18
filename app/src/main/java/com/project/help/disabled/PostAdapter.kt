@@ -9,7 +9,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.database.FirebaseDatabase
 import com.project.help.CommentActivity
 import com.project.help.R
 import com.project.help.Utilities
@@ -35,6 +37,21 @@ class PostAdapter(private val postList: List<PostDetailsResponse>, private val u
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
         var currentItem = postList[position]
 
+        var count = 0
+        var database = FirebaseDatabase.getInstance().getReference("Comments")
+        database.orderByChild("postDetailId").equalTo(currentItem.id).get().addOnSuccessListener { result ->
+            for (data in result.children) {
+                count++
+            }
+            holder.countCommentFeed.text = count.toString()
+        }.addOnFailureListener{
+            Log.e("firebase", "Error getting data", it)
+        }
+
+        if (currentItem.advice) {
+            holder.itemAdvice.visibility = View.VISIBLE
+        }
+
 //        holder.imageProfileFeed.setImageResource(currentItem.imageProfile)
         holder.imageProfileFeed.setImageResource(R.drawable.helplogo)
         holder.txtUsernameFeed.text = currentItem.firstName + " " + currentItem.lastName
@@ -49,12 +66,6 @@ class PostAdapter(private val postList: List<PostDetailsResponse>, private val u
             intent.putExtra("User", user)
             holder.context?.startActivity(intent)
         })
-
-        if (currentItem.comments == "") {
-            holder.countCommentFeed.text = "0"
-        } else {
-            holder.countCommentFeed.text = "0"
-        }
 
         if (currentItem.imageUrl != "") {
             holder.imagePostFeed.visibility = View.VISIBLE
@@ -180,6 +191,7 @@ class PostAdapter(private val postList: List<PostDetailsResponse>, private val u
         val seekBar: SeekBar = itemView.findViewById(R.id.seekBar_Feed)
         val imgViewPlay: ImageView = itemView.findViewById(R.id.imgViewPlay_Feed)
         val commentLayout: LinearLayout = itemView.findViewById(R.id.commentLayout_Feed)
+        val itemAdvice: CardView = itemView.findViewById(R.id.itemAdvice)
         val context: Context? = itemView.context
         var lastProgress = 0
         var isPlaying = false

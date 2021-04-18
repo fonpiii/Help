@@ -2,6 +2,7 @@ package com.project.help.disabled
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -9,14 +10,25 @@ import android.widget.ImageView
 import android.widget.Spinner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.facebook.shimmer.ShimmerFrameLayout
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.project.help.ConstValue
 import com.project.help.R
 import com.project.help.disabled.model.PostDetails
+import com.project.help.disabled.model.PostDetailsResponse
+import com.project.help.model.UserModel
 
 class OldPostActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var recyclerFeed: RecyclerView
     private lateinit var iconLeft: ImageView
     private lateinit var spinnerCategory: Spinner
+    private lateinit var user: UserModel
+    private lateinit var shimmer: ShimmerFrameLayout
+    private lateinit var database: FirebaseDatabase
+    private lateinit var reference: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,11 +36,14 @@ class OldPostActivity : AppCompatActivity(), View.OnClickListener {
 
         recyclerFeed = findViewById(R.id.recycler_feed)
         spinnerCategory = findViewById(R.id.spinnerCategory)
+        shimmer = findViewById(R.id.shimmerFrameLayout)
 
         //region On init
+        setFirebaseDatabase()
         setToolbar()
+        setUser()
         setSpinnerCategory()
-        getPosts()
+        getPosts(ConstValue.getById, "")
         //endregion On init
     }
 
@@ -38,45 +53,71 @@ class OldPostActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    private fun setUser() {
+        if ((intent.getParcelableExtra("User") as? UserModel) != null) {
+            user = (intent.getParcelableExtra("User") as? UserModel)!!
+        }
+    }
+
     private fun setToolbar() {
         iconLeft = findViewById(R.id.iconLeft)
         iconLeft.setOnClickListener(this)
     }
 
-    private fun getPosts() {
-        var postList = generateDummyListPost(5)
-
-//        recyclerFeed.adapter = PostAdapter(postList)
-//        recyclerFeed.layoutManager = LinearLayoutManager(this)
-//        recyclerFeed.setHasFixedSize(true)
+    private fun setFirebaseDatabase() {
+        database = FirebaseDatabase.getInstance()
+        reference = database.getReference("PostDetails")
     }
 
-    private fun generateDummyListPost(size: Int): ArrayList<PostItem> {
-        val list = ArrayList<PostItem>()
-
-        for (i in 0 until size) {
-            val drawable = when (i % 3) {
-                0 -> R.drawable.privacypolicy
-                1 -> R.drawable.hospital
-                else -> R.drawable.helplogo
+    private fun getPosts(getBy: String, value: String) {
+        shimmer.startShimmerAnimation()
+        when (getBy) {
+            ConstValue.getById -> {
+                reference.orderByChild("createBy").equalTo(user.userId).get().addOnSuccessListener { result ->
+                    setPostDetails(result)
+                }.addOnFailureListener{
+                    Log.e("firebase", "Error getting data", it)
+                }
             }
-
-            list += if (i == 2) {
-                val item = PostItem(drawable, "User " + (i+1).toString(),
-                        "ช่วยอ่านใบนัดหมอให้ทีครับ", (i+1), 3.0F, R.drawable.gmail)
-                item
-            } else {
-                // Set content feed
-                val item = PostItem(drawable, "User " + (i+1).toString(),
-                        "ช่วยอ่านใบนัดหมอให้ทีครับ", (i+1), 3.0F, 0)
-                item
+            ConstValue.getByCategory -> {
+                reference.orderByChild("categorys").equalTo(value).get().addOnSuccessListener { result ->
+                    setPostDetails(result)
+                }.addOnFailureListener{
+                    Log.e("firebase", "Error getting data", it)
+                }
             }
         }
-        return list
+    }
+
+    private fun setPostDetails(result: DataSnapshot) {
+        var postDetails = ArrayList<PostDetailsResponse>()
+        for (data in result.children) {
+            var postDetail: PostDetailsResponse = data.getValue(PostDetailsResponse::class.java)!!
+            postDetail.id = data.key.toString()
+            postDetails.add(postDetail)
+        }
+
+        // Sort postDetails by date
+        postDetails.sortByDescending { it.createDate }
+
+        if (postDetails.size != 0) {
+            recyclerFeed.adapter = PostAdapter(postDetails, user)
+            recyclerFeed.layoutManager = LinearLayoutManager(this)
+            recyclerFeed.setHasFixedSize(true)
+            closeShimmer()
+        } else {
+            closeShimmer()
+        }
+    }
+
+    private fun closeShimmer() {
+        shimmer.stopShimmerAnimation()
+        shimmer.visibility = View.GONE
+        recyclerFeed.visibility = View.VISIBLE
     }
 
     private fun setSpinnerCategory() {
-        var categories = arrayOf("หมวดหมู่ผู้พิการ", "การมองเห็น", "การได้ยิน", "การเคลื่อนไหวร่างกาย", "สติปัญญา",
+        var categories = arrayOf("ทั้งหมด", "การมองเห็น", "การได้ยิน", "การเคลื่อนไหวร่างกาย", "สติปัญญา",
                 "ออทิสติก", "ผู้สูงอายุ")
 
         var adapter = ArrayAdapter(this, R.layout.color_spinner_layout, categories)
@@ -88,6 +129,11 @@ class OldPostActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                if (p2 == 0) {
+                    getPosts(ConstValue.getById, "")
+                } else {
+                    getPosts(ConstValue.getByCategory, categories[p2])
+                }
             }
         }
     }

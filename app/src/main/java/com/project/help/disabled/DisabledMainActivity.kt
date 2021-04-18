@@ -1,15 +1,20 @@
 package com.project.help.disabled
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.*
-import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import cn.pedant.SweetAlert.SweetAlertDialog
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.database.DataSnapshot
@@ -18,11 +23,12 @@ import com.google.firebase.database.FirebaseDatabase
 import com.project.help.ConstValue
 import com.project.help.OtherMenu
 import com.project.help.R
+import com.project.help.Utilities
 import com.project.help.disabled.model.PostDetailsResponse
 import com.project.help.model.UserModel
 
 
-class DisabledMainActivity : AppCompatActivity(), View.OnClickListener {
+class DisabledMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     //region Global variable
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
@@ -38,11 +44,14 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var ratingVolunteerForHelp: RatingBar
     private lateinit var spinnerCategory: Spinner
     private lateinit var btnPost: Button
+    private lateinit var btnSos: Button
     private lateinit var recyclerFeed: RecyclerView
     private lateinit var database: FirebaseDatabase
     private lateinit var reference: DatabaseReference
     private lateinit var user: UserModel
     private lateinit var shimmer: ShimmerFrameLayout
+    private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
+    private val RQ_TELEPHONE = 100
     //endregion Global variable
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,19 +69,23 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener {
         ratingVolunteerForHelp = findViewById(R.id.ratingVolunteerForHelp)
         spinnerCategory = findViewById(R.id.spinnerCategory)
         btnPost = findViewById(R.id.btnPost)
+        btnSos = findViewById(R.id.btnSos)
         recyclerFeed = findViewById(R.id.recycler_feed)
         shimmer = findViewById(R.id.shimmerFrameLayout)
+        mSwipeRefreshLayout = findViewById(R.id.swipe_container)
 
         archiveOfPosts.setOnClickListener(this)
         oldPost.setOnClickListener(this)
         otherMenu.setOnClickListener(this)
         btnPost.setOnClickListener(this)
+        btnSos.setOnClickListener(this)
 
         //region On init
         setMenuBottomSheet()
         setToolbar()
         setSpinnerCategory()
         setFirebaseDatabase()
+        setSwipeRefresh()
 
 //        val postDetail = intent.getSerializableExtra("PostDetail") as? PostDetailsModel
         setHeader()
@@ -108,10 +121,16 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener {
         when (v.id) {
             R.id.archiveOfPosts ->  {
                 val intent = Intent(this, ArchiveOfPostsActivity::class.java)
+                if (user != null) {
+                    intent.putExtra("User", user)
+                }
                 startActivity(intent)
             }
             R.id.oldPost -> {
                 val intent = Intent(this, OldPostActivity::class.java)
+                if (user != null) {
+                    intent.putExtra("User", user)
+                }
                 startActivity(intent)
             }
             R.id.otherMenu -> {
@@ -125,6 +144,70 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener {
                 }
                 startActivity(intent)
             }
+            R.id.btnSos -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    getPermissionToTelephone(RQ_TELEPHONE)
+                }
+            }
+        }
+    }
+
+    private fun getPermissionToTelephone(telephoneRequestCode: Int) {
+        // 1) Use the support library version ContextCompat.checkSelfPermission(...) to avoid checking the build version since Context.checkSelfPermission(...) is only available in Marshmallow
+        // 2) Always check for permission (even if permission has already been granted) since the user can revoke permissions at any time through Settings
+        if (telephoneRequestCode == RQ_TELEPHONE) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED
+                    || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                    || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(Manifest.permission.CALL_PHONE), telephoneRequestCode)
+            } else {
+                onClickSos()
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        // Make sure it's our original READ_CONTACTS request
+        if (requestCode == RQ_TELEPHONE) {
+            if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                onClickSos()
+//                Toast.makeText(this, "Call phone permission granted", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "You must give permissions to use this app. App is exiting.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun onClickSos() {
+        var database = FirebaseDatabase.getInstance().getReference("User")
+        database.orderByChild("userType").equalTo(ConstValue.UserType_Volunteer).get().addOnSuccessListener { result ->
+            var users = ArrayList<UserModel>()
+            for (data in result.children) {
+                var user: UserModel = data.getValue(UserModel::class.java)!!
+                users.add(user)
+            }
+
+            if (users.size > 0) {
+                val random = (0..users.size).random()
+                SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+                        .setTitleText("คำเตือน ?")
+                        .setContentText("ต้องการโทรแบบ Sos ใช่หรือไม่")
+                        .setCancelText("ไม่")
+                        .setCancelClickListener { sDialog -> sDialog.cancel() }
+                        .setConfirmText("ใช่")
+                        .setConfirmClickListener { sDialog ->
+                            var telRandom = users[random].telephone
+                            if (!telRandom.isNullOrEmpty()) {
+                                startActivity(Utilities.Other.callTelephone(telRandom))
+                                sDialog.dismissWithAnimation()
+                            }
+                        }
+                        .show()
+            } else {
+                Toast.makeText(this, "ไม่มีข้อมูลอาสา", Toast.LENGTH_SHORT).show()
+            }
+        }.addOnFailureListener{
+            Log.e("firebase", "Error getting data", it)
         }
     }
 
@@ -184,6 +267,7 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun getPosts(getBy: String, value: String) {
+        mSwipeRefreshLayout.isRefreshing = true
         shimmer.startShimmerAnimation()
         when (getBy) {
             ConstValue.getByAll -> {
@@ -225,8 +309,23 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun closeShimmer() {
+        mSwipeRefreshLayout.isRefreshing = false
         shimmer.stopShimmerAnimation()
         shimmer.visibility = View.GONE
         recyclerFeed.visibility = View.VISIBLE
+    }
+
+    override fun onRefresh() {
+        getPosts(ConstValue.getByAll, "")
+    }
+
+    private fun setSwipeRefresh() {
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.post {
+            mSwipeRefreshLayout.isRefreshing = true
+
+            // Fetching data from server
+            getPosts(ConstValue.getByAll, "")
+        }
     }
 }

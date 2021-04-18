@@ -16,7 +16,9 @@ import android.text.Editable
 import android.util.Log
 import android.view.View
 import android.widget.*
+import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.ShimmerFrameLayout
@@ -58,6 +60,7 @@ class CommentActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var btnSpeechToText: ImageButton
     private lateinit var btnSendMessage: ImageButton
     private lateinit var shimmer: ShimmerFrameLayout
+    private lateinit var advice: CardView
     private lateinit var user: UserModel
     private lateinit var postId: String
     private lateinit var dialog: Dialog
@@ -88,6 +91,9 @@ class CommentActivity : AppCompatActivity(), View.OnClickListener {
         btnSpeechToText= findViewById(R.id.btnSpeechToText)
         btnSendMessage= findViewById(R.id.btnSendMessage)
         shimmer = findViewById(R.id.shimmerFrameLayout)
+        advice = findViewById(R.id.advice)
+
+        btnSendMessage.isEnabled = false
 
         btnSpeechToText.setOnClickListener(this)
         btnSendMessage.setOnClickListener(this)
@@ -103,6 +109,10 @@ class CommentActivity : AppCompatActivity(), View.OnClickListener {
 
         if ((intent.getParcelableExtra("User") as? UserModel) != null) {
             user = (intent.getParcelableExtra("User") as? UserModel)!!
+        }
+
+        editComment.doAfterTextChanged {
+            btnSendMessage.isEnabled = editComment.length() > 0
         }
         //endregion On init
     }
@@ -132,6 +142,17 @@ class CommentActivity : AppCompatActivity(), View.OnClickListener {
         ratingUserFeed.rating = postDetail.rating.toFloat()
         categoryFeed.text = postDetail.categorys
         timeStampFeed.text = Utilities.Converter.convertTimeToPostDetails(postDetail.createDate)
+
+        if (postDetail.advice) {
+            advice.visibility = View.VISIBLE
+        }
+
+        if (postDetail.close) {
+            editComment.isEnabled = false
+            editComment.hint = "การช่วยเหลือเสร็จสิ้น"
+            btnSendMessage.isEnabled = false
+            btnSpeechToText.isEnabled = false
+        }
 
         if (postDetail.imageUrl != "") {
             imagePostFeed.visibility = View.VISIBLE
@@ -311,7 +332,7 @@ class CommentActivity : AppCompatActivity(), View.OnClickListener {
         if (!postId.isNullOrEmpty()) {
             shimmer.startShimmerAnimation()
             var database = FirebaseDatabase.getInstance().getReference("Comments")
-            database.get().addOnSuccessListener { result ->
+            database.orderByChild("postDetailId").equalTo(postId).get().addOnSuccessListener { result ->
                 var comments = ArrayList<CommentResponse>()
                 for (data in result.children) {
                     var comment: CommentResponse = data.getValue(CommentResponse::class.java)!!

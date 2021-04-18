@@ -2,6 +2,8 @@ package com.project.help
 
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.text.TextUtils
 import android.util.Patterns
 import cn.pedant.SweetAlert.SweetAlertDialog
@@ -77,6 +79,12 @@ class Utilities {
                 }
             }
             return result
+        }
+    }
+
+    object Other {
+        fun callTelephone(tel: String): Intent {
+            return Intent(Intent.ACTION_CALL, Uri.parse("tel:$tel"))
         }
     }
 }
