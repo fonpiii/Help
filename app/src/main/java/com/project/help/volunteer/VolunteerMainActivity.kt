@@ -3,18 +3,28 @@ package com.project.help.volunteer
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.project.help.ConstValue
 import com.project.help.OtherMenu
 import com.project.help.R
 import com.project.help.disabled.*
-import com.project.help.disabled.model.PostDetails
+import com.project.help.disabled.model.PostAdapter
+import com.project.help.disabled.model.PostDetailsResponse
+import com.project.help.disabled.model.PostItem
+import com.project.help.model.UserModel
 
-class VolunteerMainActivity : AppCompatActivity(), View.OnClickListener {
+class VolunteerMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     //region Global variable
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
@@ -32,6 +42,11 @@ class VolunteerMainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var ratingVolunteerForHelp: RatingBar
     private lateinit var spinnerCategory: Spinner
     private lateinit var recyclerFeed: RecyclerView
+    private lateinit var database: FirebaseDatabase
+    private lateinit var reference: DatabaseReference
+    private lateinit var user: UserModel
+    private lateinit var shimmer: ShimmerFrameLayout
+    private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
     //endregion Global variable
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,6 +65,8 @@ class VolunteerMainActivity : AppCompatActivity(), View.OnClickListener {
         ratingVolunteerForHelp = findViewById(R.id.ratingVolunteerForHelp)
         spinnerCategory = findViewById(R.id.spinnerCategory)
         recyclerFeed = findViewById(R.id.recycler_feed)
+        shimmer = findViewById(R.id.shimmerFrameLayout)
+        mSwipeRefreshLayout = findViewById(R.id.swipe_container)
 
         archiveOfPosts.setOnClickListener(this)
         postsHelped.setOnClickListener(this)
@@ -58,10 +75,13 @@ class VolunteerMainActivity : AppCompatActivity(), View.OnClickListener {
         //region On init
         setMenuBottomSheet()
         setToolbar()
-        setRatingUserHeader()
         setSpinnerCategory()
+        setFirebaseDatabase()
+        setSwipeRefresh()
 
-        getPosts()
+        setHeader()
+        mSwipeRefreshLayout.isRefreshing = false
+        getPosts(ConstValue.getByAll, "")
         //endregion On init
     }
 
@@ -80,6 +100,85 @@ class VolunteerMainActivity : AppCompatActivity(), View.OnClickListener {
                 startActivity(intent)
             }
         }
+    }
+
+    private fun setHeader() {
+        if ((intent.getParcelableExtra("User") as? UserModel) != null) {
+            user = (intent.getParcelableExtra("User") as? UserModel)!!
+            txtFullName.text = user.firstName + " " + user.lastName
+            ratingReqForHelp.rating = user.scoreDisabled.toFloat()
+            ratingVolunteerForHelp.rating = user.scoreVolunteer.toFloat()
+        }
+    }
+
+    override fun onResume() {
+        shimmer.startShimmerAnimation()
+        setHeader()
+        super.onResume()
+    }
+
+    override fun onPause() {
+        shimmer.stopShimmerAnimation()
+        setHeader()
+        super.onPause()
+    }
+
+    private fun setFirebaseDatabase() {
+        database = FirebaseDatabase.getInstance()
+        reference = database.getReference("PostDetails")
+    }
+
+    private fun getPosts(getBy: String, value: String) {
+        shimmer.startShimmerAnimation()
+        when (getBy) {
+            ConstValue.getByAll -> {
+                reference.get().addOnSuccessListener { result ->
+                    setPostDetails(result)
+                }.addOnFailureListener{
+                    Log.e("firebase", "Error getting data", it)
+                }
+            }
+            ConstValue.getByCategory -> {
+                reference.orderByChild("categorys").equalTo(value).get().addOnSuccessListener { result ->
+                    setPostDetails(result)
+                }.addOnFailureListener{
+                    Log.e("firebase", "Error getting data", it)
+                }
+            }
+        }
+    }
+
+    private fun setPostDetails(result: DataSnapshot) {
+        var postDetails = ArrayList<PostDetailsResponse>()
+        for (data in result.children) {
+            var postDetail: PostDetailsResponse = data.getValue(PostDetailsResponse::class.java)!!
+            postDetail.id = data.key.toString()
+            postDetails.add(postDetail)
+        }
+
+        // Sort postDetails by date
+        postDetails.sortByDescending { it.createDate }
+
+        if (postDetails.size != 0) {
+            recyclerFeed.adapter =
+                    PostAdapter(postDetails, user)
+            recyclerFeed.layoutManager = LinearLayoutManager(this)
+            recyclerFeed.setHasFixedSize(true)
+            closeShimmer()
+        } else {
+            closeShimmer()
+        }
+    }
+
+    private fun closeShimmer() {
+        mSwipeRefreshLayout.isRefreshing = false
+        shimmer.stopShimmerAnimation()
+        shimmer.visibility = View.GONE
+        recyclerFeed.visibility = View.VISIBLE
+    }
+
+    override fun onRefresh() {
+        getPosts(ConstValue.getByAll, "")
     }
 
     private fun setMenuBottomSheet() {
@@ -115,13 +214,12 @@ class VolunteerMainActivity : AppCompatActivity(), View.OnClickListener {
         iconLeft.visibility = View.INVISIBLE
     }
 
-    private fun setRatingUserHeader() {
-//        ratingReqForHelp.rating = 1.0F
-//        ratingVolunteerForHelp.rating = 5.0F
+    private fun setSwipeRefresh() {
+        mSwipeRefreshLayout.setOnRefreshListener(this);
     }
 
     private fun setSpinnerCategory() {
-        var categories = arrayOf("หมวดหมู่ผู้พิการ", "การมองเห็น", "การได้ยิน", "การเคลื่อนไหวร่างกาย", "สติปัญญา",
+        var categories = arrayOf("ทั้งหมด", "การมองเห็น", "การได้ยิน", "การเคลื่อนไหวร่างกาย", "สติปัญญา",
                 "ออทิสติก", "ผู้สูงอายุ")
 
         var adapter = ArrayAdapter(this, R.layout.color_spinner_layout, categories)
@@ -133,35 +231,12 @@ class VolunteerMainActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                if (p2 == 0) {
+                    getPosts(ConstValue.getByAll, "")
+                } else {
+                    getPosts(ConstValue.getByCategory, categories[p2])
+                }
             }
         }
-    }
-
-    private fun getPosts() {
-        var postList = generateDummyListPost(10)
-
-//        recyclerFeed.adapter = PostAdapter(postList)
-//        recyclerFeed.layoutManager = LinearLayoutManager(this)
-//        recyclerFeed.setHasFixedSize(true)
-    }
-
-    private fun generateDummyListPost(size: Int): ArrayList<PostItem> {
-        val list = ArrayList<PostItem>()
-
-        for (i in 0 until size) {
-            val drawable = when (i % 3) {
-                0 -> R.drawable.privacypolicy
-                1 -> R.drawable.hospital
-                else -> R.drawable.helplogo
-            }
-
-            // Set content feed
-            val item = PostItem(drawable, "User " + (i+1).toString(),
-                    "ช่วยอ่านใบนัดหมอให้ทีครับ", (i+1), 3.0F, 0)
-            list += item
-        }
-        list += PostItem(R.drawable.privacypolicy, "",
-                "", 999999, 3.0F, 0)
-        return list
     }
 }

@@ -154,6 +154,7 @@
                                 android:inputType="textMultiLine"
                                 android:textColorHint="@color/placeholder"
                                 android:textSize="18dp"
+                                android:textColor="@color/black"
                                 android:hint="แสดงความคิดเห็น...">
 
                             </EditText>

@@ -1,22 +1,19 @@
 package com.project.help.disabled
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.*
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.ShimmerFrameLayout
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.project.help.ConstValue
-import com.project.help.OtherMenu
 import com.project.help.R
+import com.project.help.disabled.model.PostAdapter
 import com.project.help.disabled.model.PostDetailsResponse
 import com.project.help.model.UserModel
 
@@ -106,7 +103,8 @@ class ArchiveOfPostsActivity : AppCompatActivity(), View.OnClickListener {
         postDetails.sortByDescending { it.createDate }
 
         if (postDetails.size != 0) {
-            recyclerFeed.adapter = PostAdapter(postDetails, user)
+            recyclerFeed.adapter =
+                PostAdapter(postDetails, user)
             recyclerFeed.layoutManager = LinearLayoutManager(this)
             recyclerFeed.setHasFixedSize(true)
             closeShimmer()

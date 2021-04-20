@@ -106,7 +106,9 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                                 startActivity(intent)
                                 finishAffinity()
                             } else if (user!!.userType == ConstValue.UserType_Volunteer) {
-                                startActivity(Intent(this, VolunteerMainActivity::class.java))
+                                var intent = Intent(this, VolunteerMainActivity::class.java)
+                                intent.putExtra("User", user)
+                                startActivity(intent)
                                 finishAffinity()
                             }
                         }.addOnFailureListener{

@@ -1,4 +1,4 @@
-package com.project.help.disabled
+package com.project.help.disabled.model
 
 import android.content.Context
 import android.content.Intent
@@ -13,23 +13,26 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.database.FirebaseDatabase
 import com.project.help.CommentActivity
+import com.project.help.ConstValue
 import com.project.help.R
 import com.project.help.Utilities
-import com.project.help.disabled.model.PostDetailsResponse
+import com.project.help.disabled.SaveScoreActivity
 import com.project.help.model.UserModel
 import com.squareup.picasso.Picasso
 import java.io.IOException
 
-
-class PostAdapter(private val postList: List<PostDetailsResponse>, private val user: UserModel) : RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
+class ThankYouAdapter(private val postList: List<PostDetailsResponse>, private val user: UserModel) : RecyclerView.Adapter<ThankYouAdapter.PostViewHolder>() {
 
     private lateinit var holderMaster: PostViewHolder
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.content_feed,
+        val itemView = LayoutInflater.from(parent.context).inflate(
+            R.layout.thankyou_feed,
             parent, false)
 
-        return PostViewHolder(itemView)
+        return PostViewHolder(
+            itemView
+        )
     }
 
     override fun getItemCount() = postList.size
@@ -37,31 +40,43 @@ class PostAdapter(private val postList: List<PostDetailsResponse>, private val u
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
         var currentItem = postList[position]
 
-        var count = 0
-        var database = FirebaseDatabase.getInstance().getReference("Comments")
-        database.orderByChild("postDetailId").equalTo(currentItem.id).get().addOnSuccessListener { result ->
-            for (data in result.children) {
-                count++
-            }
-            holder.countCommentFeed.text = count.toString()
-        }.addOnFailureListener{
-            Log.e("firebase", "Error getting data", it)
+        if (currentItem.close) {
+            holder.layoutStatusHelp.visibility = View.VISIBLE
+            holder.layoutNotHelp.visibility = View.GONE
+        } else {
+            holder.layoutStatusHelp.visibility = View.GONE
+            holder.layoutNotHelp.visibility = View.VISIBLE
         }
 
         if (currentItem.advice) {
             holder.itemAdvice.visibility = View.VISIBLE
         }
 
+        var databaseRating = FirebaseDatabase.getInstance().getReference("User")
+        databaseRating.orderByKey().equalTo(currentItem.createBy).get().addOnSuccessListener { result ->
+            var userRating = UserModel()
+            for (data in result.children) {
+                userRating = data.getValue(UserModel::class.java)!!
+            }
+            if (userRating.userType == ConstValue.UserType_Disabled) {
+                holder.ratingUserFeed.rating = userRating.scoreDisabled.toFloat()
+            } else if (userRating.userType == ConstValue.UserType_Volunteer) {
+                holder.ratingUserFeed.rating = userRating.scoreVolunteer.toFloat()
+            }
+
+        }.addOnFailureListener{
+            Log.e("firebase", "Error getting data", it)
+        }
+
 //        holder.imageProfileFeed.setImageResource(currentItem.imageProfile)
         holder.imageProfileFeed.setImageResource(R.drawable.helplogo)
         holder.txtUsernameFeed.text = currentItem.firstName + " " + currentItem.lastName
         holder.postDetailFeed.text = currentItem.postDesc
-        holder.ratingUserFeed.rating = currentItem.rating.toFloat()
         holder.categoryFeed.text = currentItem.categorys
         holder.timeStampFeed.text = Utilities.Converter.convertTimeToPostDetails(currentItem.createDate)
 
-        holder.commentLayout.setOnClickListener(View.OnClickListener {
-            var intent = Intent(holder.context, CommentActivity::class.java)
+        holder.btnAssignScore.setOnClickListener(View.OnClickListener {
+            var intent = Intent(holder.context, SaveScoreActivity::class.java)
             intent.putExtra("PostDetailId", currentItem.id)
             intent.putExtra("User", user)
             holder.context?.startActivity(intent)
@@ -181,7 +196,6 @@ class PostAdapter(private val postList: List<PostDetailsResponse>, private val u
         val imageProfileFeed: ImageView = itemView.findViewById(R.id.imgProfile_Feed)
         val txtUsernameFeed: TextView = itemView.findViewById(R.id.txtUsername_Feed)
         val postDetailFeed: TextView = itemView.findViewById(R.id.postDetail_Feed)
-        val countCommentFeed: TextView = itemView.findViewById(R.id.countComment_Feed)
         val ratingUserFeed: RatingBar = itemView.findViewById(R.id.ratingUser_Feed)
         val imagePostFeed: ImageView = itemView.findViewById(R.id.imgPostDetail_Feed)
         val videoPostFeed: VideoView = itemView.findViewById(R.id.videoPostDetail_Feed)
@@ -190,8 +204,10 @@ class PostAdapter(private val postList: List<PostDetailsResponse>, private val u
         val cardAudio: LinearLayout = itemView.findViewById(R.id.cardAudio_Feed)
         val seekBar: SeekBar = itemView.findViewById(R.id.seekBar_Feed)
         val imgViewPlay: ImageView = itemView.findViewById(R.id.imgViewPlay_Feed)
-        val commentLayout: LinearLayout = itemView.findViewById(R.id.commentLayout_Feed)
         val itemAdvice: CardView = itemView.findViewById(R.id.itemAdvice)
+        val btnAssignScore: Button = itemView.findViewById(R.id.btnAssignScore)
+        val layoutNotHelp: GridLayout = itemView.findViewById(R.id.layoutNotHelp)
+        val layoutStatusHelp: LinearLayout = itemView.findViewById(R.id.statusHelp)
         val context: Context? = itemView.context
         var lastProgress = 0
         var isPlaying = false

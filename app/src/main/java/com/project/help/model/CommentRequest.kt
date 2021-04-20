@@ -15,6 +15,7 @@ data class CommentRequest(
         var commentDesc: String?,
         var postDetailId: String?,
         var rating: Double?,
+        var scorePost: Double?,
         var createDate: MutableMap<String, String> = ServerValue.TIMESTAMP,
         var createBy: String?,
         var updateDate: MutableMap<String, String> = ServerValue.TIMESTAMP,

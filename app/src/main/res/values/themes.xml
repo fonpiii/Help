@@ -29,6 +29,12 @@
         <item name="android:maxHeight">16dip</item>
     </style>
 
+    <style name="AssignRatingBar" parent="@android:style/Widget.RatingBar">
+        <item name="android:progressDrawable">@drawable/save_score_ratingbar</item>
+        <item name="android:minHeight">32dip</item>
+        <item name="android:maxHeight">32dip</item>
+    </style>
+
     <style name="MyRatingBar_Feed" parent="@android:style/Widget.RatingBar">
         <item name="android:progressDrawable">@drawable/my_ratingbar</item>
         <item name="android:height">5dp</item>

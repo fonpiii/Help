@@ -24,6 +24,7 @@ import com.project.help.ConstValue
 import com.project.help.OtherMenu
 import com.project.help.R
 import com.project.help.Utilities
+import com.project.help.disabled.model.PostAdapter
 import com.project.help.disabled.model.PostDetailsResponse
 import com.project.help.model.UserModel
 
@@ -38,6 +39,7 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRef
     private lateinit var txtUserType: TextView
     private lateinit var otherMenu: CardView
     private lateinit var oldPost: CardView
+    private lateinit var thankYouNote: CardView
     private lateinit var archiveOfPosts: CardView
     private lateinit var iconLeft: ImageView
     private lateinit var ratingReqForHelp: RatingBar
@@ -64,6 +66,7 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRef
         txtUserType = findViewById(R.id.txtUserType)
         otherMenu = findViewById(R.id.otherMenu)
         oldPost = findViewById(R.id.oldPost)
+        thankYouNote = findViewById(R.id.thankYouNote)
         archiveOfPosts = findViewById(R.id.archiveOfPosts)
         ratingReqForHelp = findViewById(R.id.ratingReqForHelp)
         ratingVolunteerForHelp = findViewById(R.id.ratingVolunteerForHelp)
@@ -79,6 +82,7 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRef
         otherMenu.setOnClickListener(this)
         btnPost.setOnClickListener(this)
         btnSos.setOnClickListener(this)
+        thankYouNote.setOnClickListener(this)
 
         //region On init
         setMenuBottomSheet()
@@ -89,17 +93,20 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRef
 
 //        val postDetail = intent.getSerializableExtra("PostDetail") as? PostDetailsModel
         setHeader()
+        mSwipeRefreshLayout.isRefreshing = false
         getPosts(ConstValue.getByAll, "")
         //endregion On init
     }
 
     override fun onResume() {
-        super.onResume()
         shimmer.startShimmerAnimation()
+        setHeader()
+        super.onResume()
     }
 
     override fun onPause() {
         shimmer.stopShimmerAnimation()
+        setHeader()
         super.onPause()
     }
 
@@ -121,6 +128,13 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRef
         when (v.id) {
             R.id.archiveOfPosts ->  {
                 val intent = Intent(this, ArchiveOfPostsActivity::class.java)
+                if (user != null) {
+                    intent.putExtra("User", user)
+                }
+                startActivity(intent)
+            }
+            R.id.thankYouNote -> {
+                val intent = Intent(this, ThankYouNoteActivity::class.java)
                 if (user != null) {
                     intent.putExtra("User", user)
                 }
@@ -267,7 +281,6 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRef
     }
 
     private fun getPosts(getBy: String, value: String) {
-        mSwipeRefreshLayout.isRefreshing = true
         shimmer.startShimmerAnimation()
         when (getBy) {
             ConstValue.getByAll -> {
@@ -298,14 +311,11 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRef
         // Sort postDetails by date
         postDetails.sortByDescending { it.createDate }
 
-        if (postDetails.size != 0) {
-            recyclerFeed.adapter = PostAdapter(postDetails, user)
-            recyclerFeed.layoutManager = LinearLayoutManager(this)
-            recyclerFeed.setHasFixedSize(true)
-            closeShimmer()
-        } else {
-            closeShimmer()
-        }
+        recyclerFeed.adapter =
+                PostAdapter(postDetails, user)
+        recyclerFeed.layoutManager = LinearLayoutManager(this)
+        recyclerFeed.setHasFixedSize(true)
+        closeShimmer()
     }
 
     private fun closeShimmer() {
@@ -321,11 +331,5 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRef
 
     private fun setSwipeRefresh() {
         mSwipeRefreshLayout.setOnRefreshListener(this);
-        mSwipeRefreshLayout.post {
-            mSwipeRefreshLayout.isRefreshing = true
-
-            // Fetching data from server
-            getPosts(ConstValue.getByAll, "")
-        }
     }
 }
