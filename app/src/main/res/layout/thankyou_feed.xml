@@ -319,6 +319,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/txtAssignScore"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="ให้คะแนนอาสาช่วยเหลือ \n เมื่อได้รับการช่วยเหลือเรียบร้อยแล้ว"
@@ -376,6 +377,7 @@
             android:gravity="center">
 
             <TextView
+                android:id="@+id/txtStatusHelp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="10dp"

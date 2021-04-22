@@ -16,8 +16,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Help">
         <activity
-            android:name=".disabled.SaveScoreActivity"
-            android:theme="@style/Theme.Help.NoActionBar"></activity>
+            android:name=".volunteer.SaveScoreVolunteerActivity"
+            android:theme="@style/Theme.Help.NoActionBar"
+            ></activity>
+        <activity
+            android:name=".volunteer.AssignScoreActivity"
+            android:theme="@style/Theme.Help.NoActionBar" />
+        <activity
+            android:name=".volunteer.PostHelpActivity"
+            android:theme="@style/Theme.Help.NoActionBar" />
+        <activity
+            android:name=".disabled.SaveScoreDisabledActivity"
+            android:theme="@style/Theme.Help.NoActionBar" />
         <activity
             android:name=".disabled.ThankYouNoteActivity"
             android:theme="@style/Theme.Help.NoActionBar" />

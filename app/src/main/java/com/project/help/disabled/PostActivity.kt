@@ -367,7 +367,8 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK && requestCode == pickImage) {
             val selectedMediaUri = data!!.data
-            if (selectedMediaUri.toString().contains("image")) {
+            val test = selectedMediaUri.toString()
+            if (selectedMediaUri.toString().contains("image") || selectedMediaUri.toString().contains("Camera")) {
                 layout_imagePost.visibility = View.VISIBLE
                 imageUri = data?.data
                 imagePost.setImageURI(imageUri)

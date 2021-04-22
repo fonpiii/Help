@@ -17,6 +17,7 @@ data class CommentResponse(
         var postDetailId: String = "",
         var rating: Double = 0.0,
         var scorePost: Double = 0.0,
+        var userType: String = "",
         var createDate: Long = 0,
         var createBy: String = "",
         var updateDate: Long = 0,

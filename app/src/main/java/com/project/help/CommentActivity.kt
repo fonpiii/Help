@@ -26,10 +26,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
 import com.project.help.disabled.model.PostDetailsResponse
-import com.project.help.model.CommentAdapter
-import com.project.help.model.CommentRequest
-import com.project.help.model.CommentResponse
-import com.project.help.model.UserModel
+import com.project.help.model.*
 import com.squareup.picasso.Picasso
 import java.io.IOException
 import java.util.*
@@ -314,14 +311,42 @@ class CommentActivity : AppCompatActivity(), View.OnClickListener {
         var commentModel = CommentRequest(user.firstName!!, user.lastName!!, user.profileUrl!!,
                 "", "", "", "", "",
                 "", editComment.text.toString(), postId, user.scoreDisabled, 0.0,
-                ServerValue.TIMESTAMP, user.userId, ServerValue.TIMESTAMP, user.userId)
+                user.userType, ServerValue.TIMESTAMP, user.userId, ServerValue.TIMESTAMP, user.userId)
         var id = database.push().key
         database.child(id!!).setValue(commentModel).addOnCompleteListener {
-            getComments()
-            editComment.text = null
-            dialog.dismiss()
-            getComments()
+            if (user.userType == ConstValue.UserType_Volunteer) {
+                pushPostHelp()
+            } else if (user.userType == ConstValue.UserType_Disabled) {
+                refreshComment()
+            }
         }
+    }
+
+    private fun pushPostHelp() {
+        var database = FirebaseDatabase.getInstance().getReference("PostHelp")
+        if (!postId.isNullOrEmpty()) {
+            database.orderByChild("postDetailId").equalTo(postId).get().addOnSuccessListener {
+                var postHelp = PostHelpResponse()
+                for (data in it.children) {
+                    postHelp = data.getValue(PostHelpResponse::class.java)!!
+                }
+                if (postHelp.postDetailId == "") {
+                    var postHelpModel = PostHelpRequest(postId, false, user.userId!!)
+                    var id = database.push().key
+                    database.child(id!!).setValue(postHelpModel).addOnCompleteListener {
+                        refreshComment()
+                    }
+                } else {
+                    refreshComment()
+                }
+            }
+        }
+    }
+
+    private fun refreshComment() {
+        editComment.text = null
+        dialog.dismiss()
+        getComments()
     }
 
     private fun getComments() {

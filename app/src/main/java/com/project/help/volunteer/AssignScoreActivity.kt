@@ -1,10 +1,9 @@
-package com.project.help.disabled
+package com.project.help.volunteer
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Button
 import android.widget.ImageView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,12 +13,12 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.project.help.ConstValue
 import com.project.help.R
-import com.project.help.disabled.model.PostAdapter
 import com.project.help.disabled.model.PostDetailsResponse
 import com.project.help.disabled.model.ThankYouAdapter
+import com.project.help.model.PostHelpResponse
 import com.project.help.model.UserModel
 
-class ThankYouNoteActivity : AppCompatActivity(), View.OnClickListener {
+class AssignScoreActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var recyclerFeed: RecyclerView
     private lateinit var iconLeft: ImageView
@@ -30,7 +29,7 @@ class ThankYouNoteActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_thank_you_note)
+        setContentView(R.layout.activity_assign_score)
 
         recyclerFeed = findViewById(R.id.recycler_feed)
         shimmer = findViewById(R.id.shimmerFrameLayout)
@@ -79,7 +78,7 @@ class ThankYouNoteActivity : AppCompatActivity(), View.OnClickListener {
         shimmer.startShimmerAnimation()
         when (getBy) {
             ConstValue.getById -> {
-                reference.orderByChild("createBy").equalTo(user.userId).get().addOnSuccessListener { result ->
+                reference.get().addOnSuccessListener { result ->
                     setPostDetails(result)
                 }.addOnFailureListener{
                     Log.e("firebase", "Error getting data", it)
@@ -93,19 +92,34 @@ class ThankYouNoteActivity : AppCompatActivity(), View.OnClickListener {
         for (data in result.children) {
             var postDetail: PostDetailsResponse = data.getValue(PostDetailsResponse::class.java)!!
             postDetail.id = data.key.toString()
-            postDetails.add(postDetail)
+            if (postDetail.close) {
+                postDetails.add(postDetail)
+            }
         }
 
-        // Sort postDetails by date
-        postDetails.sortByDescending { it.createDate }
+        var database = FirebaseDatabase.getInstance().getReference("PostHelp")
+        database.orderByChild("userId").equalTo(user.userId).get().addOnSuccessListener { it ->
+            var postHelps = java.util.ArrayList<PostHelpResponse>()
+            for (data in it.children) {
+                var postHelp: PostHelpResponse = data.getValue(PostHelpResponse::class.java)!!
+                postHelps.add(postHelp)
+            }
+            var resultPostHelp = ArrayList<PostDetailsResponse>()
+            if (postHelps.size > 0) {
+                for (data in postHelps) {
+                    var index = postDetails.indexOfFirst  { it.id == data.postDetailId }
+                    if (index != -1) {
+                        resultPostHelp.add(postDetails[index])
+                    }
+                }
+                // Sort postDetails by date
+                resultPostHelp.sortByDescending { it.createDate }
 
-        if (postDetails.size != 0) {
-            recyclerFeed.adapter = ThankYouAdapter(postDetails, user)
-            recyclerFeed.layoutManager = LinearLayoutManager(this)
-            recyclerFeed.setHasFixedSize(true)
-            closeShimmer()
-        } else {
-            closeShimmer()
+                recyclerFeed.adapter = ThankYouAdapter(resultPostHelp, user)
+                recyclerFeed.layoutManager = LinearLayoutManager(this)
+                recyclerFeed.setHasFixedSize(true)
+                closeShimmer()
+            }
         }
     }
 

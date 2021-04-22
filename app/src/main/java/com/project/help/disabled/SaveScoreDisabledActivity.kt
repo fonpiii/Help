@@ -12,13 +12,14 @@ import cn.pedant.SweetAlert.SweetAlertDialog
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.project.help.ConstValue
 import com.project.help.R
 import com.project.help.model.CommentAdapter
 import com.project.help.model.CommentResponse
 import com.project.help.model.UserModel
 import java.util.ArrayList
 
-class SaveScoreActivity : AppCompatActivity(), View.OnClickListener {
+class SaveScoreDisabledActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var iconLeft: ImageView
     private lateinit var database: FirebaseDatabase
@@ -31,7 +32,7 @@ class SaveScoreActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_save_score)
+        setContentView(R.layout.activity_save_score_disabled)
 
         shimmer = findViewById(R.id.shimmerFrameLayout)
         recyclerFeed = findViewById(R.id.recycler_feed)
@@ -66,7 +67,7 @@ class SaveScoreActivity : AppCompatActivity(), View.OnClickListener {
                 var comments = ArrayList<CommentResponse>()
                 for (data in result.children) {
                     var comment: CommentResponse = data.getValue(CommentResponse::class.java)!!
-                    if (comment.createBy != user.userId) {
+                    if (comment.createBy != user.userId && comment.userType == ConstValue.UserType_Volunteer) {
                         comment.id = data.key.toString()
                         comments.add(comment)
                     }

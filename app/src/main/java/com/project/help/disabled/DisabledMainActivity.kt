@@ -27,6 +27,7 @@ import com.project.help.Utilities
 import com.project.help.disabled.model.PostAdapter
 import com.project.help.disabled.model.PostDetailsResponse
 import com.project.help.model.UserModel
+import com.project.help.volunteer.VolunteerMainActivity
 
 
 class DisabledMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
@@ -41,6 +42,7 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRef
     private lateinit var oldPost: CardView
     private lateinit var thankYouNote: CardView
     private lateinit var archiveOfPosts: CardView
+    private lateinit var switchVolunteer: CardView
     private lateinit var iconLeft: ImageView
     private lateinit var ratingReqForHelp: RatingBar
     private lateinit var ratingVolunteerForHelp: RatingBar
@@ -68,6 +70,7 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRef
         oldPost = findViewById(R.id.oldPost)
         thankYouNote = findViewById(R.id.thankYouNote)
         archiveOfPosts = findViewById(R.id.archiveOfPosts)
+        switchVolunteer = findViewById(R.id.switchVolunteer)
         ratingReqForHelp = findViewById(R.id.ratingReqForHelp)
         ratingVolunteerForHelp = findViewById(R.id.ratingVolunteerForHelp)
         spinnerCategory = findViewById(R.id.spinnerCategory)
@@ -83,6 +86,7 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRef
         btnPost.setOnClickListener(this)
         btnSos.setOnClickListener(this)
         thankYouNote.setOnClickListener(this)
+        switchVolunteer.setOnClickListener(this)
 
         //region On init
         setMenuBottomSheet()
@@ -140,6 +144,9 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRef
                 }
                 startActivity(intent)
             }
+            R.id.switchVolunteer -> {
+                switchVolunteer()
+            }
             R.id.oldPost -> {
                 val intent = Intent(this, OldPostActivity::class.java)
                 if (user != null) {
@@ -164,6 +171,27 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRef
                 }
             }
         }
+    }
+
+    private fun switchVolunteer() {
+        SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+            .setTitleText("คำเตือน ?")
+            .setContentText("ต้องการเปลี่ยนเป็นอาสา ใช่หรือไม่")
+            .setCancelText("ไม่")
+            .setCancelClickListener { sDialog -> sDialog.cancel() }
+            .setConfirmText("ใช่")
+            .setConfirmClickListener { sDialog ->
+                var databaseUser= FirebaseDatabase.getInstance().getReference("User")
+                databaseUser.child(user.userId.toString()).child("userType").setValue(ConstValue.UserType_Volunteer).addOnSuccessListener {
+                    user.userType = ConstValue.UserType_Volunteer
+                    var intent = Intent(this, VolunteerMainActivity::class.java)
+                    intent.putExtra("User", user)
+                    sDialog.dismissWithAnimation()
+                    startActivity(intent)
+                    finishAffinity()
+                }
+            }
+            .show()
     }
 
     private fun getPermissionToTelephone(telephoneRequestCode: Int) {

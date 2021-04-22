@@ -12,12 +12,13 @@ import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.database.FirebaseDatabase
-import com.project.help.CommentActivity
 import com.project.help.ConstValue
 import com.project.help.R
 import com.project.help.Utilities
-import com.project.help.disabled.SaveScoreActivity
+import com.project.help.disabled.SaveScoreDisabledActivity
+import com.project.help.model.PostHelpResponse
 import com.project.help.model.UserModel
+import com.project.help.volunteer.SaveScoreVolunteerActivity
 import com.squareup.picasso.Picasso
 import java.io.IOException
 
@@ -39,13 +40,35 @@ class ThankYouAdapter(private val postList: List<PostDetailsResponse>, private v
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
         var currentItem = postList[position]
+        var postHelp = PostHelpResponse()
 
-        if (currentItem.close) {
-            holder.layoutStatusHelp.visibility = View.VISIBLE
-            holder.layoutNotHelp.visibility = View.GONE
-        } else {
-            holder.layoutStatusHelp.visibility = View.GONE
-            holder.layoutNotHelp.visibility = View.VISIBLE
+        if (user.userType == ConstValue.UserType_Disabled) {
+            if (currentItem.close) {
+                holder.layoutStatusHelp.visibility = View.VISIBLE
+                holder.layoutNotHelp.visibility = View.GONE
+            } else {
+                holder.layoutStatusHelp.visibility = View.GONE
+                holder.layoutNotHelp.visibility = View.VISIBLE
+            }
+        } else if (user.userType == ConstValue.UserType_Volunteer) {
+            holder.txtAssignScore.text = "ให้คะแนนผู้ขอความช่วยเหลือ \n เมื่อได้รับการช่วยเหลือเรียบร้อยแล้ว"
+            holder.btnAssignScore.text = "ให้คะแนน"
+
+            var dbAssignScore = FirebaseDatabase.getInstance().getReference("PostHelp")
+            dbAssignScore.orderByChild("postDetailId").equalTo(currentItem.id).get().addOnSuccessListener { result ->
+                for (data in result.children) {
+                    postHelp = data.getValue(PostHelpResponse::class.java)!!
+                    postHelp.id = data.key.toString()
+                }
+                if (postHelp.assignScore) {
+                    holder.layoutStatusHelp.visibility = View.VISIBLE
+                    holder.layoutNotHelp.visibility = View.GONE
+                    holder.txtStatusHelp.text = "สถานะ : ให้คะแนนแล้ว"
+                }
+
+            }.addOnFailureListener{
+                Log.e("firebase", "Error getting data", it)
+            }
         }
 
         if (currentItem.advice) {
@@ -76,10 +99,19 @@ class ThankYouAdapter(private val postList: List<PostDetailsResponse>, private v
         holder.timeStampFeed.text = Utilities.Converter.convertTimeToPostDetails(currentItem.createDate)
 
         holder.btnAssignScore.setOnClickListener(View.OnClickListener {
-            var intent = Intent(holder.context, SaveScoreActivity::class.java)
-            intent.putExtra("PostDetailId", currentItem.id)
-            intent.putExtra("User", user)
-            holder.context?.startActivity(intent)
+            if (user.userType == ConstValue.UserType_Disabled) {
+                var intent = Intent(holder.context, SaveScoreDisabledActivity::class.java)
+                intent.putExtra("PostDetailId", currentItem.id)
+                intent.putExtra("User", user)
+                holder.context?.startActivity(intent)
+            } else if (user.userType == ConstValue.UserType_Volunteer) {
+                var intent = Intent(holder.context, SaveScoreVolunteerActivity::class.java)
+                intent.putExtra("PostUserId", currentItem.createBy)
+                intent.putExtra("PostHelpId", postHelp.id)
+                intent.putExtra("PostDetailId", currentItem.id)
+                intent.putExtra("User", user)
+                holder.context?.startActivity(intent)
+            }
         })
 
         if (currentItem.imageUrl != "") {
@@ -208,6 +240,8 @@ class ThankYouAdapter(private val postList: List<PostDetailsResponse>, private v
         val btnAssignScore: Button = itemView.findViewById(R.id.btnAssignScore)
         val layoutNotHelp: GridLayout = itemView.findViewById(R.id.layoutNotHelp)
         val layoutStatusHelp: LinearLayout = itemView.findViewById(R.id.statusHelp)
+        val txtAssignScore: TextView = itemView.findViewById(R.id.txtAssignScore)
+        val txtStatusHelp: TextView = itemView.findViewById(R.id.txtStatusHelp)
         val context: Context? = itemView.context
         var lastProgress = 0
         var isPlaying = false

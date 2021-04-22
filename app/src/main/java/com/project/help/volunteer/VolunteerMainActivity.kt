@@ -10,6 +10,7 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import cn.pedant.SweetAlert.SweetAlertDialog
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.database.DataSnapshot
@@ -36,7 +37,7 @@ class VolunteerMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRe
     private lateinit var otherMenu: CardView
     private lateinit var rating: CardView
     private lateinit var postsHelped: CardView
-    private lateinit var disabled: CardView
+    private lateinit var switchDisabled: CardView
     private lateinit var archiveOfPosts: CardView
     private lateinit var ratingReqForHelp: RatingBar
     private lateinit var ratingVolunteerForHelp: RatingBar
@@ -58,7 +59,7 @@ class VolunteerMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRe
         txtUserType = findViewById(R.id.txtUserType)
         otherMenu = findViewById(R.id.otherMenu)
         rating = findViewById(R.id.rating)
-        disabled = findViewById(R.id.disabled)
+        switchDisabled = findViewById(R.id.switchDisabled)
         postsHelped = findViewById(R.id.postsHelped)
         archiveOfPosts = findViewById(R.id.archiveOfPosts)
         ratingReqForHelp = findViewById(R.id.ratingReqForHelp)
@@ -71,6 +72,8 @@ class VolunteerMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRe
         archiveOfPosts.setOnClickListener(this)
         postsHelped.setOnClickListener(this)
         otherMenu.setOnClickListener(this)
+        rating.setOnClickListener(this)
+        switchDisabled.setOnClickListener(this)
 
         //region On init
         setMenuBottomSheet()
@@ -89,10 +92,26 @@ class VolunteerMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRe
         when (v.id) {
             R.id.archiveOfPosts ->  {
                 val intent = Intent(this, ArchiveOfPostsActivity::class.java)
+                if (user != null) {
+                    intent.putExtra("User", user)
+                }
                 startActivity(intent)
             }
+            R.id.rating -> {
+                val intent = Intent(this, AssignScoreActivity::class.java)
+                if (user != null) {
+                    intent.putExtra("User", user)
+                }
+                startActivity(intent)
+            }
+            R.id.switchDisabled -> {
+                switchDisabled()
+            }
             R.id.postsHelped -> {
-                val intent = Intent(this, OldPostActivity::class.java)
+                val intent = Intent(this, PostHelpActivity::class.java)
+                if (user != null) {
+                    intent.putExtra("User", user)
+                }
                 startActivity(intent)
             }
             R.id.otherMenu -> {
@@ -126,6 +145,27 @@ class VolunteerMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRe
     private fun setFirebaseDatabase() {
         database = FirebaseDatabase.getInstance()
         reference = database.getReference("PostDetails")
+    }
+
+    private fun switchDisabled() {
+        SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+            .setTitleText("คำเตือน ?")
+            .setContentText("ต้องการเปลี่ยนเป็นผู้พิการ ใช่หรือไม่")
+            .setCancelText("ไม่")
+            .setCancelClickListener { sDialog -> sDialog.cancel() }
+            .setConfirmText("ใช่")
+            .setConfirmClickListener { sDialog ->
+                var databaseUser= FirebaseDatabase.getInstance().getReference("User")
+                databaseUser.child(user.userId.toString()).child("userType").setValue(ConstValue.UserType_Disabled).addOnSuccessListener {
+                    user.userType = ConstValue.UserType_Disabled
+                    var intent = Intent(this, DisabledMainActivity::class.java)
+                    intent.putExtra("User", user)
+                    sDialog.dismissWithAnimation()
+                    startActivity(intent)
+                    finishAffinity()
+                }
+            }
+            .show()
     }
 
     private fun getPosts(getBy: String, value: String) {
