@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.google.firebase.database.DatabaseReference
@@ -40,6 +41,10 @@ class CommentAdapter(
     override fun onBindViewHolder(holder: CommentViewHolder, position: Int) {
         var currentItem = commentList[position]
 
+        if (currentItem.firstName + " " + currentItem.lastName == "ผู้พิการ 1") {
+            holder.imageProfileFeed.setImageResource(R.drawable.user)
+        }
+
         if (title == "SaveScore") {
             holder.layoutAssignScore.visibility = View.VISIBLE
             holder.ratingComment.rating = currentItem.scorePost.toFloat()
@@ -51,16 +56,20 @@ class CommentAdapter(
         }
 
         holder.btnAssignScore.setOnClickListener(View.OnClickListener {
-            SweetAlertDialog(holder.context, SweetAlertDialog.WARNING_TYPE)
-                    .setTitleText("คำเตือน ?")
-                    .setContentText("ต้องการให้คะแนนคอมเมนต์นี้ ใช่หรือไม่")
-                    .setCancelText("ไม่")
-                    .setCancelClickListener { sDialog -> sDialog.cancel() }
-                    .setConfirmText("ใช่")
-                    .setConfirmClickListener { sDialog ->
+            val alertDialog = SweetAlertDialog(holder.context, SweetAlertDialog.WARNING_TYPE)
+            alertDialog.titleText = "คำเตือน ?"
+            alertDialog.contentText = "ต้องการให้คะแนนคอมเมนต์นี้"
+            alertDialog.cancelText = "ไม่"
+            alertDialog.setCancelClickListener { sDialog -> sDialog.cancel() }
+            alertDialog.confirmText = "ใช่"
+            alertDialog.setConfirmClickListener { sDialog ->
                         updateScore(holder, currentItem, sDialog, holder.context)
                     }
-                    .show()
+            alertDialog.show()
+            val btnConfirm = alertDialog.findViewById(R.id.confirm_button) as Button
+            btnConfirm.setBackgroundColor(ContextCompat.getColor(holder.context!!, R.color.colorRed))
+            val btnCancel = alertDialog.findViewById(R.id.cancel_button) as Button
+            btnCancel.setBackgroundColor(ContextCompat.getColor(holder.context!!, R.color.lightBlack))
         })
 
         var databaseRating = FirebaseDatabase.getInstance().getReference("User")
@@ -80,7 +89,6 @@ class CommentAdapter(
         }
 
 //        holder.imageProfileFeed.setImageResource(currentItem.imageProfile)
-        holder.imageProfileFeed.setImageResource(R.drawable.helplogo)
         holder.txtUsernameFeed.text = currentItem.firstName + " " + currentItem.lastName
         holder.postDetailFeed.text = currentItem.commentDesc
         holder.timeStampFeed.text = Utilities.Converter.convertTimeToPostDetails(currentItem.createDate)

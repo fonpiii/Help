@@ -43,7 +43,7 @@
                     android:textSize="20dp"
                     android:textColor="@color/black"
                     android:textAlignment="center"
-                    android:text="สร้างโพสต์ขอควมช่วยเหลือ">
+                    android:text="สร้างโพสต์ขอความช่วยเหลือ">
                 </TextView>
 
             </androidx.cardview.widget.CardView>
@@ -83,7 +83,7 @@
                     android:gravity="center">
 
                     <ImageView
-                        android:id="@+id/imgProfile_Feed"
+                        android:id="@+id/imgProfile"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:src="@drawable/helplogo">
@@ -122,6 +122,7 @@
                             android:layout_height="wrap_content"
                             android:text="xxxxx  xxxxxx"
                             android:textColor="@color/black"
+                            android:textStyle="bold"
                             android:textSize="15dp">
 
                         </TextView>
@@ -148,7 +149,7 @@
                                 android:background="@drawable/style_spinner2"
                                 android:popupBackground="@color/lightYellow"
                                 android:paddingHorizontal="7dp"
-                                android:layout_width="150dp">
+                                android:layout_width="190dp">
                             </Spinner>
 
 <!--                            <TextView-->
@@ -166,26 +167,34 @@
                         </androidx.cardview.widget.CardView>
 
                         <androidx.cardview.widget.CardView
+                            android:id="@+id/itemAdvice"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             app:cardCornerRadius="20dp"
                             android:layout_gravity="center"
+                            android:visibility="gone"
                             android:layout_marginStart="8dp"
-                            app:cardBackgroundColor="@color/lightYellow">
+                            app:cardBackgroundColor="@color/lightGray">
 
                             <TextView
-                                android:id="@+id/itemAdvice"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="ขอคำแนะนำ"
-                                android:paddingHorizontal="7dp"
+                                android:layout_marginEnd="17dp"
+                                android:layout_marginStart="5dp"
                                 android:paddingVertical="3dp"
-                                android:visibility="gone"
                                 android:gravity="center"
                                 android:textSize="15dp"
                                 android:textColor="@color/black">
 
                             </TextView>
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="end"
+                                android:layout_marginTop="6dp"
+                                android:src="@drawable/lightbulb"></ImageView>
 
                         </androidx.cardview.widget.CardView>
 
@@ -235,14 +244,14 @@
                     android:paddingStart="15dp"
                     android:visibility="gone"
                     android:orientation="horizontal"
-                    android:gravity="start">
+                    android:gravity="start|center">
 
                     <androidx.cardview.widget.CardView
                         android:layout_width="150dp"
                         android:layout_height="wrap_content"
-                        app:cardCornerRadius="20dp"
+                        app:cardCornerRadius="10dp"
                         android:layout_gravity="center"
-                        app:cardBackgroundColor="@color/lightYellow">
+                        app:cardBackgroundColor="@color/lightGray">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -275,10 +284,10 @@
 
                     <ImageButton
                         android:id="@+id/btnCloseAudio"
-                        android:layout_marginTop="3dp"
                         android:layout_marginStart="5dp"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
+                        android:backgroundTint="@color/white"
                         android:src="@drawable/close">
 
                     </ImageButton>
@@ -457,7 +466,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="load \n audio"
+                                    android:text="Load \n Audio"
                                     android:textSize="25dp"
                                     android:textColor="@color/white"
                                     android:textStyle="bold"
@@ -592,7 +601,7 @@
                             android:id="@+id/btnCancelAudio"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:backgroundTint="@color/white"
+                            android:backgroundTint="@color/lightYellow"
                             android:src="@drawable/close">
 
                         </ImageButton>
@@ -606,7 +615,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:gravity="center_horizontal"
-                        android:textColor="@android:color/darker_gray"
+                        android:textColor="@android:color/black"
                         android:textSize="50sp" />
 
                     <!--        <LinearLayout-->

@@ -25,6 +25,7 @@ import android.webkit.MimeTypeMap
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import cn.pedant.SweetAlert.SweetAlertDialog
@@ -48,6 +49,7 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
 
     //region Global variable
     private lateinit var iconLeft: ImageView
+    private lateinit var imgProfile: ImageView
     private lateinit var editPost: EditText
     private lateinit var txtUsername: TextView
     private lateinit var btnPost: TextView
@@ -55,7 +57,7 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var btnImgGallery: LinearLayout
     private lateinit var btnAudio: LinearLayout
     private lateinit var btnSpeechToText: LinearLayout
-    private lateinit var itemAdvice: TextView
+    private lateinit var itemAdvice: CardView
     private lateinit var layout_imagePost: LinearLayout
     private lateinit var layout_videoPost: LinearLayout
     private lateinit var imagePost: ImageView
@@ -94,7 +96,7 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var user: UserModel
     private lateinit var categorySelected: String
     private lateinit var dialog: Dialog
-    var categories = arrayOf("หมวดหมู่ผู้พิการ", "การมองเห็น", "การได้ยิน", "การเคลื่อนไหวร่างกาย", "สติปัญญา",
+    var categories = arrayOf("เลือกหมวดหมู่ผู้พิการ", "การมองเห็น", "การได้ยิน", "การเคลื่อนไหวร่างกาย", "สติปัญญา",
             "ออทิสติก", "ผู้สูงอายุ")
     //endregion Global variable
 
@@ -104,6 +106,7 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
 
         //region Set variable
         editPost = findViewById(R.id.editPost_Post)
+        imgProfile = findViewById(R.id.imgProfile)
         btnPost = findViewById(R.id.btnPost_Post)
         txtUsername = findViewById(R.id.txtUsername_Feed)
         btnIsAdvice = findViewById(R.id.btnIsAdvice)
@@ -175,6 +178,9 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
     private fun setUser() {
         if ((intent.getParcelableExtra("User") as? UserModel) != null) {
             user = (intent.getParcelableExtra("User") as? UserModel)!!
+            if (user.firstName + " " + user.lastName == "ผู้พิการ 1") {
+                imgProfile.setImageResource(R.drawable.user)
+            }
             txtUsername.text = user.firstName + " " + user.lastName
         }
     }
@@ -189,7 +195,7 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
                     if (categorySelected == categories[0]) {
                         Utilities.Alert.alertDialog("กรุณาเลือกหมวดหมู่ผู้พิการ", SweetAlertDialog.ERROR_TYPE, this)
                     } else {
-                        dialog = Utilities.Alert.loadingDialog(this, "กำลังโพส")
+                        dialog = Utilities.Alert.loadingDialog(this, "กำลังโพสต์")
                         dialog.apply { show() }
                         saveVideoToDb()
                     }
@@ -367,12 +373,11 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK && requestCode == pickImage) {
             val selectedMediaUri = data!!.data
-            val test = selectedMediaUri.toString()
-            if (selectedMediaUri.toString().contains("image") || selectedMediaUri.toString().contains("Camera")) {
+            if (selectedMediaUri.toString().contains("image") || selectedMediaUri.toString().contains(".jpg")) {
                 layout_imagePost.visibility = View.VISIBLE
                 imageUri = data?.data
                 imagePost.setImageURI(imageUri)
-            } else if (selectedMediaUri.toString().contains("video")) {
+            } else if (selectedMediaUri.toString().contains("video") || selectedMediaUri.toString().contains(".mp4")) {
                 mediaController = MediaController(this)
                 videoPost.setMediaController(mediaController)
                 mediaController.setAnchorView(videoPost)

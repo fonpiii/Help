@@ -40,6 +40,10 @@ class PostAdapter(private val postList: List<PostDetailsResponse>, private val u
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
         var currentItem = postList[position]
 
+        if (currentItem.firstName + " " + currentItem.lastName == "ผู้พิการ 1") {
+            holder.imageProfileFeed.setImageResource(R.drawable.user)
+        }
+
         var count = 0
         var database = FirebaseDatabase.getInstance().getReference("Comments")
         database.orderByChild("postDetailId").equalTo(currentItem.id).get().addOnSuccessListener { result ->
@@ -72,7 +76,6 @@ class PostAdapter(private val postList: List<PostDetailsResponse>, private val u
         }
 
 //        holder.imageProfileFeed.setImageResource(currentItem.imageProfile)
-        holder.imageProfileFeed.setImageResource(R.drawable.helplogo)
         holder.txtUsernameFeed.text = currentItem.firstName + " " + currentItem.lastName
         holder.postDetailFeed.text = currentItem.postDesc
         holder.categoryFeed.text = currentItem.categorys

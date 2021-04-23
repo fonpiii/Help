@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.facebook.shimmer.ShimmerFrameLayout
@@ -21,6 +22,8 @@ import java.util.ArrayList
 class SaveScoreVolunteerActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var iconLeft: ImageView
+    private lateinit var toolbar: ImageView
+    private lateinit var imgProfile: ImageView
     private lateinit var txtUsername: TextView
     private lateinit var ratingDisabled: RatingBar
     private lateinit var ratingScore: RatingBar
@@ -38,6 +41,7 @@ class SaveScoreVolunteerActivity : AppCompatActivity(), View.OnClickListener {
         setContentView(R.layout.activity_save_score_volunteer)
 
         btnSaveScore = findViewById(R.id.btnSaveScore)
+        imgProfile = findViewById(R.id.imgProfile)
         txtUsername = findViewById(R.id.txtUsername_Feed)
         ratingDisabled = findViewById(R.id.ratingDisabled)
         ratingScore = findViewById(R.id.ratingScore)
@@ -73,6 +77,8 @@ class SaveScoreVolunteerActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun setToolbar() {
         iconLeft = findViewById(R.id.iconLeft)
+        toolbar = findViewById(R.id.toolbar)
+        toolbar.setImageResource(R.drawable.header_volunteer)
         iconLeft.setOnClickListener(this)
     }
 
@@ -83,6 +89,10 @@ class SaveScoreVolunteerActivity : AppCompatActivity(), View.OnClickListener {
                     userDisabled = data.getValue(UserModel::class.java)!!
                     userDisabled.userId = data.key
                 }
+
+                if (userDisabled.firstName + " " + userDisabled.lastName == "ผู้พิการ 1") {
+                    imgProfile.setImageResource(R.drawable.user)
+                }
                 txtUsername.text = userDisabled.firstName + " " + userDisabled.lastName
                 ratingDisabled.rating = userDisabled.scoreDisabled.toFloat()
             }
@@ -90,12 +100,12 @@ class SaveScoreVolunteerActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun saveScoreToDb() {
-        SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
-            .setTitleText("คำเตือน ?")
-            .setContentText("ยืนยันการให้คะแนน ใช่หรือไม่")
-            .setCancelText("ไม่")
-            .setCancelClickListener { sDialog -> sDialog.cancel() }
-            .setConfirmText("ใช่")
+        val alertDialog = SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+        alertDialog.titleText = "คำเตือน ?"
+        alertDialog.contentText = "ยืนยันการให้คะแนน ใช่หรือไม่"
+        alertDialog.cancelText = "ไม่"
+        alertDialog.setCancelClickListener { sDialog -> sDialog.cancel() }
+        alertDialog.setConfirmText("ใช่")
             .setConfirmClickListener { sDialog ->
                 var score = if (userDisabled.scoreDisabled == 0.0) {
                     ratingScore.rating
@@ -107,14 +117,20 @@ class SaveScoreVolunteerActivity : AppCompatActivity(), View.OnClickListener {
                     var databasePostHelp= FirebaseDatabase.getInstance().getReference("PostHelp")
                     databasePostHelp.child(postHelpId).child("assignScore").setValue(true).addOnSuccessListener {
                         sDialog.dismissWithAnimation()
-                        SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
-                            .setTitleText("ให้คะแนนเสร็จสิ้น")
-                            .show()
-                        finish()
+                        var alert = SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
+                        alert.titleText = "ให้คะแนนเสร็จสิ้น"
+                        alert.setConfirmClickListener {
+                            finish()
+                        }
+                        alert.show()
                     }
                 }
             }
-            .show()
+        alertDialog.show()
+        val btnConfirm = alertDialog.findViewById(R.id.confirm_button) as Button
+        btnConfirm.setBackgroundColor(ContextCompat.getColor(this, R.color.colorRed))
+        val btnCancel = alertDialog.findViewById(R.id.cancel_button) as Button
+        btnCancel.setBackgroundColor(ContextCompat.getColor(this, R.color.lightBlack))
     }
 
     override fun onClick(v: View) {

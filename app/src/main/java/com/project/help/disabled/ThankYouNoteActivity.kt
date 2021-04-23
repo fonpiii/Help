@@ -6,6 +6,8 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.ShimmerFrameLayout
@@ -27,6 +29,8 @@ class ThankYouNoteActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var shimmer: ShimmerFrameLayout
     private lateinit var database: FirebaseDatabase
     private lateinit var reference: DatabaseReference
+    private lateinit var layoutEmpty: LinearLayout
+    private lateinit var layoutIsItem: RelativeLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +38,8 @@ class ThankYouNoteActivity : AppCompatActivity(), View.OnClickListener {
 
         recyclerFeed = findViewById(R.id.recycler_feed)
         shimmer = findViewById(R.id.shimmerFrameLayout)
+        layoutEmpty = findViewById(R.id.layout_Empty)
+        layoutIsItem = findViewById(R.id.layout_IsItem)
 
         //region On init
         setFirebaseDatabase()
@@ -98,6 +104,14 @@ class ThankYouNoteActivity : AppCompatActivity(), View.OnClickListener {
 
         // Sort postDetails by date
         postDetails.sortByDescending { it.createDate }
+
+        layoutEmpty.visibility = View.GONE
+        layoutIsItem.visibility = View.VISIBLE
+
+        if (postDetails.size == 0) {
+            layoutEmpty.visibility = View.VISIBLE
+            layoutIsItem.visibility = View.GONE
+        }
 
         if (postDetails.size != 0) {
             recyclerFeed.adapter = ThankYouAdapter(postDetails, user)

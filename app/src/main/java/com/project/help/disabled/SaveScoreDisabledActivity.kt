@@ -6,6 +6,9 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.RelativeLayout
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cn.pedant.SweetAlert.SweetAlertDialog
@@ -29,6 +32,8 @@ class SaveScoreDisabledActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var btnSaveScore: Button
     private lateinit var user: UserModel
     private lateinit var postId: String
+    private lateinit var layoutEmpty: LinearLayout
+    private lateinit var layoutIsItem: RelativeLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +42,8 @@ class SaveScoreDisabledActivity : AppCompatActivity(), View.OnClickListener {
         shimmer = findViewById(R.id.shimmerFrameLayout)
         recyclerFeed = findViewById(R.id.recycler_feed)
         btnSaveScore = findViewById(R.id.btnSaveScore)
+        layoutEmpty = findViewById(R.id.layout_Empty)
+        layoutIsItem = findViewById(R.id.layout_IsItem)
 
         btnSaveScore.setOnClickListener(this)
 
@@ -79,14 +86,18 @@ class SaveScoreDisabledActivity : AppCompatActivity(), View.OnClickListener {
                 // Sort postDetails by date
                 comments.sortByDescending { it.createDate }
 
-                if (comments.size != 0) {
-                    recyclerFeed.adapter = CommentAdapter(comments, user, "SaveScore")
-                    recyclerFeed.layoutManager = LinearLayoutManager(this)
-                    recyclerFeed.setHasFixedSize(true)
-                    closeShimmer()
-                } else {
-                    closeShimmer()
+                layoutEmpty.visibility = View.GONE
+                layoutIsItem.visibility = View.VISIBLE
+
+                if (comments.size == 0) {
+                    layoutEmpty.visibility = View.VISIBLE
+                    layoutIsItem.visibility = View.GONE
                 }
+
+                recyclerFeed.adapter = CommentAdapter(comments, user, "SaveScore")
+                recyclerFeed.layoutManager = LinearLayoutManager(this)
+                recyclerFeed.setHasFixedSize(true)
+                closeShimmer()
             }.addOnFailureListener{
                 Log.e("firebase", "Error getting data", it)
             }
@@ -105,23 +116,29 @@ class SaveScoreDisabledActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun saveScoreToDb() {
-        SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
-                .setTitleText("คำเตือน ?")
-                .setContentText("ต้องการยืนยันการปิดโพสต์นี้ ใช่หรือไม่")
-                .setCancelText("ไม่")
-                .setCancelClickListener { sDialog -> sDialog.cancel() }
-                .setConfirmText("ใช่")
-                .setConfirmClickListener { sDialog ->
+        val alertDialog = SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+        alertDialog.titleText = "คำเตือน ?"
+        alertDialog.contentText = "ต้องการยืนยันการปิดโพสต์นี้ ใช่หรือไม่"
+        alertDialog.cancelText = "ไม่"
+        alertDialog.setCancelClickListener { sDialog -> sDialog.cancel() }
+        alertDialog.confirmText = "ใช่"
+        alertDialog.setConfirmClickListener { sDialog ->
                     var databaseComment = FirebaseDatabase.getInstance().getReference("PostDetails")
                     databaseComment.child(postId).child("close").setValue(true).addOnSuccessListener {
                         sDialog.dismissWithAnimation()
-                        SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
-                                .setTitleText("ปิดโพสต์เสร็จสิ้น")
-                                .show()
-                        finish()
+                        var alert = SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
+                        alert.titleText = "ปิดโพสต์เสร็จสิ้น"
+                        alert.setConfirmClickListener {
+                            finish()
+                        }
+                        alert.show()
                     }
                 }
-                .show()
+        alertDialog.show()
+        val btnConfirm = alertDialog.findViewById(R.id.confirm_button) as Button
+        btnConfirm.setBackgroundColor(ContextCompat.getColor(this, R.color.colorRed))
+        val btnCancel = alertDialog.findViewById(R.id.cancel_button) as Button
+        btnCancel.setBackgroundColor(ContextCompat.getColor(this, R.color.lightBlack))
     }
 
     override fun onClick(v: View) {

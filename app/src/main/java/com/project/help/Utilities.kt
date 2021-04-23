@@ -55,7 +55,7 @@ class Utilities {
         fun convertTimeToPostDetails(timeStamp: Long): String {
             var result = ""
             val formatterFull = SimpleDateFormat("dd/MM/yyyy HH:mm")
-            val formatterTime = SimpleDateFormat("HH:mm:ss")
+            val formatterTime = SimpleDateFormat("HH:mm")
             val secondApiFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
 
             val currentDate = LocalDate.parse(formatterFull.format(Date()) , secondApiFormat)

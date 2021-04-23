@@ -128,8 +128,10 @@
         </GridLayout>
 
         <RelativeLayout
+            android:id="@+id/layout_IsItem"
             android:layout_width="match_parent"
             android:layout_height="530dp"
+            android:visibility="visible"
             android:layout_marginTop="7dp">
 
             <com.facebook.shimmer.ShimmerFrameLayout
@@ -188,6 +190,34 @@
             </androidx.recyclerview.widget.RecyclerView>
 
         </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_Empty"
+            android:layout_width="match_parent"
+            android:layout_height="530dp"
+            android:gravity="center"
+            android:visibility="gone"
+            android:orientation="vertical"
+            android:layout_marginTop="7dp">
+
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/open_box">
+            </ImageView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="normal"
+                android:textSize="12dp"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/lightBlack"
+                android:text="ยังไม่มีจิตอาสาให้ความช่วยเหลือ">
+
+            </TextView>
+
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/layout_menu_bottom"

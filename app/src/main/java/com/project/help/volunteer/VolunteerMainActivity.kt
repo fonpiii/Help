@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -31,6 +32,7 @@ class VolunteerMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRe
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
     private lateinit var bottomSheetDisabled: LinearLayout
     private lateinit var iconLeft: ImageView
+    private lateinit var toolbar: ImageView
     private lateinit var imgProfile: ImageView
     private lateinit var txtFullName: TextView
     private lateinit var txtUserType: TextView
@@ -148,13 +150,13 @@ class VolunteerMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRe
     }
 
     private fun switchDisabled() {
-        SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
-            .setTitleText("คำเตือน ?")
-            .setContentText("ต้องการเปลี่ยนเป็นผู้พิการ ใช่หรือไม่")
-            .setCancelText("ไม่")
-            .setCancelClickListener { sDialog -> sDialog.cancel() }
-            .setConfirmText("ใช่")
-            .setConfirmClickListener { sDialog ->
+        val alertDialog = SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+        alertDialog.titleText = "คำเตือน ?"
+        alertDialog.contentText = "ต้องการเปลี่ยนเป็นผู้พิการ"
+        alertDialog.cancelText = "ไม่"
+        alertDialog.setCancelClickListener { sDialog -> sDialog.cancel() }
+        alertDialog.confirmText = "ใช่"
+        alertDialog.setConfirmClickListener { sDialog ->
                 var databaseUser= FirebaseDatabase.getInstance().getReference("User")
                 databaseUser.child(user.userId.toString()).child("userType").setValue(ConstValue.UserType_Disabled).addOnSuccessListener {
                     user.userType = ConstValue.UserType_Disabled
@@ -165,7 +167,12 @@ class VolunteerMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRe
                     finishAffinity()
                 }
             }
-            .show()
+        alertDialog.show()
+        alertDialog.show()
+        val btnConfirm = alertDialog.findViewById(R.id.confirm_button) as Button
+        btnConfirm.setBackgroundColor(ContextCompat.getColor(this, R.color.colorRed))
+        val btnCancel = alertDialog.findViewById(R.id.cancel_button) as Button
+        btnCancel.setBackgroundColor(ContextCompat.getColor(this, R.color.lightBlack))
     }
 
     private fun getPosts(getBy: String, value: String) {
@@ -251,6 +258,8 @@ class VolunteerMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRe
 
     private fun setToolbar() {
         iconLeft = findViewById(R.id.iconLeft)
+        toolbar = findViewById(R.id.toolbar)
+        toolbar.setImageResource(R.drawable.header_volunteer)
         iconLeft.visibility = View.INVISIBLE
     }
 

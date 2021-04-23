@@ -22,12 +22,15 @@ class ArchiveOfPostsActivity : AppCompatActivity(), View.OnClickListener {
     //region Global variable
     private lateinit var recyclerFeed: RecyclerView
     private lateinit var iconLeft: ImageView
+    private lateinit var toolbar: ImageView
     private lateinit var spinnerCategory: Spinner
     private lateinit var titleActivity: TextView
     private lateinit var user: UserModel
     private lateinit var shimmer: ShimmerFrameLayout
     private lateinit var database: FirebaseDatabase
     private lateinit var reference: DatabaseReference
+    private lateinit var layoutEmpty: LinearLayout
+    private lateinit var layoutIsItem: RelativeLayout
     //endregion Global variable
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,9 +41,10 @@ class ArchiveOfPostsActivity : AppCompatActivity(), View.OnClickListener {
         spinnerCategory = findViewById(R.id.spinnerCategory)
         titleActivity = findViewById(R.id.titleActivity)
         shimmer = findViewById(R.id.shimmerFrameLayout)
+        layoutEmpty = findViewById(R.id.layout_Empty)
+        layoutIsItem = findViewById(R.id.layout_IsItem)
 
         //region On init
-        setToolbar()
         setFirebaseDatabase()
         setUser()
         setTitleName()
@@ -57,12 +61,17 @@ class ArchiveOfPostsActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun setToolbar() {
         iconLeft = findViewById(R.id.iconLeft)
+        toolbar = findViewById(R.id.toolbar)
+        if (user.userType == ConstValue.UserType_Volunteer) {
+            toolbar.setImageResource(R.drawable.header_volunteer)
+        }
         iconLeft.setOnClickListener(this)
     }
 
     private fun setUser() {
         if ((intent.getParcelableExtra("User") as? UserModel) != null) {
             user = (intent.getParcelableExtra("User") as? UserModel)!!
+            setToolbar()
         }
     }
 
@@ -73,25 +82,14 @@ class ArchiveOfPostsActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun getPosts(getBy: String, value: String) {
         shimmer.startShimmerAnimation()
-        when (getBy) {
-            ConstValue.getById -> {
-                reference.orderByChild("close").equalTo(true).get().addOnSuccessListener { result ->
-                    setPostDetails(result)
-                }.addOnFailureListener{
-                    Log.e("firebase", "Error getting data", it)
-                }
-            }
-            ConstValue.getByCategory -> {
-                reference.orderByChild("categorys").equalTo(value).get().addOnSuccessListener { result ->
-                    setPostDetails(result)
-                }.addOnFailureListener{
-                    Log.e("firebase", "Error getting data", it)
-                }
-            }
+        reference.orderByChild("close").equalTo(true).get().addOnSuccessListener { result ->
+            setPostDetails(result, getBy, value)
+        }.addOnFailureListener{
+            Log.e("firebase", "Error getting data", it)
         }
     }
 
-    private fun setPostDetails(result: DataSnapshot) {
+    private fun setPostDetails(result: DataSnapshot, getBy: String, value: String) {
         var postDetails = ArrayList<PostDetailsResponse>()
         for (data in result.children) {
             var postDetail: PostDetailsResponse = data.getValue(PostDetailsResponse::class.java)!!
@@ -102,15 +100,28 @@ class ArchiveOfPostsActivity : AppCompatActivity(), View.OnClickListener {
         // Sort postDetails by date
         postDetails.sortByDescending { it.createDate }
 
-        if (postDetails.size != 0) {
-            recyclerFeed.adapter =
-                PostAdapter(postDetails, user)
-            recyclerFeed.layoutManager = LinearLayoutManager(this)
-            recyclerFeed.setHasFixedSize(true)
-            closeShimmer()
-        } else {
-            closeShimmer()
+        if (getBy == ConstValue.getByCategory) {
+            var filter = postDetails.filter { it.categorys == value }
+            addPostAdapter(filter as ArrayList<PostDetailsResponse>)
+        } else if (getBy == ConstValue.getById) {
+            addPostAdapter(postDetails)
         }
+    }
+
+    private fun addPostAdapter(postDetails: ArrayList<PostDetailsResponse>) {
+        layoutEmpty.visibility = View.GONE
+        layoutIsItem.visibility = View.VISIBLE
+
+        if (postDetails.size == 0) {
+            layoutEmpty.visibility = View.VISIBLE
+            layoutIsItem.visibility = View.GONE
+        }
+
+        recyclerFeed.adapter =
+                PostAdapter(postDetails, user)
+        recyclerFeed.layoutManager = LinearLayoutManager(this)
+        recyclerFeed.setHasFixedSize(true)
+        closeShimmer()
     }
 
     private fun closeShimmer() {
@@ -142,6 +153,6 @@ class ArchiveOfPostsActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun setTitleName() {
-        titleActivity.text = "คลังของโพสต์"
+        titleActivity.text = "Case Study"
     }
 }

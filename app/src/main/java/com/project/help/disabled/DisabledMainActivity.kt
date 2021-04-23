@@ -122,6 +122,9 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRef
     private fun setHeader() {
         if ((intent.getParcelableExtra("User") as? UserModel) != null) {
             user = (intent.getParcelableExtra("User") as? UserModel)!!
+            if (user.firstName + " " + user.lastName == "ผู้พิการ 1") {
+                imgProfile.setImageResource(R.drawable.user)
+            }
             txtFullName.text = user.firstName + " " + user.lastName
             ratingReqForHelp.rating = user.scoreDisabled.toFloat()
             ratingVolunteerForHelp.rating = user.scoreVolunteer.toFloat()
@@ -174,13 +177,13 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRef
     }
 
     private fun switchVolunteer() {
-        SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
-            .setTitleText("คำเตือน ?")
-            .setContentText("ต้องการเปลี่ยนเป็นอาสา ใช่หรือไม่")
-            .setCancelText("ไม่")
-            .setCancelClickListener { sDialog -> sDialog.cancel() }
-            .setConfirmText("ใช่")
-            .setConfirmClickListener { sDialog ->
+        val alertDialog = SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+        alertDialog.titleText = "คำเตือน ?"
+        alertDialog.contentText = "ต้องการเปลี่ยนเป็นอาสา"
+        alertDialog.cancelText = "ไม่"
+        alertDialog.setCancelClickListener { sDialog -> sDialog.cancel() }
+        alertDialog.confirmText = "ใช่"
+        alertDialog.setConfirmClickListener { sDialog ->
                 var databaseUser= FirebaseDatabase.getInstance().getReference("User")
                 databaseUser.child(user.userId.toString()).child("userType").setValue(ConstValue.UserType_Volunteer).addOnSuccessListener {
                     user.userType = ConstValue.UserType_Volunteer
@@ -191,7 +194,11 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRef
                     finishAffinity()
                 }
             }
-            .show()
+        alertDialog.show()
+        val btnConfirm = alertDialog.findViewById(R.id.confirm_button) as Button
+        btnConfirm.setBackgroundColor(ContextCompat.getColor(this, R.color.colorRed))
+        val btnCancel = alertDialog.findViewById(R.id.cancel_button) as Button
+        btnCancel.setBackgroundColor(ContextCompat.getColor(this, R.color.lightBlack))
     }
 
     private fun getPermissionToTelephone(telephoneRequestCode: Int) {
@@ -230,21 +237,25 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRef
             }
 
             if (users.size > 0) {
-                val random = (0..users.size).random()
-                SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
-                        .setTitleText("คำเตือน ?")
-                        .setContentText("ต้องการโทรแบบ Sos ใช่หรือไม่")
-                        .setCancelText("ไม่")
-                        .setCancelClickListener { sDialog -> sDialog.cancel() }
-                        .setConfirmText("ใช่")
-                        .setConfirmClickListener { sDialog ->
+                val random = (0 until users.size).random()
+                val alertDialog = SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+                alertDialog.titleText = "คำเตือน ?"
+                alertDialog.contentText = "ต้องการโทรแบบ SOS ใช่หรือไม่"
+                alertDialog.cancelText = "ไม่"
+                alertDialog.setCancelClickListener { sDialog -> sDialog.cancel() }
+                alertDialog.confirmText = "ใช่"
+                alertDialog.setConfirmClickListener { sDialog ->
                             var telRandom = users[random].telephone
                             if (!telRandom.isNullOrEmpty()) {
                                 startActivity(Utilities.Other.callTelephone(telRandom))
                                 sDialog.dismissWithAnimation()
                             }
                         }
-                        .show()
+                alertDialog.show()
+                val btnConfirm = alertDialog.findViewById(R.id.confirm_button) as Button
+                btnConfirm.setBackgroundColor(ContextCompat.getColor(this, R.color.colorRed))
+                val btnCancel = alertDialog.findViewById(R.id.cancel_button) as Button
+                btnCancel.setBackgroundColor(ContextCompat.getColor(this, R.color.lightBlack))
             } else {
                 Toast.makeText(this, "ไม่มีข้อมูลอาสา", Toast.LENGTH_SHORT).show()
             }

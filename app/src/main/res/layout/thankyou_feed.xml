@@ -74,6 +74,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="xxxxx  xxxxxx"
+                            android:textStyle="bold"
                             android:textColor="@color/black"
                             android:textSize="13dp">
 
@@ -125,7 +126,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            app:cardBackgroundColor="@color/lightGray"
+                            app:cardBackgroundColor="@color/lightYellow"
                             app:cardCornerRadius="20dp">
 
                             <TextView
@@ -156,12 +157,20 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="center"
-                                android:paddingHorizontal="5dp"
+                                android:layout_marginEnd="15dp"
+                                android:layout_marginStart="5dp"
                                 android:text="ขอคำแนะนำ"
                                 android:textColor="@color/black"
                                 android:textSize="10dp">
 
                             </TextView>
+
+                            <ImageView
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:layout_gravity="end"
+                                android:layout_marginTop="1dp"
+                                android:src="@drawable/lightbulb"></ImageView>
 
                         </androidx.cardview.widget.CardView>
 
@@ -201,7 +210,7 @@
                             android:layout_marginTop="10dp"
                             android:layout_marginBottom="10dp"
                             android:visibility="visible"
-                            app:cardBackgroundColor="@color/lightYellow"
+                            app:cardBackgroundColor="@color/lightGray"
                             app:cardCornerRadius="20dp">
 
                             <LinearLayout

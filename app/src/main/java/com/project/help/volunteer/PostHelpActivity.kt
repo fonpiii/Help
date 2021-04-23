@@ -26,6 +26,7 @@ class PostHelpActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var recyclerFeed: RecyclerView
     private lateinit var iconLeft: ImageView
+    private lateinit var toolbar: ImageView
     private lateinit var spinnerCategory: Spinner
     private lateinit var user: UserModel
     private lateinit var shimmer: ShimmerFrameLayout
@@ -63,6 +64,8 @@ class PostHelpActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun setToolbar() {
         iconLeft = findViewById(R.id.iconLeft)
+        toolbar = findViewById(R.id.toolbar)
+        toolbar.setImageResource(R.drawable.header_volunteer)
         iconLeft.setOnClickListener(this)
     }
 

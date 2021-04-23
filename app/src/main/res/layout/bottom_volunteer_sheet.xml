@@ -60,7 +60,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="คลังของโพสต์"
+                            android:text="Case Study"
                             android:textSize="25dp"
                             android:textColor="@color/black"
                             android:textStyle="bold"

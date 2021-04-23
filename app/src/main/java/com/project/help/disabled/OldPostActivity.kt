@@ -4,10 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.ImageView
-import android.widget.Spinner
+import android.widget.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.ShimmerFrameLayout
@@ -29,6 +26,8 @@ class OldPostActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var shimmer: ShimmerFrameLayout
     private lateinit var database: FirebaseDatabase
     private lateinit var reference: DatabaseReference
+    private lateinit var layoutEmpty: LinearLayout
+    private lateinit var layoutIsItem: RelativeLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,10 +36,11 @@ class OldPostActivity : AppCompatActivity(), View.OnClickListener {
         recyclerFeed = findViewById(R.id.recycler_feed)
         spinnerCategory = findViewById(R.id.spinnerCategory)
         shimmer = findViewById(R.id.shimmerFrameLayout)
+        layoutEmpty = findViewById(R.id.layout_Empty)
+        layoutIsItem = findViewById(R.id.layout_IsItem)
 
         //region On init
         setFirebaseDatabase()
-        setToolbar()
         setUser()
         setSpinnerCategory()
         getPosts(ConstValue.getById, "")
@@ -56,6 +56,7 @@ class OldPostActivity : AppCompatActivity(), View.OnClickListener {
     private fun setUser() {
         if ((intent.getParcelableExtra("User") as? UserModel) != null) {
             user = (intent.getParcelableExtra("User") as? UserModel)!!
+            setToolbar()
         }
     }
 
@@ -109,6 +110,14 @@ class OldPostActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun addPostAdapter(postDetails: ArrayList<PostDetailsResponse>) {
+        layoutEmpty.visibility = View.GONE
+        layoutIsItem.visibility = View.VISIBLE
+
+        if (postDetails.size == 0) {
+            layoutEmpty.visibility = View.VISIBLE
+            layoutIsItem.visibility = View.GONE
+        }
+
         recyclerFeed.adapter =
                 PostAdapter(postDetails, user)
         recyclerFeed.layoutManager = LinearLayoutManager(this)

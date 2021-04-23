@@ -34,6 +34,7 @@ import java.util.*
 class CommentActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var iconLeft: ImageView
+    private lateinit var toolbar: ImageView
     private lateinit var database: FirebaseDatabase
     private lateinit var reference: DatabaseReference
     private lateinit var imageProfileFeed: ImageView
@@ -93,7 +94,6 @@ class CommentActivity : AppCompatActivity(), View.OnClickListener {
 
         //region On init
         setFirebaseDatabase()
-        setToolbar()
 
         if (!intent.getStringExtra("PostDetailId").toString().isNullOrEmpty()) {
             postId = intent.getStringExtra("PostDetailId").toString()
@@ -102,6 +102,7 @@ class CommentActivity : AppCompatActivity(), View.OnClickListener {
 
         if ((intent.getParcelableExtra("User") as? UserModel) != null) {
             user = (intent.getParcelableExtra("User") as? UserModel)!!
+            setToolbar()
         }
 
         editComment.doAfterTextChanged {
@@ -130,6 +131,9 @@ class CommentActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun setPostDetail(postDetail: PostDetailsResponse) {
         imageProfileFeed.setImageResource(R.drawable.helplogo)
+        if (postDetail.firstName + " " + postDetail.lastName == "ผู้พิการ 1") {
+            imageProfileFeed.setImageResource(R.drawable.user)
+        }
         txtUsernameFeed.text = postDetail.firstName + " " + postDetail.lastName
         postDetailFeed.text = postDetail.postDesc
         ratingUserFeed.rating = postDetail.rating.toFloat()
@@ -258,6 +262,10 @@ class CommentActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun setToolbar() {
         iconLeft = findViewById(R.id.iconLeft)
+        toolbar = findViewById(R.id.toolbar)
+        if (user.userType == ConstValue.UserType_Volunteer) {
+            toolbar.setImageResource(R.drawable.header_volunteer)
+        }
         iconLeft.setOnClickListener(this)
     }
 
