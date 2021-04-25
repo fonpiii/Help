@@ -18,9 +18,8 @@ import com.project.help.ConstValue
 import com.project.help.R
 import com.project.help.disabled.model.PostAdapter
 import com.project.help.disabled.model.PostDetailsResponse
-import com.project.help.model.CommentResponse
 import com.project.help.model.PostHelpResponse
-import com.project.help.model.UserModel
+import com.project.help.model.UserDisabledModel
 
 class PostHelpActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -28,7 +27,7 @@ class PostHelpActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var iconLeft: ImageView
     private lateinit var toolbar: ImageView
     private lateinit var spinnerCategory: Spinner
-    private lateinit var user: UserModel
+    private lateinit var userDisabled: UserDisabledModel
     private lateinit var shimmer: ShimmerFrameLayout
     private lateinit var database: FirebaseDatabase
     private lateinit var reference: DatabaseReference
@@ -57,8 +56,8 @@ class PostHelpActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun setUser() {
-        if ((intent.getParcelableExtra("User") as? UserModel) != null) {
-            user = (intent.getParcelableExtra("User") as? UserModel)!!
+        if ((intent.getParcelableExtra("User") as? UserDisabledModel) != null) {
+            userDisabled = (intent.getParcelableExtra("User") as? UserDisabledModel)!!
         }
     }
 
@@ -108,7 +107,7 @@ class PostHelpActivity : AppCompatActivity(), View.OnClickListener {
         }
 
         var database = FirebaseDatabase.getInstance().getReference("PostHelp")
-        database.orderByChild("userId").equalTo(user.userId).get().addOnSuccessListener { it ->
+        database.orderByChild("userId").equalTo(userDisabled.userId).get().addOnSuccessListener { it ->
             var postHelps = java.util.ArrayList<PostHelpResponse>()
             for (data in it.children) {
                 var postHelp: PostHelpResponse = data.getValue(PostHelpResponse::class.java)!!
@@ -131,28 +130,15 @@ class PostHelpActivity : AppCompatActivity(), View.OnClickListener {
                 } else if (getBy == ConstValue.getById) {
                     addPostAdapter(resultPostHelp)
                 }
+            } else {
+                closeShimmer()
             }
         }
-//        for (data in postDetails) {
-//            var database = FirebaseDatabase.getInstance().getReference("PostHelp")
-//            database.orderByChild("userId").equalTo(data.id).get().addOnSuccessListener {
-//                var comments = java.util.ArrayList<CommentResponse>()
-//                for (data in it.children) {
-//                    var comment: CommentResponse = data.getValue(CommentResponse::class.java)!!
-//                    if (comment.createBy == user.userId) {
-//                        comments.add(comment)
-//                    }
-//                }
-//                if (comments.size > 0) {
-//                    result.add(data)
-//                }
-//            }
-//        }
     }
 
     private fun addPostAdapter(postDetails: ArrayList<PostDetailsResponse>) {
         recyclerFeed.adapter =
-                PostAdapter(postDetails, user)
+                PostAdapter(postDetails, userDisabled)
         recyclerFeed.layoutManager = LinearLayoutManager(this)
         recyclerFeed.setHasFixedSize(true)
         closeShimmer()

@@ -16,14 +16,14 @@ import com.project.help.R
 import com.project.help.disabled.model.PostDetailsResponse
 import com.project.help.disabled.model.ThankYouAdapter
 import com.project.help.model.PostHelpResponse
-import com.project.help.model.UserModel
+import com.project.help.model.UserDisabledModel
 
 class AssignScoreActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var recyclerFeed: RecyclerView
     private lateinit var iconLeft: ImageView
     private lateinit var toolbar: ImageView
-    private lateinit var user: UserModel
+    private lateinit var userDisabled: UserDisabledModel
     private lateinit var shimmer: ShimmerFrameLayout
     private lateinit var database: FirebaseDatabase
     private lateinit var reference: DatabaseReference
@@ -50,8 +50,8 @@ class AssignScoreActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun setUser() {
-        if ((intent.getParcelableExtra("User") as? UserModel) != null) {
-            user = (intent.getParcelableExtra("User") as? UserModel)!!
+        if ((intent.getParcelableExtra("User") as? UserDisabledModel) != null) {
+            userDisabled = (intent.getParcelableExtra("User") as? UserDisabledModel)!!
         }
     }
 
@@ -101,7 +101,7 @@ class AssignScoreActivity : AppCompatActivity(), View.OnClickListener {
         }
 
         var database = FirebaseDatabase.getInstance().getReference("PostHelp")
-        database.orderByChild("userId").equalTo(user.userId).get().addOnSuccessListener { it ->
+        database.orderByChild("userId").equalTo(userDisabled.userId).get().addOnSuccessListener { it ->
             var postHelps = java.util.ArrayList<PostHelpResponse>()
             for (data in it.children) {
                 var postHelp: PostHelpResponse = data.getValue(PostHelpResponse::class.java)!!
@@ -118,9 +118,11 @@ class AssignScoreActivity : AppCompatActivity(), View.OnClickListener {
                 // Sort postDetails by date
                 resultPostHelp.sortByDescending { it.createDate }
 
-                recyclerFeed.adapter = ThankYouAdapter(resultPostHelp, user)
+                recyclerFeed.adapter = ThankYouAdapter(resultPostHelp, userDisabled)
                 recyclerFeed.layoutManager = LinearLayoutManager(this)
                 recyclerFeed.setHasFixedSize(true)
+                closeShimmer()
+            } else {
                 closeShimmer()
             }
         }

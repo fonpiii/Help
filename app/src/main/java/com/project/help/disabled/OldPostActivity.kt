@@ -15,14 +15,14 @@ import com.project.help.ConstValue
 import com.project.help.R
 import com.project.help.disabled.model.PostAdapter
 import com.project.help.disabled.model.PostDetailsResponse
-import com.project.help.model.UserModel
+import com.project.help.model.UserDisabledModel
 
 class OldPostActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var recyclerFeed: RecyclerView
     private lateinit var iconLeft: ImageView
     private lateinit var spinnerCategory: Spinner
-    private lateinit var user: UserModel
+    private lateinit var userDisabled: UserDisabledModel
     private lateinit var shimmer: ShimmerFrameLayout
     private lateinit var database: FirebaseDatabase
     private lateinit var reference: DatabaseReference
@@ -54,8 +54,8 @@ class OldPostActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun setUser() {
-        if ((intent.getParcelableExtra("User") as? UserModel) != null) {
-            user = (intent.getParcelableExtra("User") as? UserModel)!!
+        if ((intent.getParcelableExtra("User") as? UserDisabledModel) != null) {
+            userDisabled = (intent.getParcelableExtra("User") as? UserDisabledModel)!!
             setToolbar()
         }
     }
@@ -74,14 +74,14 @@ class OldPostActivity : AppCompatActivity(), View.OnClickListener {
         shimmer.startShimmerAnimation()
         when (getBy) {
             ConstValue.getById -> {
-                reference.orderByChild("createBy").equalTo(user.userId).get().addOnSuccessListener { result ->
+                reference.orderByChild("createBy").equalTo(userDisabled.userId).get().addOnSuccessListener { result ->
                     setPostDetails(result, getBy, value)
                 }.addOnFailureListener{
                     Log.e("firebase", "Error getting data", it)
                 }
             }
             ConstValue.getByCategory -> {
-                reference.orderByChild("createBy").equalTo(user.userId).get().addOnSuccessListener { result ->
+                reference.orderByChild("createBy").equalTo(userDisabled.userId).get().addOnSuccessListener { result ->
                     setPostDetails(result, getBy, value)
                 }.addOnFailureListener{
                     Log.e("firebase", "Error getting data", it)
@@ -119,7 +119,7 @@ class OldPostActivity : AppCompatActivity(), View.OnClickListener {
         }
 
         recyclerFeed.adapter =
-                PostAdapter(postDetails, user)
+                PostAdapter(postDetails, userDisabled)
         recyclerFeed.layoutManager = LinearLayoutManager(this)
         recyclerFeed.setHasFixedSize(true)
         closeShimmer()

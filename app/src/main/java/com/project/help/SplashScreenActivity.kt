@@ -9,7 +9,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.project.help.disabled.DisabledMainActivity
-import com.project.help.model.UserModel
+import com.project.help.model.UserDisabledModel
 import com.project.help.volunteer.VolunteerMainActivity
 
 class SplashScreenActivity : AppCompatActivity() {
@@ -32,9 +32,9 @@ class SplashScreenActivity : AppCompatActivity() {
         handler.postDelayed({
             if (mAuth!!.currentUser != null) {
                 reference.orderByChild("email").equalTo(mAuth!!.currentUser.email).get().addOnSuccessListener { result ->
-                    var user = UserModel()
+                    var user = UserDisabledModel()
                     for (data in result.children) {
-                        user = data.getValue(UserModel::class.java)!!
+                        user = data.getValue(UserDisabledModel::class.java)!!
                         user.userId = data.key
                     }
 

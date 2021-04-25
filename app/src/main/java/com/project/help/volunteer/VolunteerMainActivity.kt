@@ -23,8 +23,7 @@ import com.project.help.R
 import com.project.help.disabled.*
 import com.project.help.disabled.model.PostAdapter
 import com.project.help.disabled.model.PostDetailsResponse
-import com.project.help.disabled.model.PostItem
-import com.project.help.model.UserModel
+import com.project.help.model.UserDisabledModel
 
 class VolunteerMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
 
@@ -47,7 +46,7 @@ class VolunteerMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRe
     private lateinit var recyclerFeed: RecyclerView
     private lateinit var database: FirebaseDatabase
     private lateinit var reference: DatabaseReference
-    private lateinit var user: UserModel
+    private lateinit var userDisabled: UserDisabledModel
     private lateinit var shimmer: ShimmerFrameLayout
     private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
     //endregion Global variable
@@ -94,15 +93,15 @@ class VolunteerMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRe
         when (v.id) {
             R.id.archiveOfPosts ->  {
                 val intent = Intent(this, ArchiveOfPostsActivity::class.java)
-                if (user != null) {
-                    intent.putExtra("User", user)
+                if (userDisabled != null) {
+                    intent.putExtra("User", userDisabled)
                 }
                 startActivity(intent)
             }
             R.id.rating -> {
                 val intent = Intent(this, AssignScoreActivity::class.java)
-                if (user != null) {
-                    intent.putExtra("User", user)
+                if (userDisabled != null) {
+                    intent.putExtra("User", userDisabled)
                 }
                 startActivity(intent)
             }
@@ -111,8 +110,8 @@ class VolunteerMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRe
             }
             R.id.postsHelped -> {
                 val intent = Intent(this, PostHelpActivity::class.java)
-                if (user != null) {
-                    intent.putExtra("User", user)
+                if (userDisabled != null) {
+                    intent.putExtra("User", userDisabled)
                 }
                 startActivity(intent)
             }
@@ -124,11 +123,11 @@ class VolunteerMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRe
     }
 
     private fun setHeader() {
-        if ((intent.getParcelableExtra("User") as? UserModel) != null) {
-            user = (intent.getParcelableExtra("User") as? UserModel)!!
-            txtFullName.text = user.firstName + " " + user.lastName
-            ratingReqForHelp.rating = user.scoreDisabled.toFloat()
-            ratingVolunteerForHelp.rating = user.scoreVolunteer.toFloat()
+        if ((intent.getParcelableExtra("User") as? UserDisabledModel) != null) {
+            userDisabled = (intent.getParcelableExtra("User") as? UserDisabledModel)!!
+            txtFullName.text = userDisabled.firstName + " " + userDisabled.lastName
+            ratingReqForHelp.rating = userDisabled.scoreDisabled.toFloat()
+            ratingVolunteerForHelp.rating = userDisabled.scoreVolunteer.toFloat()
         }
     }
 
@@ -158,10 +157,10 @@ class VolunteerMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRe
         alertDialog.confirmText = "ใช่"
         alertDialog.setConfirmClickListener { sDialog ->
                 var databaseUser= FirebaseDatabase.getInstance().getReference("User")
-                databaseUser.child(user.userId.toString()).child("userType").setValue(ConstValue.UserType_Disabled).addOnSuccessListener {
-                    user.userType = ConstValue.UserType_Disabled
+                databaseUser.child(userDisabled.userId.toString()).child("userType").setValue(ConstValue.UserType_Disabled).addOnSuccessListener {
+                    userDisabled.userType = ConstValue.UserType_Disabled
                     var intent = Intent(this, DisabledMainActivity::class.java)
-                    intent.putExtra("User", user)
+                    intent.putExtra("User", userDisabled)
                     sDialog.dismissWithAnimation()
                     startActivity(intent)
                     finishAffinity()
@@ -208,7 +207,7 @@ class VolunteerMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRe
 
         if (postDetails.size != 0) {
             recyclerFeed.adapter =
-                    PostAdapter(postDetails, user)
+                    PostAdapter(postDetails, userDisabled)
             recyclerFeed.layoutManager = LinearLayoutManager(this)
             recyclerFeed.setHasFixedSize(true)
             closeShimmer()

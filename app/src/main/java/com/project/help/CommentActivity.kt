@@ -55,7 +55,7 @@ class CommentActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var btnSendMessage: ImageButton
     private lateinit var shimmer: ShimmerFrameLayout
     private lateinit var advice: CardView
-    private lateinit var user: UserModel
+    private lateinit var userDisabled: UserDisabledModel
     private lateinit var postId: String
     private lateinit var dialog: Dialog
     var lastProgress = 0
@@ -100,8 +100,8 @@ class CommentActivity : AppCompatActivity(), View.OnClickListener {
             getPostDetailsById(postId)
         }
 
-        if ((intent.getParcelableExtra("User") as? UserModel) != null) {
-            user = (intent.getParcelableExtra("User") as? UserModel)!!
+        if ((intent.getParcelableExtra("User") as? UserDisabledModel) != null) {
+            userDisabled = (intent.getParcelableExtra("User") as? UserDisabledModel)!!
             setToolbar()
         }
 
@@ -136,9 +136,11 @@ class CommentActivity : AppCompatActivity(), View.OnClickListener {
         }
         txtUsernameFeed.text = postDetail.firstName + " " + postDetail.lastName
         postDetailFeed.text = postDetail.postDesc
-        ratingUserFeed.rating = postDetail.rating.toFloat()
+//        ratingUserFeed.rating = postDetail.rating.toFloat()
         categoryFeed.text = postDetail.categorys
         timeStampFeed.text = Utilities.Converter.convertTimeToPostDetails(postDetail.createDate)
+
+        setPostRating(postDetail.createBy)
 
         if (postDetail.advice) {
             advice.visibility = View.VISIBLE
@@ -192,6 +194,24 @@ class CommentActivity : AppCompatActivity(), View.OnClickListener {
 
         } else {
             cardAudio.visibility = View.GONE
+        }
+    }
+
+    private fun setPostRating(createBy: String) {
+        var databaseRating = FirebaseDatabase.getInstance().getReference("User")
+        databaseRating.orderByKey().equalTo(createBy).get().addOnSuccessListener { result ->
+            var userRating = UserDisabledModel()
+            for (data in result.children) {
+                userRating = data.getValue(UserDisabledModel::class.java)!!
+            }
+            if (userRating.userType == ConstValue.UserType_Disabled) {
+                ratingUserFeed.rating = userRating.scoreDisabled.toFloat()
+            } else if (userRating.userType == ConstValue.UserType_Volunteer) {
+                ratingUserFeed.rating = userRating.scoreVolunteer.toFloat()
+            }
+
+        }.addOnFailureListener{
+            Log.e("firebase", "Error getting data", it)
         }
     }
 
@@ -263,7 +283,7 @@ class CommentActivity : AppCompatActivity(), View.OnClickListener {
     private fun setToolbar() {
         iconLeft = findViewById(R.id.iconLeft)
         toolbar = findViewById(R.id.toolbar)
-        if (user.userType == ConstValue.UserType_Volunteer) {
+        if (userDisabled.userType == ConstValue.UserType_Volunteer) {
             toolbar.setImageResource(R.drawable.header_volunteer)
         }
         iconLeft.setOnClickListener(this)
@@ -316,15 +336,15 @@ class CommentActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun sendMessageToDb() {
         var database = FirebaseDatabase.getInstance().getReference("Comments")
-        var commentModel = CommentRequest(user.firstName!!, user.lastName!!, user.profileUrl!!,
+        var commentModel = CommentRequest(userDisabled.firstName!!, userDisabled.lastName!!, userDisabled.profileUrl!!,
                 "", "", "", "", "",
-                "", editComment.text.toString(), postId, user.scoreDisabled, 0.0,
-                user.userType, ServerValue.TIMESTAMP, user.userId, ServerValue.TIMESTAMP, user.userId)
+                "", editComment.text.toString(), postId, userDisabled.scoreDisabled, 0.0,
+                userDisabled.userType, ServerValue.TIMESTAMP, userDisabled.userId, ServerValue.TIMESTAMP, userDisabled.userId)
         var id = database.push().key
         database.child(id!!).setValue(commentModel).addOnCompleteListener {
-            if (user.userType == ConstValue.UserType_Volunteer) {
+            if (userDisabled.userType == ConstValue.UserType_Volunteer) {
                 pushPostHelp()
-            } else if (user.userType == ConstValue.UserType_Disabled) {
+            } else if (userDisabled.userType == ConstValue.UserType_Disabled) {
                 refreshComment()
             }
         }
@@ -339,7 +359,7 @@ class CommentActivity : AppCompatActivity(), View.OnClickListener {
                     postHelp = data.getValue(PostHelpResponse::class.java)!!
                 }
                 if (postHelp.postDetailId == "") {
-                    var postHelpModel = PostHelpRequest(postId, false, user.userId!!)
+                    var postHelpModel = PostHelpRequest(postId, false, userDisabled.userId!!)
                     var id = database.push().key
                     database.child(id!!).setValue(postHelpModel).addOnCompleteListener {
                         refreshComment()
@@ -372,7 +392,7 @@ class CommentActivity : AppCompatActivity(), View.OnClickListener {
                 comments.sortByDescending { it.createDate }
 
                 if (comments.size != 0) {
-                    recyclerFeed.adapter = CommentAdapter(comments, user, "")
+                    recyclerFeed.adapter = CommentAdapter(comments, userDisabled, "")
                     recyclerFeed.layoutManager = LinearLayoutManager(this)
                     recyclerFeed.setHasFixedSize(true)
                     closeShimmer()

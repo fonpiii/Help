@@ -26,7 +26,8 @@ import com.project.help.R
 import com.project.help.Utilities
 import com.project.help.disabled.model.PostAdapter
 import com.project.help.disabled.model.PostDetailsResponse
-import com.project.help.model.UserModel
+import com.project.help.model.UserDisabledModel
+import com.project.help.model.UserVolunteerModel
 import com.project.help.volunteer.VolunteerMainActivity
 
 
@@ -52,7 +53,7 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRef
     private lateinit var recyclerFeed: RecyclerView
     private lateinit var database: FirebaseDatabase
     private lateinit var reference: DatabaseReference
-    private lateinit var user: UserModel
+    private lateinit var userDisabled: UserDisabledModel
     private lateinit var shimmer: ShimmerFrameLayout
     private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
     private val RQ_TELEPHONE = 100
@@ -120,14 +121,14 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRef
     }
 
     private fun setHeader() {
-        if ((intent.getParcelableExtra("User") as? UserModel) != null) {
-            user = (intent.getParcelableExtra("User") as? UserModel)!!
-            if (user.firstName + " " + user.lastName == "ผู้พิการ 1") {
+        if ((intent.getParcelableExtra("User") as? UserDisabledModel) != null) {
+            userDisabled = (intent.getParcelableExtra("User") as? UserDisabledModel)!!
+            if (userDisabled.firstName + " " + userDisabled.lastName == "ผู้พิการ 1") {
                 imgProfile.setImageResource(R.drawable.user)
             }
-            txtFullName.text = user.firstName + " " + user.lastName
-            ratingReqForHelp.rating = user.scoreDisabled.toFloat()
-            ratingVolunteerForHelp.rating = user.scoreVolunteer.toFloat()
+            txtFullName.text = userDisabled.firstName + " " + userDisabled.lastName
+            ratingReqForHelp.rating = userDisabled.scoreDisabled.toFloat()
+            ratingVolunteerForHelp.rating = userDisabled.scoreVolunteer.toFloat()
         }
     }
 
@@ -135,15 +136,15 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRef
         when (v.id) {
             R.id.archiveOfPosts ->  {
                 val intent = Intent(this, ArchiveOfPostsActivity::class.java)
-                if (user != null) {
-                    intent.putExtra("User", user)
+                if (userDisabled != null) {
+                    intent.putExtra("User", userDisabled)
                 }
                 startActivity(intent)
             }
             R.id.thankYouNote -> {
                 val intent = Intent(this, ThankYouNoteActivity::class.java)
-                if (user != null) {
-                    intent.putExtra("User", user)
+                if (userDisabled != null) {
+                    intent.putExtra("User", userDisabled)
                 }
                 startActivity(intent)
             }
@@ -152,8 +153,8 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRef
             }
             R.id.oldPost -> {
                 val intent = Intent(this, OldPostActivity::class.java)
-                if (user != null) {
-                    intent.putExtra("User", user)
+                if (userDisabled != null) {
+                    intent.putExtra("User", userDisabled)
                 }
                 startActivity(intent)
             }
@@ -163,8 +164,8 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRef
             }
             R.id.btnPost -> {
                 val intent = Intent(this, PostActivity::class.java)
-                if (user != null) {
-                    intent.putExtra("User", user)
+                if (userDisabled != null) {
+                    intent.putExtra("User", userDisabled)
                 }
                 startActivity(intent)
             }
@@ -185,10 +186,10 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRef
         alertDialog.confirmText = "ใช่"
         alertDialog.setConfirmClickListener { sDialog ->
                 var databaseUser= FirebaseDatabase.getInstance().getReference("User")
-                databaseUser.child(user.userId.toString()).child("userType").setValue(ConstValue.UserType_Volunteer).addOnSuccessListener {
-                    user.userType = ConstValue.UserType_Volunteer
+                databaseUser.child(userDisabled.userId.toString()).child("userType").setValue(ConstValue.UserType_Volunteer).addOnSuccessListener {
+                    userDisabled.userType = ConstValue.UserType_Volunteer
                     var intent = Intent(this, VolunteerMainActivity::class.java)
-                    intent.putExtra("User", user)
+                    intent.putExtra("User", userDisabled)
                     sDialog.dismissWithAnimation()
                     startActivity(intent)
                     finishAffinity()
@@ -230,38 +231,52 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRef
     private fun onClickSos() {
         var database = FirebaseDatabase.getInstance().getReference("User")
         database.orderByChild("userType").equalTo(ConstValue.UserType_Volunteer).get().addOnSuccessListener { result ->
-            var users = ArrayList<UserModel>()
+            var users = ArrayList<UserVolunteerModel>()
             for (data in result.children) {
-                var user: UserModel = data.getValue(UserModel::class.java)!!
+                val user: UserVolunteerModel = data.getValue(UserVolunteerModel::class.java)!!
                 users.add(user)
             }
 
             if (users.size > 0) {
-                val random = (0 until users.size).random()
-                val alertDialog = SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
-                alertDialog.titleText = "คำเตือน ?"
-                alertDialog.contentText = "ต้องการโทรแบบ SOS ใช่หรือไม่"
-                alertDialog.cancelText = "ไม่"
-                alertDialog.setCancelClickListener { sDialog -> sDialog.cancel() }
-                alertDialog.confirmText = "ใช่"
-                alertDialog.setConfirmClickListener { sDialog ->
-                            var telRandom = users[random].telephone
-                            if (!telRandom.isNullOrEmpty()) {
-                                startActivity(Utilities.Other.callTelephone(telRandom))
-                                sDialog.dismissWithAnimation()
-                            }
-                        }
-                alertDialog.show()
-                val btnConfirm = alertDialog.findViewById(R.id.confirm_button) as Button
-                btnConfirm.setBackgroundColor(ContextCompat.getColor(this, R.color.colorRed))
-                val btnCancel = alertDialog.findViewById(R.id.cancel_button) as Button
-                btnCancel.setBackgroundColor(ContextCompat.getColor(this, R.color.lightBlack))
+                var country = users.filter { s -> s.country!!.toUpperCase() == userDisabled.country!!.toUpperCase() }.toList()
+
+                if (country.isNotEmpty()) {
+                    var zone = country.filter { s -> s.zipCode == userDisabled.zipCode }.toList()
+
+                    if (zone.isNotEmpty()) {
+                        randomUserAndTel(zone)
+                    }
+                } else {
+                    randomUserAndTel(country)
+                }
             } else {
                 Toast.makeText(this, "ไม่มีข้อมูลอาสา", Toast.LENGTH_SHORT).show()
             }
         }.addOnFailureListener{
             Log.e("firebase", "Error getting data", it)
         }
+    }
+
+    private fun randomUserAndTel(list: List<UserVolunteerModel>) {
+        val random = (list.indices).random()
+        val alertDialog = SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+        alertDialog.titleText = "คำเตือน ?"
+        alertDialog.contentText = "ต้องการโทรแบบ SOS ใช่หรือไม่"
+        alertDialog.cancelText = "ไม่"
+        alertDialog.setCancelClickListener { sDialog -> sDialog.cancel() }
+        alertDialog.confirmText = "ใช่"
+        alertDialog.setConfirmClickListener { sDialog ->
+            var telRandom = list[random].telephone
+            if (!telRandom.isNullOrEmpty()) {
+                startActivity(Utilities.Other.callTelephone(telRandom))
+                sDialog.dismissWithAnimation()
+            }
+        }
+        alertDialog.show()
+        val btnConfirm = alertDialog.findViewById(R.id.confirm_button) as Button
+        btnConfirm.setBackgroundColor(ContextCompat.getColor(this, R.color.colorRed))
+        val btnCancel = alertDialog.findViewById(R.id.cancel_button) as Button
+        btnCancel.setBackgroundColor(ContextCompat.getColor(this, R.color.lightBlack))
     }
 
     private fun setMenuBottomSheet() {
@@ -351,7 +366,7 @@ class DisabledMainActivity : AppCompatActivity(), View.OnClickListener, SwipeRef
         postDetails.sortByDescending { it.createDate }
 
         recyclerFeed.adapter =
-                PostAdapter(postDetails, user)
+                PostAdapter(postDetails, userDisabled)
         recyclerFeed.layoutManager = LinearLayoutManager(this)
         recyclerFeed.setHasFixedSize(true)
         closeShimmer()

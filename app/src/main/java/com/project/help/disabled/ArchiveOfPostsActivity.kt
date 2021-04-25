@@ -15,7 +15,7 @@ import com.project.help.ConstValue
 import com.project.help.R
 import com.project.help.disabled.model.PostAdapter
 import com.project.help.disabled.model.PostDetailsResponse
-import com.project.help.model.UserModel
+import com.project.help.model.UserDisabledModel
 
 class ArchiveOfPostsActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -25,7 +25,7 @@ class ArchiveOfPostsActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var toolbar: ImageView
     private lateinit var spinnerCategory: Spinner
     private lateinit var titleActivity: TextView
-    private lateinit var user: UserModel
+    private lateinit var userDisabled: UserDisabledModel
     private lateinit var shimmer: ShimmerFrameLayout
     private lateinit var database: FirebaseDatabase
     private lateinit var reference: DatabaseReference
@@ -62,15 +62,15 @@ class ArchiveOfPostsActivity : AppCompatActivity(), View.OnClickListener {
     private fun setToolbar() {
         iconLeft = findViewById(R.id.iconLeft)
         toolbar = findViewById(R.id.toolbar)
-        if (user.userType == ConstValue.UserType_Volunteer) {
+        if (userDisabled.userType == ConstValue.UserType_Volunteer) {
             toolbar.setImageResource(R.drawable.header_volunteer)
         }
         iconLeft.setOnClickListener(this)
     }
 
     private fun setUser() {
-        if ((intent.getParcelableExtra("User") as? UserModel) != null) {
-            user = (intent.getParcelableExtra("User") as? UserModel)!!
+        if ((intent.getParcelableExtra("User") as? UserDisabledModel) != null) {
+            userDisabled = (intent.getParcelableExtra("User") as? UserDisabledModel)!!
             setToolbar()
         }
     }
@@ -118,7 +118,7 @@ class ArchiveOfPostsActivity : AppCompatActivity(), View.OnClickListener {
         }
 
         recyclerFeed.adapter =
-                PostAdapter(postDetails, user)
+                PostAdapter(postDetails, userDisabled)
         recyclerFeed.layoutManager = LinearLayoutManager(this)
         recyclerFeed.setHasFixedSize(true)
         closeShimmer()

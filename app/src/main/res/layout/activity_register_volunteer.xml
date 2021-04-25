@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:fbutton="http://schemas.android.com/tools"
@@ -44,253 +44,360 @@
 
             </LinearLayout>
 
-            <LinearLayout
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingHorizontal="25dp"
-                android:orientation="vertical">
+                android:layout_height="match_parent">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="ชื่อ"
-                        android:textSize="15dp"
-                        android:textStyle="bold"
-                        android:textColor="@color/black">
-
-                    </TextView>
-
-                    <EditText
-                        android:id="@+id/firstName"
-                        android:layout_width="match_parent"
-                        android:layout_height="45dp"
-                        android:layout_marginTop="5dp"
-                        android:paddingHorizontal="7dp"
-                        android:hint="@string/enterFirstName"
-                        android:textColorHint="@color/hint"
-                        android:textColor="@color/black"
-                        android:textSize="15dp"
-                        android:inputType="textPersonName"
-                        android:background="@color/lightGray">
-
-                    </EditText>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="นามสกุล"
-                        android:textSize="15dp"
-                        android:textStyle="bold"
-                        android:textColor="@color/black">
-
-                    </TextView>
-
-                    <EditText
-                        android:id="@+id/lastName"
-                        android:layout_width="match_parent"
-                        android:layout_height="45dp"
-                        android:layout_marginTop="5dp"
-                        android:paddingHorizontal="7dp"
-                        android:hint="@string/enterLastName"
-                        android:textColorHint="@color/hint"
-                        android:textColor="@color/black"
-                        android:textSize="15dp"
-                        android:inputType="textPersonName"
-                        android:background="@color/lightGray">
-
-                    </EditText>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="เบอร์โทรศัพท์"
-                        android:textSize="15dp"
-                        android:textStyle="bold"
-                        android:textColor="@color/black">
-
-                    </TextView>
-
-                    <EditText
-                        android:id="@+id/tel"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:layout_marginTop="5dp"
-                        android:paddingHorizontal="7dp"
-                        android:maxLength="10"
-                        android:hint="@string/enterTel"
-                        android:textColorHint="@color/hint"
-                        android:textColor="@color/black"
-                        android:textSize="15dp"
-                        android:inputType="number"
-                        android:background="@color/lightGray">
-
-                    </EditText>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="อีเมล"
-                        android:textSize="15dp"
-                        android:textStyle="bold"
-                        android:textColor="@color/black">
-
-                    </TextView>
-
-                    <EditText
-                        android:id="@+id/email"
-                        android:layout_width="match_parent"
-                        android:layout_height="45dp"
-                        android:layout_marginTop="5dp"
-                        android:paddingHorizontal="7dp"
-                        android:inputType="textEmailAddress"
-                        android:hint="@string/enterEmail"
-                        android:textColorHint="@color/hint"
-                        android:textSize="15dp"
-                        android:textColor="@color/black"
-                        android:background="@color/lightGray">
-
-                    </EditText>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="รหัสผ่าน"
-                        android:textSize="15dp"
-                        android:textStyle="bold"
-                        android:textColor="@color/black">
-
-                    </TextView>
-
-                    <EditText
-                        android:id="@+id/password"
-                        android:layout_width="match_parent"
-                        android:layout_height="45dp"
-                        android:layout_marginTop="5dp"
-                        android:inputType="textPassword"
-                        android:paddingHorizontal="7dp"
-                        android:hint="@string/enterPassword"
-                        android:textColorHint="@color/hint"
-                        android:textSize="15dp"
-                        android:textColor="@color/black"
-                        android:maxLength="20"
-                        android:background="@color/lightGray">
-
-                    </EditText>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:paddingHorizontal="25dp"
                     android:orientation="vertical">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:orientation="vertical">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="ยืนยันรหัสผ่านอีกครั้ง"
+                            android:text="ชื่อ"
                             android:textSize="15dp"
                             android:textStyle="bold"
                             android:textColor="@color/black">
+
                         </TextView>
+
+                        <EditText
+                            android:id="@+id/firstName"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp"
+                            android:layout_marginTop="5dp"
+                            android:paddingHorizontal="7dp"
+                            android:hint="@string/enterFirstName"
+                            android:textColorHint="@color/hint"
+                            android:textColor="@color/black"
+                            android:textSize="15dp"
+                            android:inputType="textPersonName"
+                            android:background="@color/lightGray">
+
+                        </EditText>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="vertical">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="*"
+                            android:text="นามสกุล"
                             android:textSize="15dp"
                             android:textStyle="bold"
-                            android:layout_marginStart="2dp"
-                            android:textColor="@color/red">
+                            android:textColor="@color/black">
+
                         </TextView>
+
+                        <EditText
+                            android:id="@+id/lastName"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp"
+                            android:layout_marginTop="5dp"
+                            android:paddingHorizontal="7dp"
+                            android:hint="@string/enterLastName"
+                            android:textColorHint="@color/hint"
+                            android:textColor="@color/black"
+                            android:textSize="15dp"
+                            android:inputType="textPersonName"
+                            android:background="@color/lightGray">
+
+                        </EditText>
 
                     </LinearLayout>
 
-                    <EditText
-                        android:id="@+id/re_password"
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="45dp"
-                        android:layout_marginTop="5dp"
-                        android:inputType="textPassword"
-                        android:paddingHorizontal="7dp"
-                        android:hint="@string/enterRePassword"
-                        android:textColorHint="@color/hint"
-                        android:textSize="15dp"
-                        android:textColor="@color/black"
-                        android:maxLength="20"
-                        android:background="@color/lightGray">
-
-                    </EditText>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/submit"
                         android:layout_height="wrap_content"
-                        android:layout_width="wrap_content"
-                        android:layout_marginTop="7dp"
-                        android:text="ดำเนินการต่อ"
-                        android:textColor="@color/black"
-                        android:backgroundTint="@color/lightGreen"
-                        android:paddingHorizontal="35dp"
-                        android:paddingVertical="13dp"
-                        app:cornerRadius="18dp" />
+                        android:layout_marginTop="10dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="เบอร์โทรศัพท์"
+                            android:textSize="15dp"
+                            android:textStyle="bold"
+                            android:textColor="@color/black">
+
+                        </TextView>
+
+                        <EditText
+                            android:id="@+id/tel"
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:layout_marginTop="5dp"
+                            android:paddingHorizontal="7dp"
+                            android:maxLength="10"
+                            android:hint="@string/enterTel"
+                            android:textColorHint="@color/hint"
+                            android:textColor="@color/black"
+                            android:textSize="15dp"
+                            android:inputType="number"
+                            android:background="@color/lightGray">
+
+                        </EditText>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="อีเมล"
+                            android:textSize="15dp"
+                            android:textStyle="bold"
+                            android:textColor="@color/black">
+
+                        </TextView>
+
+                        <EditText
+                            android:id="@+id/email"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp"
+                            android:layout_marginTop="5dp"
+                            android:paddingHorizontal="7dp"
+                            android:inputType="textEmailAddress"
+                            android:hint="@string/enterEmail"
+                            android:textColorHint="@color/hint"
+                            android:textSize="15dp"
+                            android:textColor="@color/black"
+                            android:background="@color/lightGray">
+
+                        </EditText>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="รหัสผ่าน"
+                            android:textSize="15dp"
+                            android:textStyle="bold"
+                            android:textColor="@color/black">
+
+                        </TextView>
+
+                        <EditText
+                            android:id="@+id/password"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp"
+                            android:layout_marginTop="5dp"
+                            android:inputType="textPassword"
+                            android:paddingHorizontal="7dp"
+                            android:hint="@string/enterPassword"
+                            android:textColorHint="@color/hint"
+                            android:textSize="15dp"
+                            android:textColor="@color/black"
+                            android:maxLength="20"
+                            android:background="@color/lightGray">
+
+                        </EditText>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="ยืนยันรหัสผ่านอีกครั้ง"
+                                android:textSize="15dp"
+                                android:textStyle="bold"
+                                android:textColor="@color/black">
+                            </TextView>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="*"
+                                android:textSize="15dp"
+                                android:textStyle="bold"
+                                android:layout_marginStart="2dp"
+                                android:textColor="@color/red">
+                            </TextView>
+
+                        </LinearLayout>
+
+                        <EditText
+                            android:id="@+id/re_password"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp"
+                            android:layout_marginTop="5dp"
+                            android:inputType="textPassword"
+                            android:paddingHorizontal="7dp"
+                            android:hint="@string/enterRePassword"
+                            android:textColorHint="@color/hint"
+                            android:textSize="15dp"
+                            android:textColor="@color/black"
+                            android:maxLength="20"
+                            android:background="@color/lightGray">
+
+                        </EditText>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="จังหวัด"
+                                android:textSize="15dp"
+                                android:textStyle="bold"
+                                android:textColor="@color/black">
+                            </TextView>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="*"
+                                android:textSize="15dp"
+                                android:textStyle="bold"
+                                android:layout_marginStart="2dp"
+                                android:textColor="@color/red">
+                            </TextView>
+
+                        </LinearLayout>
+
+                        <EditText
+                            android:id="@+id/country"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp"
+                            android:layout_marginTop="5dp"
+                            android:inputType="text"
+                            android:paddingHorizontal="7dp"
+                            android:hint="@string/enterCountry"
+                            android:textColorHint="@color/hint"
+                            android:textSize="15dp"
+                            android:textColor="@color/black"
+                            android:maxLength="20"
+                            android:background="@color/lightGray">
+
+                        </EditText>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="รหัสไปรษณีย์"
+                                android:textSize="15dp"
+                                android:textStyle="bold"
+                                android:textColor="@color/black">
+                            </TextView>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="*"
+                                android:textSize="15dp"
+                                android:textStyle="bold"
+                                android:layout_marginStart="2dp"
+                                android:textColor="@color/red">
+                            </TextView>
+
+                        </LinearLayout>
+
+                        <EditText
+                            android:id="@+id/zipCode"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp"
+                            android:layout_marginTop="5dp"
+                            android:inputType="text"
+                            android:paddingHorizontal="7dp"
+                            android:hint="@string/enterZipCode"
+                            android:textColorHint="@color/hint"
+                            android:textSize="15dp"
+                            android:textColor="@color/black"
+                            android:maxLength="5"
+                            android:background="@color/lightGray">
+
+                        </EditText>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/submit"
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:layout_marginTop="7dp"
+                            android:text="ดำเนินการต่อ"
+                            android:textColor="@color/black"
+                            android:backgroundTint="@color/lightGreen"
+                            android:paddingHorizontal="35dp"
+                            android:paddingVertical="13dp"
+                            app:cornerRadius="18dp" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
-            </LinearLayout>
+            </ScrollView>
 
         </LinearLayout>
 
     </LinearLayout>
 
-</ScrollView>
+</LinearLayout>

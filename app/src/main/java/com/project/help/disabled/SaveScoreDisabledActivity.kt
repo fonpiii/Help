@@ -19,7 +19,7 @@ import com.project.help.ConstValue
 import com.project.help.R
 import com.project.help.model.CommentAdapter
 import com.project.help.model.CommentResponse
-import com.project.help.model.UserModel
+import com.project.help.model.UserDisabledModel
 import java.util.ArrayList
 
 class SaveScoreDisabledActivity : AppCompatActivity(), View.OnClickListener {
@@ -30,7 +30,7 @@ class SaveScoreDisabledActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var shimmer: ShimmerFrameLayout
     private lateinit var recyclerFeed: RecyclerView
     private lateinit var btnSaveScore: Button
-    private lateinit var user: UserModel
+    private lateinit var userDisabled: UserDisabledModel
     private lateinit var postId: String
     private lateinit var layoutEmpty: LinearLayout
     private lateinit var layoutIsItem: RelativeLayout
@@ -56,8 +56,8 @@ class SaveScoreDisabledActivity : AppCompatActivity(), View.OnClickListener {
             getComments()
         }
 
-        if ((intent.getParcelableExtra("User") as? UserModel) != null) {
-            user = (intent.getParcelableExtra("User") as? UserModel)!!
+        if ((intent.getParcelableExtra("User") as? UserDisabledModel) != null) {
+            userDisabled = (intent.getParcelableExtra("User") as? UserDisabledModel)!!
         }
     }
 
@@ -74,7 +74,7 @@ class SaveScoreDisabledActivity : AppCompatActivity(), View.OnClickListener {
                 var comments = ArrayList<CommentResponse>()
                 for (data in result.children) {
                     var comment: CommentResponse = data.getValue(CommentResponse::class.java)!!
-                    if (comment.createBy != user.userId && comment.userType == ConstValue.UserType_Volunteer) {
+                    if (comment.createBy != userDisabled.userId && comment.userType == ConstValue.UserType_Volunteer) {
                         comment.id = data.key.toString()
                         comments.add(comment)
                     }
@@ -94,7 +94,7 @@ class SaveScoreDisabledActivity : AppCompatActivity(), View.OnClickListener {
                     layoutIsItem.visibility = View.GONE
                 }
 
-                recyclerFeed.adapter = CommentAdapter(comments, user, "SaveScore")
+                recyclerFeed.adapter = CommentAdapter(comments, userDisabled, "SaveScore")
                 recyclerFeed.layoutManager = LinearLayoutManager(this)
                 recyclerFeed.setHasFixedSize(true)
                 closeShimmer()

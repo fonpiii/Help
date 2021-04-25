@@ -11,18 +11,17 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.project.help.CommentActivity
 import com.project.help.ConstValue
 import com.project.help.R
 import com.project.help.Utilities
-import com.project.help.model.UserModel
+import com.project.help.model.UserDisabledModel
 import com.squareup.picasso.Picasso
 import java.io.IOException
 
 
-class PostAdapter(private val postList: List<PostDetailsResponse>, private val user: UserModel) : RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
+class PostAdapter(private val postList: List<PostDetailsResponse>, private val userDisabled: UserDisabledModel) : RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
 
     private lateinit var holderMaster: PostViewHolder
 
@@ -57,9 +56,9 @@ class PostAdapter(private val postList: List<PostDetailsResponse>, private val u
 
         var databaseRating = FirebaseDatabase.getInstance().getReference("User")
         databaseRating.orderByKey().equalTo(currentItem.createBy).get().addOnSuccessListener { result ->
-            var userRating = UserModel()
+            var userRating = UserDisabledModel()
             for (data in result.children) {
-                userRating = data.getValue(UserModel::class.java)!!
+                userRating = data.getValue(UserDisabledModel::class.java)!!
             }
             if (userRating.userType == ConstValue.UserType_Disabled) {
                 holder.ratingUserFeed.rating = userRating.scoreDisabled.toFloat()
@@ -84,7 +83,7 @@ class PostAdapter(private val postList: List<PostDetailsResponse>, private val u
         holder.commentLayout.setOnClickListener(View.OnClickListener {
             var intent = Intent(holder.context, CommentActivity::class.java)
             intent.putExtra("PostDetailId", currentItem.id)
-            intent.putExtra("User", user)
+            intent.putExtra("User", userDisabled)
             holder.context?.startActivity(intent)
         })
 

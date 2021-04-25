@@ -34,4 +34,6 @@
     <string name="enterEmail">กรุณากรอกอีเมล</string>
     <string name="enterPassword">กรุณากรอกรหัสผ่าน</string>
     <string name="enterRePassword">กรุณากรอกรหัสผ่านอีกครั้ง</string>
+    <string name="enterCountry">กรุณากรอกจังหวัดอีกครั้ง</string>
+    <string name="enterZipCode">กรุณากรอกรหัสไปรษณีย์อีกครั้ง</string>
 </resources>

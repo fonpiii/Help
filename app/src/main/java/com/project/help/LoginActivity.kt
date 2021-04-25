@@ -16,7 +16,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.project.help.disabled.DisabledMainActivity
-import com.project.help.model.UserModel
+import com.project.help.model.UserDisabledModel
 import com.project.help.volunteer.VolunteerMainActivity
 
 
@@ -93,9 +93,9 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 } else {
                     if (checkIsEmailVerified()) {
                         reference.orderByChild("email").equalTo(email.text.toString()).get().addOnSuccessListener { result ->
-                            var user = UserModel()
+                            var user = UserDisabledModel()
                             for (data in result.children) {
-                                user = data.getValue(UserModel::class.java)!!
+                                user = data.getValue(UserDisabledModel::class.java)!!
                                 user.userId = data.key
                             }
 

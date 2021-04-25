@@ -20,9 +20,9 @@ import com.squareup.picasso.Picasso
 import java.io.IOException
 
 class CommentAdapter(
-    private val commentList: List<CommentResponse>,
-    private val user: UserModel,
-    private val title: String
+        private val commentList: List<CommentResponse>,
+        private val userDisabled: UserDisabledModel,
+        private val title: String
 ) : RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() {
 
     private lateinit var holderMaster: CommentViewHolder
@@ -74,9 +74,9 @@ class CommentAdapter(
 
         var databaseRating = FirebaseDatabase.getInstance().getReference("User")
         databaseRating.orderByKey().equalTo(currentItem.createBy).get().addOnSuccessListener { result ->
-            var userRating = UserModel()
+            var userRating = UserDisabledModel()
             for (data in result.children) {
-                userRating = data.getValue(UserModel::class.java)!!
+                userRating = data.getValue(UserDisabledModel::class.java)!!
             }
             if (userRating.userType == ConstValue.UserType_Disabled) {
                 holder.ratingUserFeed.rating = userRating.scoreDisabled.toFloat()

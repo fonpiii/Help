@@ -8,16 +8,11 @@ import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.RecyclerView
 import cn.pedant.SweetAlert.SweetAlertDialog
-import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.project.help.ConstValue
 import com.project.help.R
-import com.project.help.model.CommentResponse
-import com.project.help.model.UserModel
-import java.util.ArrayList
+import com.project.help.model.UserDisabledModel
 
 class SaveScoreVolunteerActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -30,8 +25,8 @@ class SaveScoreVolunteerActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var database: FirebaseDatabase
     private lateinit var reference: DatabaseReference
     private lateinit var btnSaveScore: Button
-    private lateinit var user: UserModel
-    private lateinit var userDisabled: UserModel
+    private lateinit var user: UserDisabledModel
+    private lateinit var userDisabledDisabled: UserDisabledModel
     private lateinit var postUserId: String
     private lateinit var postDetailId: String
     private lateinit var postHelpId: String
@@ -65,8 +60,8 @@ class SaveScoreVolunteerActivity : AppCompatActivity(), View.OnClickListener {
             postDetailId = intent.getStringExtra("PostDetailId").toString()
         }
 
-        if ((intent.getParcelableExtra("User") as? UserModel) != null) {
-            user = (intent.getParcelableExtra("User") as? UserModel)!!
+        if ((intent.getParcelableExtra("User") as? UserDisabledModel) != null) {
+            user = (intent.getParcelableExtra("User") as? UserDisabledModel)!!
         }
     }
 
@@ -86,15 +81,15 @@ class SaveScoreVolunteerActivity : AppCompatActivity(), View.OnClickListener {
         if (!postUserId.isNullOrEmpty()) {
             reference.orderByKey().equalTo(postUserId).get().addOnSuccessListener {
                 for (data in it.children) {
-                    userDisabled = data.getValue(UserModel::class.java)!!
-                    userDisabled.userId = data.key
+                    userDisabledDisabled = data.getValue(UserDisabledModel::class.java)!!
+                    userDisabledDisabled.userId = data.key
                 }
 
-                if (userDisabled.firstName + " " + userDisabled.lastName == "ผู้พิการ 1") {
+                if (userDisabledDisabled.firstName + " " + userDisabledDisabled.lastName == "ผู้พิการ 1") {
                     imgProfile.setImageResource(R.drawable.user)
                 }
-                txtUsername.text = userDisabled.firstName + " " + userDisabled.lastName
-                ratingDisabled.rating = userDisabled.scoreDisabled.toFloat()
+                txtUsername.text = userDisabledDisabled.firstName + " " + userDisabledDisabled.lastName
+                ratingDisabled.rating = userDisabledDisabled.scoreDisabled.toFloat()
             }
         }
     }
@@ -107,10 +102,10 @@ class SaveScoreVolunteerActivity : AppCompatActivity(), View.OnClickListener {
         alertDialog.setCancelClickListener { sDialog -> sDialog.cancel() }
         alertDialog.setConfirmText("ใช่")
             .setConfirmClickListener { sDialog ->
-                var score = if (userDisabled.scoreDisabled == 0.0) {
+                var score = if (userDisabledDisabled.scoreDisabled == 0.0) {
                     ratingScore.rating
                 } else {
-                    ((ratingScore.rating + userDisabled.scoreDisabled)/2)
+                    ((ratingScore.rating + userDisabledDisabled.scoreDisabled)/2)
                 }
                 var databaseUser= FirebaseDatabase.getInstance().getReference("User")
                 databaseUser.child(postUserId).child("scoreDisabled").setValue(score).addOnSuccessListener {

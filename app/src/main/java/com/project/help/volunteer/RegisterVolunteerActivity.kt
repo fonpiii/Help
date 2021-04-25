@@ -26,7 +26,6 @@ import org.jetbrains.anko.toast
 
 class RegisterVolunteerActivity : AppCompatActivity(), View.OnClickListener {
 
-    private lateinit var txtToolbar: TextView
     private lateinit var iconLeft: ImageView
     private lateinit var submit: MaterialButton
     private lateinit var firstName: EditText
@@ -35,6 +34,8 @@ class RegisterVolunteerActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var email: EditText
     private lateinit var password: EditText
     private lateinit var rePassword: EditText
+    private lateinit var country: EditText
+    private lateinit var zipCode: EditText
     var mAuth: FirebaseAuth? = null
     private lateinit var database: FirebaseDatabase
     private lateinit var reference: DatabaseReference
@@ -43,7 +44,6 @@ class RegisterVolunteerActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register_volunteer)
 
-        txtToolbar = findViewById(R.id.txtToolbar)
         submit = findViewById(R.id.submit)
         firstName = findViewById(R.id.firstName)
         lastName = findViewById(R.id.lastName)
@@ -51,6 +51,8 @@ class RegisterVolunteerActivity : AppCompatActivity(), View.OnClickListener {
         email = findViewById(R.id.email)
         password = findViewById(R.id.password)
         rePassword = findViewById(R.id.re_password)
+        country = findViewById(R.id.country)
+        zipCode = findViewById(R.id.zipCode)
 
         submit.setOnClickListener(this)
 
@@ -78,7 +80,6 @@ class RegisterVolunteerActivity : AppCompatActivity(), View.OnClickListener {
     private fun setToolbar() {
         iconLeft = findViewById(R.id.iconLeft)
         iconLeft.setOnClickListener(this)
-        txtToolbar.text = getString(R.string.register_volunteer)
     }
 
     override fun onClick(v: View) {
@@ -103,7 +104,7 @@ class RegisterVolunteerActivity : AppCompatActivity(), View.OnClickListener {
                     if (sendEmailVerification()) {
                         var model = RegisterVolunteerModel(firstName.text.trim().toString(), lastName.text.trim().toString(),
                                 tel.text.trim().toString(), email.text.trim().toString(), ConstValue.UserType_Volunteer,
-                                "", 0.0, 0.0, ServerValue.TIMESTAMP)
+                                "", country.text.trim().toString(), zipCode.text.trim().toString(), 0.0, 0.0, ServerValue.TIMESTAMP)
                         var id = reference.push().key
                         reference.child(id!!).setValue(model)
 
@@ -188,6 +189,21 @@ class RegisterVolunteerActivity : AppCompatActivity(), View.OnClickListener {
                 rePassword.error = "ยืนยันรหัสผ่านไม่ถูกต้อง"
                 result = false
             }
+        }
+
+        if (country.text.isNullOrEmpty()) {
+            country.error = "กรุณากรอกจังหวัด"
+            result = false
+        }
+
+        if (zipCode.text.isNullOrEmpty()) {
+            zipCode.error = "กรุณากรอกรหัสไปรษณีย์"
+            result = false
+        }
+
+        if (!zipCode.text.isNullOrEmpty() && zipCode.text.length < 5) {
+            zipCode.error = "รูปแบบรหัสไปรษณีย์ไม่ถูกต้อง"
+            result = false
         }
         return result
     }

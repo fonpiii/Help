@@ -5,16 +5,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.project.help.disabled.DisabledMainActivity
-import com.project.help.model.UserModel
-import com.project.help.volunteer.VolunteerMainActivity
 
 class WelcomeActivity : AppCompatActivity(), View.OnClickListener {
 

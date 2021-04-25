@@ -39,7 +39,7 @@ import com.project.help.R
 import com.project.help.Utilities
 import com.project.help.disabled.model.PostDetailsRequest
 import com.project.help.disabled.model.mediaModel
-import com.project.help.model.UserModel
+import com.project.help.model.UserDisabledModel
 import java.io.File
 import java.io.IOException
 import java.util.*
@@ -93,7 +93,7 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var database: FirebaseDatabase
     private lateinit var reference: DatabaseReference
     private lateinit var storageReference: StorageReference
-    private lateinit var user: UserModel
+    private lateinit var userDisabled: UserDisabledModel
     private lateinit var categorySelected: String
     private lateinit var dialog: Dialog
     var categories = arrayOf("เลือกหมวดหมู่ผู้พิการ", "การมองเห็น", "การได้ยิน", "การเคลื่อนไหวร่างกาย", "สติปัญญา",
@@ -176,12 +176,12 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
 //    }
 
     private fun setUser() {
-        if ((intent.getParcelableExtra("User") as? UserModel) != null) {
-            user = (intent.getParcelableExtra("User") as? UserModel)!!
-            if (user.firstName + " " + user.lastName == "ผู้พิการ 1") {
+        if ((intent.getParcelableExtra("User") as? UserDisabledModel) != null) {
+            userDisabled = (intent.getParcelableExtra("User") as? UserDisabledModel)!!
+            if (userDisabled.firstName + " " + userDisabled.lastName == "ผู้พิการ 1") {
                 imgProfile.setImageResource(R.drawable.user)
             }
-            txtUsername.text = user.firstName + " " + user.lastName
+            txtUsername.text = userDisabled.firstName + " " + userDisabled.lastName
         }
     }
 
@@ -332,15 +332,15 @@ class PostActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun savePostDetails(typeUrl: mediaModel) {
         var reference = database.getReference("PostDetails")
-        var postDetailsModel = PostDetailsRequest(user.firstName!!, user.lastName!!, user.profileUrl!!,
+        var postDetailsModel = PostDetailsRequest(userDisabled.firstName!!, userDisabled.lastName!!, userDisabled.profileUrl!!,
                 typeUrl.imageUrl, typeUrl.imageName, typeUrl.videoUrl, typeUrl.videoName, typeUrl.audioUrl,
                 typeUrl.audioName, editPost.text.toString(), isAdvice, categorySelected,
-                "", user.scoreDisabled, false, ServerValue.TIMESTAMP, user.userId,
-                ServerValue.TIMESTAMP, user.userId)
+                "", userDisabled.scoreDisabled, false, ServerValue.TIMESTAMP, userDisabled.userId,
+                ServerValue.TIMESTAMP, userDisabled.userId)
         var id = reference.push().key
         reference.child(id!!).setValue(postDetailsModel).addOnCompleteListener {
                     var intent = Intent(this, DisabledMainActivity::class.java)
-                    intent.putExtra("User", user)
+                    intent.putExtra("User", userDisabled)
                     startActivity(intent)
                     finishAffinity()
                     dialog.dismiss()

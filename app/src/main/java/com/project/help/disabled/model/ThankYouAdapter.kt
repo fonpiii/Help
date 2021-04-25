@@ -17,12 +17,12 @@ import com.project.help.R
 import com.project.help.Utilities
 import com.project.help.disabled.SaveScoreDisabledActivity
 import com.project.help.model.PostHelpResponse
-import com.project.help.model.UserModel
+import com.project.help.model.UserDisabledModel
 import com.project.help.volunteer.SaveScoreVolunteerActivity
 import com.squareup.picasso.Picasso
 import java.io.IOException
 
-class ThankYouAdapter(private val postList: List<PostDetailsResponse>, private val user: UserModel) : RecyclerView.Adapter<ThankYouAdapter.PostViewHolder>() {
+class ThankYouAdapter(private val postList: List<PostDetailsResponse>, private val userDisabled: UserDisabledModel) : RecyclerView.Adapter<ThankYouAdapter.PostViewHolder>() {
 
     private lateinit var holderMaster: PostViewHolder
 
@@ -42,7 +42,7 @@ class ThankYouAdapter(private val postList: List<PostDetailsResponse>, private v
         var currentItem = postList[position]
         var postHelp = PostHelpResponse()
 
-        if (user.userType == ConstValue.UserType_Disabled) {
+        if (userDisabled.userType == ConstValue.UserType_Disabled) {
             if (currentItem.close) {
                 holder.layoutStatusHelp.visibility = View.VISIBLE
                 holder.layoutNotHelp.visibility = View.GONE
@@ -50,7 +50,7 @@ class ThankYouAdapter(private val postList: List<PostDetailsResponse>, private v
                 holder.layoutStatusHelp.visibility = View.GONE
                 holder.layoutNotHelp.visibility = View.VISIBLE
             }
-        } else if (user.userType == ConstValue.UserType_Volunteer) {
+        } else if (userDisabled.userType == ConstValue.UserType_Volunteer) {
             holder.txtAssignScore.text = "ให้คะแนนผู้ขอความช่วยเหลือ \n เมื่อได้รับการช่วยเหลือเรียบร้อยแล้ว"
             holder.btnAssignScore.text = "ให้คะแนน"
 
@@ -77,9 +77,9 @@ class ThankYouAdapter(private val postList: List<PostDetailsResponse>, private v
 
         var databaseRating = FirebaseDatabase.getInstance().getReference("User")
         databaseRating.orderByKey().equalTo(currentItem.createBy).get().addOnSuccessListener { result ->
-            var userRating = UserModel()
+            var userRating = UserDisabledModel()
             for (data in result.children) {
-                userRating = data.getValue(UserModel::class.java)!!
+                userRating = data.getValue(UserDisabledModel::class.java)!!
             }
             if (userRating.userType == ConstValue.UserType_Disabled) {
                 holder.ratingUserFeed.rating = userRating.scoreDisabled.toFloat()
@@ -99,17 +99,17 @@ class ThankYouAdapter(private val postList: List<PostDetailsResponse>, private v
         holder.timeStampFeed.text = Utilities.Converter.convertTimeToPostDetails(currentItem.createDate)
 
         holder.btnAssignScore.setOnClickListener(View.OnClickListener {
-            if (user.userType == ConstValue.UserType_Disabled) {
+            if (userDisabled.userType == ConstValue.UserType_Disabled) {
                 var intent = Intent(holder.context, SaveScoreDisabledActivity::class.java)
                 intent.putExtra("PostDetailId", currentItem.id)
-                intent.putExtra("User", user)
+                intent.putExtra("User", userDisabled)
                 holder.context?.startActivity(intent)
-            } else if (user.userType == ConstValue.UserType_Volunteer) {
+            } else if (userDisabled.userType == ConstValue.UserType_Volunteer) {
                 var intent = Intent(holder.context, SaveScoreVolunteerActivity::class.java)
                 intent.putExtra("PostUserId", currentItem.createBy)
                 intent.putExtra("PostHelpId", postHelp.id)
                 intent.putExtra("PostDetailId", currentItem.id)
-                intent.putExtra("User", user)
+                intent.putExtra("User", userDisabled)
                 holder.context?.startActivity(intent)
             }
         })

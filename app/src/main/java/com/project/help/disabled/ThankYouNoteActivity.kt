@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
@@ -16,16 +15,15 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.project.help.ConstValue
 import com.project.help.R
-import com.project.help.disabled.model.PostAdapter
 import com.project.help.disabled.model.PostDetailsResponse
 import com.project.help.disabled.model.ThankYouAdapter
-import com.project.help.model.UserModel
+import com.project.help.model.UserDisabledModel
 
 class ThankYouNoteActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var recyclerFeed: RecyclerView
     private lateinit var iconLeft: ImageView
-    private lateinit var user: UserModel
+    private lateinit var userDisabled: UserDisabledModel
     private lateinit var shimmer: ShimmerFrameLayout
     private lateinit var database: FirebaseDatabase
     private lateinit var reference: DatabaseReference
@@ -56,8 +54,8 @@ class ThankYouNoteActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun setUser() {
-        if ((intent.getParcelableExtra("User") as? UserModel) != null) {
-            user = (intent.getParcelableExtra("User") as? UserModel)!!
+        if ((intent.getParcelableExtra("User") as? UserDisabledModel) != null) {
+            userDisabled = (intent.getParcelableExtra("User") as? UserDisabledModel)!!
         }
     }
 
@@ -85,7 +83,7 @@ class ThankYouNoteActivity : AppCompatActivity(), View.OnClickListener {
         shimmer.startShimmerAnimation()
         when (getBy) {
             ConstValue.getById -> {
-                reference.orderByChild("createBy").equalTo(user.userId).get().addOnSuccessListener { result ->
+                reference.orderByChild("createBy").equalTo(userDisabled.userId).get().addOnSuccessListener { result ->
                     setPostDetails(result)
                 }.addOnFailureListener{
                     Log.e("firebase", "Error getting data", it)
@@ -114,7 +112,7 @@ class ThankYouNoteActivity : AppCompatActivity(), View.OnClickListener {
         }
 
         if (postDetails.size != 0) {
-            recyclerFeed.adapter = ThankYouAdapter(postDetails, user)
+            recyclerFeed.adapter = ThankYouAdapter(postDetails, userDisabled)
             recyclerFeed.layoutManager = LinearLayoutManager(this)
             recyclerFeed.setHasFixedSize(true)
             closeShimmer()
