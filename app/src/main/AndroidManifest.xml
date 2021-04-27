@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.project.help">
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -15,10 +16,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Help">
+
+        <meta-data
+        android:name="com.google.android.geo.API_KEY"
+        android:value="AIzaSyAAvAkStdqxfjT3epnqZB4Po_joHkrnVgM"/>
+
+        <activity
+            android:name=".HospitalNearByActivity"
+            android:theme="@style/Theme.Help.NoActionBar">
+
+        </activity>
         <activity
             android:name=".volunteer.SaveScoreVolunteerActivity"
-            android:theme="@style/Theme.Help.NoActionBar"
-            ></activity>
+            android:theme="@style/Theme.Help.NoActionBar" />
         <activity
             android:name=".volunteer.AssignScoreActivity"
             android:theme="@style/Theme.Help.NoActionBar" />

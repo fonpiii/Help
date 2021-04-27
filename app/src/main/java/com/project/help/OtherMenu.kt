@@ -14,6 +14,7 @@ class OtherMenu : AppCompatActivity(), View.OnClickListener {
     private lateinit var contactUsMenu: CardView
     private lateinit var profileMenu: CardView
     private lateinit var emergencyTel: CardView
+    private lateinit var hospital: CardView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,10 +23,12 @@ class OtherMenu : AppCompatActivity(), View.OnClickListener {
         contactUsMenu = findViewById(R.id.contactUs)
         profileMenu = findViewById(R.id.profile)
         emergencyTel = findViewById(R.id.emergencyTel)
+        hospital = findViewById(R.id.hospital)
 
         contactUsMenu.setOnClickListener(this)
         profileMenu.setOnClickListener(this)
         emergencyTel.setOnClickListener(this)
+        hospital.setOnClickListener(this)
 
         //region On init
         setToolbar()
@@ -39,6 +42,10 @@ class OtherMenu : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View) {
         when (v.id) {
+            R.id.hospital -> {
+                val intent = Intent(this, HospitalNearByActivity::class.java)
+                startActivity(intent)
+            }
             R.id.contactUs -> {
                 val intent = Intent(this, ContactUsActivity::class.java)
                 startActivity(intent)
